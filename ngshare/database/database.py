@@ -113,3 +113,7 @@ class File(Base):
     _id = Column(INTEGER, primary_key=True)
     filename = Column(TEXT)
     contents = Column(BLOB)
+
+    def __init__(self, filename, contents):
+        self.filename = filename
+        self.contents = contents

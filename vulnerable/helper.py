@@ -1,6 +1,6 @@
 # Helper functions
 
-import os, json, sqlite3
+import os, json, sqlite3, base64
 
 from app import request, app
 from settings import FS_PREFIX, DB_NAME
@@ -71,14 +71,13 @@ def db_call(cmd, *args) :
 	conn.close()
 	return result
 
-def json_files(files_id) :
-	'Fetch and generate file list (directory tree) from files_id'
-	files = db_call(
-			"SELECT file_name, content FROM file_content WHERE files_id=$1",
-			files_id
-		)
+def json_files(file_list) :
+	'Generate JSON file list (directory tree) from a list of File objects'
 	ans = []
-	for file_name, content in files :
-		ans.append({"path": file_name, "content": content})
+	for i in file_list :
+		ans.append({
+			'path': i.filename, 
+			'content': base64.encodebytes(i.contents).decode(),
+		})
 	return ans
 

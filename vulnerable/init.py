@@ -109,3 +109,38 @@ def db_init(create_data=False) :
 	conn.commit()
 	conn.close()
 
+def init_data() :
+	db = Session()
+	db.add(Course('course1', User('Kevin')))
+	db.add(Course('course2', User('Abigail')))
+	db.query(Course).filter(Course.id == 'course1').one_or_none().students \
+		.append(User('Lawrence'))
+	db.query(Course).filter(Course.id == 'course2').one_or_none().students \
+		.append(User('Eric'))
+	# c = db.query(Course).filter(Course.id == 'course1').one_or_none()
+
+	"INSERT INTO files VALUES ('files0')", 
+	"INSERT INTO files VALUES ('files1')", 
+	"INSERT INTO files VALUES ('files2')", 
+	"INSERT INTO files VALUES ('files3')", 
+	"INSERT INTO files VALUES ('files4')", 
+	"INSERT INTO files VALUES ('files5')", 
+	"INSERT INTO files VALUES ('files6')", 
+	"INSERT INTO file_content VALUES ('files0', 'file0', '00000')", 
+	"INSERT INTO file_content VALUES ('files1', 'file1', '11111')", 
+	"INSERT INTO file_content VALUES ('files2', 'file2', '22222')", 
+	"INSERT INTO file_content VALUES ('files3', 'file3', '33333')", 
+	"INSERT INTO file_content VALUES ('files4', 'file4', '44444')", 
+	"INSERT INTO file_content VALUES ('files5', 'file5', '55555')", 
+	"INSERT INTO file_content VALUES ('files6', 'file6', '66666')", 
+	"INSERT INTO assignments VALUES \
+	 ('challenge', 'course1', 'files0');", 
+	"INSERT INTO assignments VALUES \
+	 ('assignment2a', 'course2', 'files1');", 
+	"INSERT INTO assignments VALUES \
+	 ('assignment2b', 'course2', 'files2');", 
+	"INSERT INTO submissions VALUES \
+	 ('course1', 'challenge', 'Lawrence', '2019-20-20', 'files3',null)",
+	"INSERT INTO submissions VALUES \
+	 ('course1', 'challenge', 'Eric', '2020-20-20', 'files4', null)", 
+
