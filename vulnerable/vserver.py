@@ -7,9 +7,6 @@ import os, sys
 
 BASE_DIR = os.path.dirname(__file__)
 
-from settings import FS_PREFIX, DB_NAME
-from init import db_init
-
 from helper import (json_success, json_error, error_catcher, path_modifier,
 					get_pathname, remove_pathname)
 import helper

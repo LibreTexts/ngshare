@@ -2,9 +2,8 @@
 
 import os, json, sqlite3, base64, binascii
 
-from app import request, app
-from settings import FS_PREFIX, DB_NAME
-from init import db_init
+from app import request
+from settings import FS_PREFIX
 
 from database.database import *
 
@@ -58,20 +57,6 @@ def remove_pathname(pathname) :
 	return pathname[len(FS_PREFIX.rstrip('/')):]
 
 # For nbgrader APIs
-
-def db_call(cmd, *args) :
-	'''
-		Execute any database command, ignoring efficiency and security
-		But I believe allowing SQL injection is more difficult than not allowing
-		e.g. db_call('SELECT ... WHERE id=$1;', '1')
-	'''
-	if not os.path.exists(DB_NAME) :
-		db_init(True)
-	conn = sqlite3.connect(DB_NAME)
-	result = conn.execute(cmd, args).fetchall()
-	conn.commit()
-	conn.close()
-	return result
 
 def json_files_pack(file_list) :
 	'Generate JSON file list (directory tree) from a list of File objects'

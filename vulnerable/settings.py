@@ -1,3 +1,3 @@
 FS_PREFIX = '/'				# Try '/path/to/tmpdir'
-DB_NAME = '/tmp/vserver.db'
+DB_NAME = 'sqlite:////tmp/vserver.db'
 
