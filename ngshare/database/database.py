@@ -52,6 +52,9 @@ class User(Base):
     def __init__(self, name):
         self.id = name
 
+    def __str__(self):
+        return '<User %s>' % self.id
+
     @staticmethod
     def from_jupyterhub_user(user_model, db):
         user = db.query(User)\
@@ -78,6 +81,9 @@ class Course(Base):
         self.id = name
         self.instructors.append(instructor)
 
+    def __str__(self):
+        return '<Course %s>' % self.id
+
 class Assignment(Base):
     __tablename__ = 'assignments'
     # in case assignment name needs to be changed
@@ -94,6 +100,9 @@ class Assignment(Base):
         self.id = name
         self.course = course
 
+    def __str__(self):
+        return '<Assignment %s>' % self.id
+
 class Submission(Base):
     __tablename__ = 'submissions'
     _id = Column(INTEGER, primary_key=True)
@@ -108,6 +117,9 @@ class Submission(Base):
         self.student = student.id
         self.assignment = assignment
 
+    def __str__(self):
+        return '<Submission %d>' % self._id
+
 class File(Base):
     __tablename__ = 'files'
     _id = Column(INTEGER, primary_key=True)
@@ -117,3 +129,6 @@ class File(Base):
     def __init__(self, filename, contents):
         self.filename = filename
         self.contents = contents
+
+    def __str__(self):
+        return '<File %s>' % self.filename
