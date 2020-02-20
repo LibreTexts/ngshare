@@ -1,10 +1,11 @@
 # nbgrader APIs
 # https://github.com/jupyter/nbgrader/issues/659
 
-import os, base64, binascii, operator
+import os, json, operator
 
 from app import request, app
-from helper import json_success, json_error, error_catcher, db_call, json_files
+from helper import (json_success, json_error, error_catcher, db_call,
+					json_files_pack, json_files_unpack)
 
 # Initialize database
 from database.database import *
@@ -91,7 +92,7 @@ def download_assignment(course_id, assignment_id) :
 		Assignment.course == course).one_or_none()
 	if assignment is None :
 		return json_error('Assignment not found')
-	return json_success(files=json_files(assignment.files))
+	return json_success(files=json_files_pack(assignment.files))
 
 @app.route('/api/assignment/<course_id>/<assignment_id>', methods=["POST"])
 @error_catcher
@@ -100,7 +101,21 @@ def release_assignment(course_id, assignment_id) :
 		POST /api/assignment/<course_id>/<assignment_id>
 		Release an assignment (instructors only)
 	'''
-	raise NotImplementedError
+	db = Session()
+	course = db.query(Course).filter(Course.id == course_id).one_or_none()
+	if course is None :
+		return json_error('Course not found')
+	if db.query(Assignment).filter(Assignment.id == assignment_id,
+									Assignment.course == course).one_or_none() :
+		return json_error('Assignment already exists')
+	assignment = Assignment(assignment_id, course)
+	files = request.args.get('files')
+	if not files :
+		return json_error('Please supply files')
+	for i in json_files_unpack(json.loads(files)) :
+		assignment.files.append(i)
+	db.commit()
+	return json_success()
 
 @app.route('/api/submissions/<course_id>/<assignment_id>')
 @error_catcher

@@ -37,11 +37,16 @@
     /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
   Download assignment
 </p>
-<p style="margin-left: 2em">
-  POST
-    /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;:
-  Release assignment
-</p>
+<form
+  id="form1"
+  action="/api/assignment/course1/challenger?files=%5B%7B%22path%22%3A%20%22a%22%2C%20%22content%22%3A%20%22amtsCg%3D%3D%22%7D%5D"
+  method="POST">
+  <p style="margin-left: 2em">
+    POST
+      <a href="#" onclick="document.getElementById('form1').submit()">/api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
+    Release assignment (see HTML form action)
+  </p>
+</form>
 <p style="margin-left: 2em">
   GET
     /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;:

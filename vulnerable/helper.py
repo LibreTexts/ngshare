@@ -1,10 +1,12 @@
 # Helper functions
 
-import os, json, sqlite3, base64
+import os, json, sqlite3, base64, binascii
 
 from app import request, app
 from settings import FS_PREFIX, DB_NAME
 from init import db_init
+
+from database.database import *
 
 def json_success(msg=None, **kwargs) :
 	assert 'message' not in kwargs
@@ -71,7 +73,7 @@ def db_call(cmd, *args) :
 	conn.close()
 	return result
 
-def json_files(file_list) :
+def json_files_pack(file_list) :
 	'Generate JSON file list (directory tree) from a list of File objects'
 	ans = []
 	for i in file_list :
@@ -79,5 +81,16 @@ def json_files(file_list) :
 			'path': i.filename, 
 			'content': base64.encodebytes(i.contents).decode(),
 		})
+	return ans
+
+def json_files_unpack(json_obj) :
+	'Generate a list of File objects from a JSON file list (directory tree)'
+	ans = []
+	for i in json_obj :
+		try :
+			content = base64.decodebytes(i['content'].encode())
+		except binascii.Error :
+			raise JsonError('Content cannot be base64 decoded')
+		ans.append(File(i['path'], content))
 	return ans
 
