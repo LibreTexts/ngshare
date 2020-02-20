@@ -15,8 +15,8 @@ import nbgrader	# all nbgrader APIs
 
 @app.route('/')
 @error_catcher
-def main_page(deduct=lambda x: False) :
-	return open(os.path.join(BASE_DIR, 'main.html')).read()
+def home_page(deduct=lambda x: False) :
+	return open(os.path.join(BASE_DIR, 'home.html')).read()
 
 @app.route('/favicon.ico')
 @error_catcher
