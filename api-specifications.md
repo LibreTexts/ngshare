@@ -112,11 +112,15 @@ None
 
 *download a copy of an assignment (students+instructors)*
 
-Used for ExchangeFetchAssignment.
+If `list_only` is `true`, the response's file content fields in the encoded directory tree will either be empty or absent. Used for ExchangeFetchAssignment.
 
 ##### Request
 
-None
+```javascript
+{
+    "list_only": /* true or false */
+}
+```
 
 ##### Response
 
