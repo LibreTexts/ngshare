@@ -102,3 +102,18 @@ def find_assignment(db, course, assignment_id) :
 	if assignment is None :
 		raise JsonError('Assignment not found')
 	return assignment
+
+def find_course_student(db, course, student_id) :	
+	'Return a Student object from course and id, or raise error'
+	student = db.query(User).filter(
+		User.id == student_id, 
+		User.taking.contains(course)).one_or_none()
+	if student is None :
+		raise JsonError('Student not found')
+	return student
+
+def find_student_submissions(db, assignment, student) :
+	'Return a list of Submission objects from assignment and student id'
+	return db.query(Submission).filter(
+		Submission.assignment == assignment,
+		Submission.student == student.id)

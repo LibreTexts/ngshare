@@ -73,3 +73,15 @@ def test_list_submissions() :
 	assert result['submissions'][1]['student_id'] == 'Lawrence'
 	result = assert_success('/api/submissions/course2/assignment2a')
 	assert len(result['submissions']) == 0
+
+def test_list_student_submission() :
+	assert assert_fail('/api/submissions/jkl/challenge/st')['message'] == \
+			'Course not found'
+	assert assert_fail('/api/submissions/course1/challenges/st')['message'] == \
+			'Assignment not found'
+	assert assert_fail('/api/submissions/course1/challenge/st')['message'] == \
+			'Student not found'
+	result = assert_success('/api/submissions/course1/challenge/Lawrence')
+	assert len(result['submissions']) == 2
+	result = assert_success('/api/submissions/course2/assignment2a/Eric')
+	assert len(result['submissions']) == 0
