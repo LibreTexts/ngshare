@@ -75,11 +75,19 @@ None
 ##### Response
 
 ```javascript
-[
-    /* course name */,
-    ...
-]
+{
+    "success": true,
+    "assignments":
+    [
+        /* course name */,
+        ...
+    ]
+}
 ```
+
+##### Error messages
+
+(TODO)
 
 ### /api/assignments: Course assignments
 
@@ -97,7 +105,7 @@ None
 
 ```javascript
 {
-    "success": /* true or false */,
+    "success": true,
     "assignments":
     [
         /* assignment name */,
@@ -105,6 +113,10 @@ None
     ]
 }
 ```
+
+##### Error messages
+
+* Course not found
 
 ### /api/assignment: Fetching and releasing an assignment
 
@@ -126,10 +138,15 @@ If `list_only` is `true`, the response's file content fields in the encoded dire
 
 ```javascript
 {
-    "success": /* true or false */,
+    "success": true,
     "files": /* encoded directory tree */
 }
 ```
+
+##### Error messages
+
+* Course not found
+* Assignment not found
 
 #### POST /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;
 
@@ -149,9 +166,16 @@ Used for ExchangeReleaseAssignment.
 
 ```javascript
 {
-    "success": /* true or false */
+    "success": true
 }
 ```
+
+##### Error messages
+
+* Course not found
+* Assignment already exists
+* Please supply files
+* Content cannot be base64 decoded
 
 ### /api/submissions: Listing submissions
 
@@ -169,7 +193,7 @@ None
 
 ```javascript
 {
-    "success": /* true or false */,
+    "success": true,
     "submissions":
     [
         {
@@ -189,6 +213,11 @@ None
 }
 ```
 
+##### Error messages
+
+* Course not found
+* Assignment not found
+
 #### GET /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 
 *list all submissions for an assignment from a particular student (instructors+students, though students are restricted to only viewing their own submissions)*
@@ -201,7 +230,7 @@ None
 
 ```javascript
 {
-    "success": /* true or false */,
+    "success": true,
     "submissions":
     [
         {
@@ -219,6 +248,12 @@ None
     ]
 }
 ```
+
+##### Error messages
+
+* Course not found
+* Assignment not found
+* Student not found
 
 ### /api/submission: Collecting and submitting a submission
 
@@ -241,9 +276,17 @@ Used for ExchangeSubmit.
 
 ```javascript
 {
-    "success": /* true or false */
+    "success": true
 }
 ```
+
+##### Error messages
+
+* Course not found
+* Assignment not found
+* Student not found
+* Please supply files
+* Content cannot be base64 decoded
 
 #### GET /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 
@@ -259,11 +302,15 @@ None
 
 ```javascript
 {
-    "success": /* true or false */,
+    "success": true,
     "timestamp": /* submission timestamp */,
     "files": /* encoded directory tree */
 }
 ```
+
+##### Error messages
+
+(TODO)
 
 ### /api/feedback: Fetching and releasing submission feedback
 
@@ -290,9 +337,13 @@ Used for ExchangeReleaseFeedback.
 
 ```javascript
 {
-    "success": /* true or false */
+    "success": true
 }
 ```
+
+##### Error messages
+
+(TODO)
 
 #### GET /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 
@@ -308,7 +359,7 @@ None
 
 ```javascript
 {
-    "success": /* true or false*/,
+    "success": true,
     "feedback":
     [
         {
@@ -320,3 +371,7 @@ None
     ]
 }
 ```
+
+##### Error messages
+
+(TODO)
