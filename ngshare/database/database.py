@@ -1,4 +1,7 @@
-# pylint: disable=missing-docstring
+'''
+    Database structure for NGShare
+'''
+
 # pylint: disable=invalid-name
 # pylint: disable=too-few-public-methods
 # pylint: disable=fixme
@@ -11,30 +14,35 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+# Instructor -> Course (Many to Many)
 instructor_assoc_table = Table(
     'instructor_assoc_table', Base.metadata,
     Column('left_id', TEXT, ForeignKey('users.id')),
     Column('right_id', INTEGER, ForeignKey('courses._id'))
 )
 
+# Student -> Course (Many to Many)
 student_assoc_table = Table(
     'student_assoc_table', Base.metadata,
     Column('left_id', TEXT, ForeignKey('users.id')),
     Column('right_id', INTEGER, ForeignKey('courses._id'))
 )
 
+# Assignment -> Course (One to Many)
 assignment_files_assoc_table = Table(
     'assignment_files_assoc_table', Base.metadata,
     Column('left_id', TEXT, ForeignKey('assignments._id')),
     Column('right_id', INTEGER, ForeignKey('files._id'))
 )
 
+# Submission -> Course (One to Many)
 submission_files_assoc_table = Table(
     'submission_files_assoc_table', Base.metadata,
     Column('left_id', TEXT, ForeignKey('submissions._id')),
     Column('right_id', INTEGER, ForeignKey('files._id'))
 )
 
+# Submission (feedback) -> Course (One to Many)
 feedback_files_assoc_table = Table(
     'feedback_files_assoc_table', Base.metadata,
     Column('left_id', TEXT, ForeignKey('submissions._id')),
@@ -42,6 +50,7 @@ feedback_files_assoc_table = Table(
 )
 
 class User(Base):
+    'A JupyterHub user; can be either instructor or student, or both'
     __tablename__ = 'users'
     id = Column(TEXT, primary_key=True)
     teaching = relationship("Course", secondary=instructor_assoc_table,
@@ -57,9 +66,8 @@ class User(Base):
 
     @staticmethod
     def from_jupyterhub_user(user_model, db):
-        user = db.query(User)\
-            .filter(User.id == user_model.name)\
-            .one_or_none()
+        'Import users from JupyterHub'
+        user = db.query(User).filter(User.id == user_model.name).one_or_none()
         if user is None:
             user = User(user_model.name)
             db.add(user)
@@ -67,6 +75,7 @@ class User(Base):
         return user
 
 class Course(Base):
+    'An nbgrader course'
     __tablename__ = 'courses'
     # in case course name needs to be changed
     _id = Column(INTEGER, primary_key=True)
@@ -85,6 +94,7 @@ class Course(Base):
         return '<Course %s>' % self.id
 
 class Assignment(Base):
+    'An nbgrader assignment'
     __tablename__ = 'assignments'
     # in case assignment name needs to be changed
     _id = Column(INTEGER, primary_key=True)
@@ -104,6 +114,7 @@ class Assignment(Base):
         return '<Assignment %s>' % self.id
 
 class Submission(Base):
+    'A submission for an assignment'
     __tablename__ = 'submissions'
     _id = Column(INTEGER, primary_key=True)
     assignment_id = Column(INTEGER, ForeignKey("assignments._id"))
@@ -121,6 +132,7 @@ class Submission(Base):
         return '<Submission %d>' % self._id
 
 class File(Base):
+    'A File (for assignment, submission file, or submission feedback)'
     __tablename__ = 'files'
     _id = Column(INTEGER, primary_key=True)
     filename = Column(TEXT)
