@@ -37,18 +37,18 @@ def test_init() :
 	os.system('touch vserver.py')
 	time.sleep(2)
 
-def test_assignment_list() :
+def test_list_assignments() :
 	assert assert_success('/api/assignments/course2')['assignments'] == \
 			['assignment2a', 'assignment2b']
 	assert assert_fail('/api/assignments/jkl')['message'] == \
 			'Course not found'
 
-def test_assignment_download() :
+def test_download_assignment() :
 	files = assert_success('/api/assignment/course1/challenge')['files']
 	assert files[0]['path'] == 'file2'
 	assert base64.b64decode(files[0]['content'].encode()) == b'22222'
 
-def test_assignment_release() :
+def test_release_assignment() :
 	params = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
 									{'path': 'b', 'content': 'amtsCg=='}])}
 	assert assert_fail('/api/assignment/jkl/challenger', method=POST, 

@@ -24,7 +24,7 @@ if not db_exists:
 
 @app.route('/api/assignments/<course_id>')
 @error_catcher
-def assignments_list(course_id) :
+def list_assignments(course_id) :
 	'''
 		GET /api/assignments/<course_id>
 		List all assignments for a course (students+instructors)
@@ -93,7 +93,7 @@ def release_assignment(course_id, assignment_id) :
 
 @app.route('/api/submissions/<course_id>/<assignment_id>')
 @error_catcher
-def list_assignments(course_id, assignment_id) :
+def list_submissions(course_id, assignment_id) :
 	'''
 		GET /api/submissions/<course_id>/<assignment_id>
 		List all submissions for an assignment from all students
