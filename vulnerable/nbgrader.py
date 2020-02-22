@@ -165,4 +165,3 @@ def download_feedback(course_id, assignment_id, student_id) :
 		 (instructors+students, students restricted to their own submissions)
 	'''
 	raise NotImplementedError
-
