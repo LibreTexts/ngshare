@@ -60,11 +60,19 @@
       /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   List student's submissions
 </p>
-<p style="margin-left: 2em">
-  POST
-    /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;:
-  Submit assignment
-</p>
+
+
+<form
+  id="form2"
+  action="/api/submission/course2/assignment2a/Eric?files=%5B%7B%22path%22%3A%20%22a%22%2C%20%22content%22%3A%20%22amtsCg%3D%3D%22%7D%5D"
+  method="POST">
+  <!-- files = [{"path": "a", "content": "amtsCg=="}] -->
+  <p style="margin-left: 2em">
+    POST
+      <a href="#" onclick="document.getElementById('form2').submit()">/api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
+    Submit assignment (see HTML form action)
+  </p>
+</form>
 <p style="margin-left: 2em">
   GET
     /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;:

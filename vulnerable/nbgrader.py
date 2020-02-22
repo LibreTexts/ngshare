@@ -118,7 +118,6 @@ def list_student_submission(course_id, assignment_id, student_id) :
 			# TODO: "notebooks": [], 
 		})
 	return json_success(submissions=submissions)
-	raise NotImplementedError
 
 @app.route('/api/submission/<course_id>/<assignment_id>/<student_id>', 
 			methods=["POST"])
@@ -128,7 +127,14 @@ def submit_assignment(course_id, assignment_id, student_id) :
 		POST /api/submission/<course_id>/<assignment_id>/<student_id>
 		Submit a copy of an assignment (students+instructors)
 	'''
-	raise NotImplementedError
+	db = Session()
+	course = find_course(db, course_id)
+	assignment = find_assignment(db, course, assignment_id)
+	student = find_course_student(db, course, student_id)
+	submission = Submission(student, assignment)
+	json_files_unpack(request.args.get('files'), submission.files)
+	db.commit()
+	return json_success()
 
 @app.route('/api/submission/<course_id>/<assignment_id>/<student_id>')
 @error_catcher
