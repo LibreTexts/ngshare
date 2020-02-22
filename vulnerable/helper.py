@@ -8,14 +8,14 @@ from settings import FS_PREFIX
 from database.database import *
 
 def json_success(msg=None, **kwargs) :
-	assert 'message' not in kwargs
+	assert 'success' not in kwargs and 'message' not in kwargs
 	resp = {'success': True, **kwargs}
 	if msg is not None :
 		resp['message'] = msg
 	return json.dumps(resp)
 
 def json_error(msg, **kwargs) :
-	assert 'message' not in kwargs
+	assert 'success' not in kwargs and 'message' not in kwargs
 	return json.dumps({'success': False, 'message': msg, **kwargs})
 
 class JsonError(Exception) :
@@ -30,6 +30,10 @@ def error_catcher(function) :
 			return e.error
 	call.__name__ = function.__name__ + '_caller'
 	return call
+
+def strftime(dt) :
+	# TODO: follow API specification
+	return dt.strftime('%Y-%m-%d %H:%M:%S %Z%z')
 
 # For unix APIs
 
@@ -96,5 +100,5 @@ def find_assignment(db, course, assignment_id) :
 		Assignment.id == assignment_id,
 		Assignment.course == course).one_or_none()
 	if assignment is None :
-		return json_error('Assignment not found')
+		raise JsonError('Assignment not found')
 	return assignment

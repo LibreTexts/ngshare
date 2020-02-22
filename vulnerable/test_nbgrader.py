@@ -47,6 +47,10 @@ def test_download_assignment() :
 	files = assert_success('/api/assignment/course1/challenge')['files']
 	assert files[0]['path'] == 'file2'
 	assert base64.b64decode(files[0]['content'].encode()) == b'22222'
+	assert assert_fail('/api/assignment/jkl/challenger')['message'] == \
+			'Course not found'
+	assert assert_fail('/api/assignment/course1/challenger')['message'] == \
+			'Assignment not found'
 
 def test_release_assignment() :
 	params = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
@@ -57,3 +61,15 @@ def test_release_assignment() :
 					params=params)
 	assert assert_fail('/api/assignment/course1/challenger', method=POST, 
 						params=params)['message'] == 'Assignment already exists'
+
+def test_list_submissions() :
+	assert assert_fail('/api/submissions/jkl/challenge')['message'] == \
+			'Course not found'
+	assert assert_fail('/api/submissions/course1/challenges')['message'] == \
+			'Assignment not found'
+	result = assert_success('/api/submissions/course1/challenge')
+	assert len(result['submissions']) == 2
+	assert result['submissions'][0]['student_id'] == 'Lawrence'
+	assert result['submissions'][1]['student_id'] == 'Lawrence'
+	result = assert_success('/api/submissions/course2/assignment2a')
+	assert len(result['submissions']) == 0

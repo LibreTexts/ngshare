@@ -5,7 +5,7 @@ import os, json, operator
 
 from app import request, app
 from helper import (json_success, json_error, error_catcher, json_files_pack,
-					json_files_unpack, find_course, find_assignment)
+					json_files_unpack, find_course, find_assignment, strftime)
 from settings import DB_NAME
 from init import init_test_data
 
@@ -85,7 +85,17 @@ def list_submissions(course_id, assignment_id) :
 		List all submissions for an assignment from all students
 		 (instructors only)
 	'''
-	raise NotImplementedError
+	db = Session()
+	course = find_course(db, course_id)
+	assignment = find_assignment(db, course, assignment_id)
+	submissions = []
+	for submission in assignment.submissions :
+		submissions.append({
+			'student_id': submission.student, 
+			'timestamp': strftime(submission.timestamp), 
+			# TODO: "notebooks": [], 
+		})
+	return json_success(submissions=submissions)
 
 @app.route('/api/submissions/<course_id>/<assignment_id>/<student_id>')
 @error_catcher
