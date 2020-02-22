@@ -323,14 +323,10 @@ Used for ExchangeReleaseFeedback.
 ##### Request
 
 ```javascript
-[
-    {
-        "timestamp": /* submission timestamp */,
-        "notebook_id": /* name of submitted notebook */,
-        "file": /* base64 encoded content of feedback file */
-    },
-    ...
-]
+{
+    "timestamp": /* submission timestamp */,
+    "files": /* encoded directory tree */
+}
 ```
 
 ##### Response
@@ -359,16 +355,9 @@ None
 
 ```javascript
 {
-    "success": true,
-    "feedback":
-    [
-        {
-            "timestamp": /* submission timestamp */,
-            "notebook_id": /* name of submitted notebook */,
-            "file": /* base64 encoded content of feedback file */
-        },
-        ...
-    ]
+    "success": /* true or false*/,
+    "timestamp": /* submission timestamp */,
+    "files": /* encoded directory tree */
 }
 ```
 
