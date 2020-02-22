@@ -4,6 +4,17 @@ Last updated 2020-02-20
 
 ---
 
+## Definitions
+
+### Timestamp
+
+A timestamp of when a user initiates the assignment submission process. It
+follows the
+[format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes)
+"%Y-%m-%d %H:%M:%S.%f %Z". For example, "2020-01-30 10:30:47.524219 UTC".
+
+---
+
 ## Exchanging multiple files
 
 ### Directory tree
