@@ -77,7 +77,7 @@ None
 ```javascript
 {
     "success": true,
-    "assignments":
+    "courses":
     [
         /* course name */,
         ...
