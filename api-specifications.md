@@ -30,6 +30,25 @@ Each file and directory tree will be transferred individually.
 
 Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyter/nbgrader/issues/659).
 
+### /api/courses: Courses
+
+#### GET /api/courses
+
+List all available courses (students+instructors). Used for ExchangeList.
+
+##### Request
+
+None
+
+##### Response
+
+```javascript
+[
+    /* course name */,
+    ...
+]
+```
+
 ### /api/assignments: Course assignments
 
 #### GET /api/assignments/&lt;course_id&gt;
