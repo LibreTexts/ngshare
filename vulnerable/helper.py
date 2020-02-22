@@ -68,14 +68,33 @@ def json_files_pack(file_list) :
 		})
 	return ans
 
-def json_files_unpack(json_obj) :
-	'Generate a list of File objects from a JSON file list (directory tree)'
-	ans = []
-	for i in json_obj :
+def json_files_unpack(json_obj, target) :
+	'''
+		Generate a list of File objects from a JSON file list (directory tree)
+		json_obj: json object as string; raise error when None
+		target: a list to put file objects in
+	'''
+	if json_obj is None :
+		raise JsonError('Please supply files')
+	for i in json.loads(json_obj) :
 		try :
 			content = base64.decodebytes(i['content'].encode())
 		except binascii.Error :
 			raise JsonError('Content cannot be base64 decoded')
-		ans.append(File(i['path'], content))
-	return ans
+		target.append(File(i['path'], content))
 
+def find_course(db, course_id) :
+	'Return a Course object from id, or raise error'
+	course = db.query(Course).filter(Course.id == course_id).one_or_none()
+	if course is None :
+		raise JsonError('Course not found')
+	return course
+
+def find_assignment(db, course, assignment_id) :
+	'Return an Assignment object from course and id, or raise error'
+	assignment = db.query(Assignment).filter(
+		Assignment.id == assignment_id,
+		Assignment.course == course).one_or_none()
+	if assignment is None :
+		return json_error('Assignment not found')
+	return assignment

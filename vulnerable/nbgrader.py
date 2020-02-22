@@ -4,8 +4,8 @@
 import os, json, operator
 
 from app import request, app
-from helper import (json_success, json_error, error_catcher,
-					json_files_pack, json_files_unpack)
+from helper import (json_success, json_error, error_catcher, json_files_pack,
+					json_files_unpack, find_course, find_assignment)
 from settings import DB_NAME
 from init import init_test_data
 
@@ -44,9 +44,7 @@ def list_assignments(course_id) :
 			}
 	'''
 	db = Session()
-	course = db.query(Course).filter(Course.id == course_id).one_or_none()
-	if course is None :
-		return json_error('Course not found')
+	course = find_course(db, course_id)
 	assignments = course.assignments
 	return json_success(assignments=list(map(lambda x: x.id, assignments)))
 
@@ -58,14 +56,8 @@ def download_assignment(course_id, assignment_id) :
 		Download a copy of an assignment (students+instructors)
 	'''
 	db = Session()
-	course = db.query(Course).filter(Course.id == course_id).one_or_none()
-	if course is None :
-		return json_error('Course not found')
-	assignment = db.query(Assignment).filter(
-		Assignment.id == assignment_id,
-		Assignment.course == course).one_or_none()
-	if assignment is None :
-		return json_error('Assignment not found')
+	course = find_course(db, course_id)
+	assignment = find_assignment(db, course, assignment_id)
 	return json_success(files=json_files_pack(assignment.files))
 
 @app.route('/api/assignment/<course_id>/<assignment_id>', methods=["POST"])
@@ -76,18 +68,12 @@ def release_assignment(course_id, assignment_id) :
 		Release an assignment (instructors only)
 	'''
 	db = Session()
-	course = db.query(Course).filter(Course.id == course_id).one_or_none()
-	if course is None :
-		return json_error('Course not found')
+	course = find_course(db, course_id)
 	if db.query(Assignment).filter(Assignment.id == assignment_id,
 									Assignment.course == course).one_or_none() :
 		return json_error('Assignment already exists')
 	assignment = Assignment(assignment_id, course)
-	files = request.args.get('files')
-	if not files :
-		return json_error('Please supply files')
-	for i in json_files_unpack(json.loads(files)) :
-		assignment.files.append(i)
+	json_files_unpack(request.args.get('files'), assignment.files)
 	db.commit()
 	return json_success()
 
