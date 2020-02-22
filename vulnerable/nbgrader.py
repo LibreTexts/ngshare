@@ -113,7 +113,7 @@ def list_student_submission(course_id, assignment_id, student_id) :
 	submissions = []
 	for submission in find_student_submissions(db, assignment, student) :
 		submissions.append({
-			# TODO: 'student_id': submission.student, 
+			'student_id': submission.student, 
 			'timestamp': strftime(submission.timestamp), 
 			# TODO: "notebooks": [], 
 		})
