@@ -221,14 +221,10 @@ Used for ExchangeReleaseFeedback.
 ##### Request
 
 ```javascript
-[
-    {
-        "timestamp": /* submission timestamp */,
-        "notebook_id": /* name of submitted notebook */,
-        "file": /* base64 encoded content of feedback file */
-    },
-    ...
-]
+{
+    "timestamp": /* submission timestamp */,
+    "files": /* encoded directory tree */
+}
 ```
 
 ##### Response
