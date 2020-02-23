@@ -94,6 +94,7 @@ def list_submissions(course_id, assignment_id) :
 		submissions.append({
 			'student_id': submission.student, 
 			'timestamp': strftime(submission.timestamp), 
+			'random': submission.random, 
 			# TODO: "notebooks": [], 
 		})
 	return json_success(submissions=submissions)
@@ -115,6 +116,7 @@ def list_student_submission(course_id, assignment_id, student_id) :
 		submissions.append({
 			'student_id': submission.student, 
 			'timestamp': strftime(submission.timestamp), 
+			'random': submission.random, 
 			# TODO: "notebooks": [], 
 		})
 	return json_success(submissions=submissions)
