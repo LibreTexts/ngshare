@@ -6,7 +6,8 @@ import os, json, operator
 from app import request, app
 from helper import (json_success, json_error, error_catcher, json_files_pack,
 					json_files_unpack, strftime, find_course, find_assignment,
-					find_course_student, find_student_submissions)
+					find_course_student, find_student_submissions,
+					find_student_latest_submission)
 from settings import DB_NAME
 from init import init_test_data
 
@@ -146,7 +147,12 @@ def download_submission(course_id, assignment_id, student_id) :
 		Download a student's submitted assignment (instructors only)
 		TODO: maybe allow student to see their own submissions?
 	'''
-	raise NotImplementedError
+	db = Session()
+	course = find_course(db, course_id)
+	assignment = find_assignment(db, course, assignment_id)
+	student = find_course_student(db, course, student_id)
+	submission = find_student_latest_submission(db, assignment, student)
+	return json_success(files=json_files_pack(submission.files))
 
 @app.route('/api/feedback/<course_id>/<assignment_id>/<student_id>', 
 			methods=["POST"])

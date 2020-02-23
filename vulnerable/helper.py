@@ -1,6 +1,6 @@
 # Helper functions
 
-import os, json, sqlite3, base64, binascii
+import os, json, sqlite3, base64, binascii, datetime
 
 from app import request
 from settings import FS_PREFIX
@@ -32,8 +32,13 @@ def error_catcher(function) :
 	return call
 
 def strftime(dt) :
+	'Use API specified format to strftime'
 	# TODO: follow API specification
-	return dt.strftime('%Y-%m-%d %H:%M:%S %Z%z')
+	return dt.strftime('%Y-%m-%d %H:%M:%S.%f %Z')
+
+def strptime(string) :
+	'Use API specified format to strptime'
+	datetime.datetime.strptime(string, '%Y-%m-%d %H:%M:%S.%f %Z')
 
 # For unix APIs
 
@@ -117,7 +122,15 @@ def find_course_student(db, course, student_id) :
 	return student
 
 def find_student_submissions(db, assignment, student) :
-	'Return a list of Submission objects from assignment and student id'
+	'Return a list of Submission objects from assignment and student'
 	return db.query(Submission).filter(
 		Submission.assignment == assignment,
 		Submission.student == student.id)
+
+def find_student_latest_submission(db, assignment, student) :
+	'Return the latest Submission object from assignment and studnet, or error'
+	submission = find_student_submissions(db, assignment, student).order_by(
+				Submission.timestamp.desc()).first()
+	if submission is None :
+		raise JsonError('Submission not found')
+	return submission

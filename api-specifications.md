@@ -311,7 +311,10 @@ None
 
 ##### Error messages
 
-(TODO)
+* Course not found
+* Assignment not found
+* Student not found
+* Submission not found
 
 ### /api/feedback: Fetching and releasing submission feedback
 

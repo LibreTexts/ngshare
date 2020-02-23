@@ -112,6 +112,7 @@ def test_submit_assignment() :
 			method=POST)['message'] == 'Please supply files'
 	assert_success('/api/submission/course1/challenge/Lawrence',
 			method=POST, data=data)
+	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg=='}])
 	assert_success('/api/submission/course1/challenge/Lawrence',
 			method=POST, data=data)
 	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
@@ -121,7 +122,20 @@ def test_submit_assignment() :
 	result = assert_success('/api/submissions/course1/challenge/Lawrence')
 	assert len(result['submissions']) == 4	# 2 from init, 2 from this
 
-# def test_download_submission() :
+def test_download_submission() :
+	assert assert_fail('/api/submission/jkl/challenge/st') \
+			['message'] == 'Course not found'
+	assert assert_fail('/api/submission/course1/challenges/st') \
+			['message'] == 'Assignment not found'
+	assert assert_fail('/api/submission/course1/challenge/st') \
+			['message'] == 'Student not found'
+	result = assert_success('/api/submission/course1/challenge/Lawrence')
+	assert len(result['files']) == 1
+	assert next(filter(lambda x: x['path'] == 'a', result['files'])) \
+			['content'].replace('\n', '') == 'amtsCg=='
+	assert assert_fail('/api/submission/course2/assignment2a/Eric') \
+			['message'] == 'Submission not found'
+
 # def test_upload_feedback() :
 # def test_download_feedback() :
 
