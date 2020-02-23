@@ -1,6 +1,38 @@
 # Server API
 
-Last updated 2020-02-20
+Last updated 2020-02-22
+
+---
+
+## Definitions
+
+### Assignment name
+
+Also referred to as "assignment_id," this is a unique name for an assignment within a course. For example, "Assignment 1".
+
+### Course name
+
+Also referred to as "course_id," this is a unique name for a course. For example, "NBG 101".
+
+### Feedback checksum
+
+The md5 checksum of a feedback file. The feedback file is an HTML document containing a grader's feedback on a notebook file from a submission.
+
+### Notebook name
+
+Also referred to as "notebook_id," this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
+
+### Student ID
+
+The ID given to a student. For example, "doe_jane".
+
+### Success
+
+`true` if the request is successful, `false` otherwise. If unsuccessful, the response will only contain the fields `"success"` and `"message"`. The message field contains the error message, if any.
+
+### Timestamp
+
+A timestamp of when a user initiates the assignment submission process. It follows the [format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) "%Y-%m-%d %H:%M:%S.%f %Z". For example, "2020-01-30 10:30:47.524219 UTC".
 
 ---
 
@@ -30,6 +62,33 @@ Each file and directory tree will be transferred individually.
 
 Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyter/nbgrader/issues/659).
 
+### /api/courses: Courses
+
+#### GET /api/courses
+
+List all available courses (students+instructors). Used for ExchangeList.
+
+##### Request
+
+None
+
+##### Response
+
+```javascript
+{
+    "success": true,
+    "courses":
+    [
+        /* course name */,
+        ...
+    ]
+}
+```
+
+##### Error messages
+
+(TODO)
+
 ### /api/assignments: Course assignments
 
 #### GET /api/assignments/&lt;course_id&gt;
@@ -46,7 +105,7 @@ None
 
 ```javascript
 {
-    "success": /* true or false */,
+    "success": true,
     "assignments":
     [
         /* assignment name */,
@@ -55,26 +114,39 @@ None
 }
 ```
 
+##### Error messages
+
+* Course not found
+
 ### /api/assignment: Fetching and releasing an assignment
 
 #### GET /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;
 
 *download a copy of an assignment (students+instructors)*
 
-Used for ExchangeFetchAssignment.
+If `list_only` is `true`, the response's file content fields in the encoded directory tree will either be empty or absent. Used for ExchangeFetchAssignment.
 
 ##### Request
 
-None
+```javascript
+{
+    "list_only": /* true or false */
+}
+```
 
 ##### Response
 
 ```javascript
 {
-    "success": /* true or false */,
+    "success": true,
     "files": /* encoded directory tree */
 }
 ```
+
+##### Error messages
+
+* Course not found
+* Assignment not found
 
 #### POST /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;
 
@@ -94,9 +166,17 @@ Used for ExchangeReleaseAssignment.
 
 ```javascript
 {
-    "success": /* true or false */
+    "success": true
 }
 ```
+
+##### Error messages
+
+* Course not found
+* Assignment already exists
+* Please supply files
+* Files cannot be JSON decoded
+* Content cannot be base64 decoded
 
 ### /api/submissions: Listing submissions
 
@@ -114,7 +194,7 @@ None
 
 ```javascript
 {
-    "success": /* true or false */,
+    "success": true,
     "submissions":
     [
         {
@@ -134,6 +214,11 @@ None
 }
 ```
 
+##### Error messages
+
+* Course not found
+* Assignment not found
+
 #### GET /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 
 *list all submissions for an assignment from a particular student (instructors+students, though students are restricted to only viewing their own submissions)*
@@ -146,7 +231,7 @@ None
 
 ```javascript
 {
-    "success": /* true or false */,
+    "success": true,
     "submissions":
     [
         {
@@ -164,6 +249,12 @@ None
     ]
 }
 ```
+
+##### Error messages
+
+* Course not found
+* Assignment not found
+* Student not found
 
 ### /api/submission: Collecting and submitting a submission
 
@@ -186,9 +277,18 @@ Used for ExchangeSubmit.
 
 ```javascript
 {
-    "success": /* true or false */
+    "success": true
 }
 ```
+
+##### Error messages
+
+* Course not found
+* Assignment not found
+* Student not found
+* Please supply files
+* Files cannot be JSON decoded
+* Content cannot be base64 decoded
 
 #### GET /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 
@@ -204,11 +304,15 @@ None
 
 ```javascript
 {
-    "success": /* true or false */,
+    "success": true,
     "timestamp": /* submission timestamp */,
     "files": /* encoded directory tree */
 }
 ```
+
+##### Error messages
+
+(TODO)
 
 ### /api/feedback: Fetching and releasing submission feedback
 
@@ -221,23 +325,23 @@ Used for ExchangeReleaseFeedback.
 ##### Request
 
 ```javascript
-[
-    {
-        "timestamp": /* submission timestamp */,
-        "notebook_id": /* name of submitted notebook */,
-        "file": /* base64 encoded content of feedback file */
-    },
-    ...
-]
+{
+    "timestamp": /* submission timestamp */,
+    "files": /* encoded directory tree */
+}
 ```
 
 ##### Response
 
 ```javascript
 {
-    "success": /* true or false */
+    "success": true
 }
 ```
+
+##### Error messages
+
+(TODO)
 
 #### GET /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 
@@ -254,14 +358,11 @@ None
 ```javascript
 {
     "success": /* true or false*/,
-    "feedback":
-    [
-        {
-            "timestamp": /* submission timestamp */,
-            "notebook_id": /* name of submitted notebook */,
-            "file": /* base64 encoded content of feedback file */
-        },
-        ...
-    ]
+    "timestamp": /* submission timestamp */,
+    "files": /* encoded directory tree */
 }
 ```
+
+##### Error messages
+
+(TODO)
