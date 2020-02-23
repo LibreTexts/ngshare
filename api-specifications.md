@@ -131,7 +131,7 @@ Used for ExchangeFetchAssignment.
 ##### Request (HTTP GET parameter)
 
 ```
-"list_only": /* true or false */
+list_only=/* true or false */
 ```
 
 ##### Response
@@ -299,7 +299,7 @@ Used for ExchangeCollect.
 ##### Request (HTTP GET parameter)
 
 ```
-"list_only": /* true or false */
+list_only=/* true or false */
 ```
 
 ##### Response
@@ -325,6 +325,8 @@ Used for ExchangeCollect.
 #### POST /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 
 *upload feedback on a student's assignment (instructors only)*
+
+Old feedback on the same submission will be removed
 
 Used for ExchangeReleaseFeedback.
 
@@ -367,7 +369,9 @@ Used for ExchangeFetchFeedback.
 ##### Request (HTTP GET parameter)
 
 ```
-"list_only": /* true or false */
+timestamp=/* submission timestamp */&
+random=/* submission random str */&
+list_only=/* true or false */
 ```
 
 ##### Response
@@ -387,3 +391,6 @@ Used for ExchangeFetchFeedback.
 * Assignment not found
 * Student not found
 * Submission not found
+* Please supply random str
+* Please supply timestamp
+* Time format incorrect

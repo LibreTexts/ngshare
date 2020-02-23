@@ -197,7 +197,14 @@ def download_feedback(course_id, assignment_id, student_id) :
 	course = find_course(db, course_id)
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
-	submission = find_student_latest_submission(db, assignment, student)
+	if 'timestamp' not in request.args :
+		raise JsonError('Please supply timestamp')
+	timestamp = strptime(request.args.get('timestamp'))
+	if 'random' not in request.args :
+		raise JsonError('Please supply random str')
+	random_str = request.args.get('random')
+	submission = find_student_submission(db, assignment, student, timestamp,
+										random_str)
 	list_only = request.args.get('list_only', 'false') == 'true'
 	return json_success(files=json_files_pack(submission.feedbacks, list_only),
 						timestamp=strftime(submission.timestamp),

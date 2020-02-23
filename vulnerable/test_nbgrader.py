@@ -8,20 +8,20 @@ URL_PREFIX = 'http://127.0.0.1:11111'
 GET = requests.get
 POST = requests.post
 
-def request_page(url, data={}, method=GET) :
+def request_page(url, data={}, params={}, method=GET) :
 	assert url.startswith('/') and not url.startswith('//')
-	resp = method(URL_PREFIX + url, data=data)
+	resp = method(URL_PREFIX + url, data=data, params=params)
 	return resp.json()
 
-def assert_success(url, data={}, method=GET) :
-	resp = request_page(url, data, method)
+def assert_success(url, data={}, params={}, method=GET) :
+	resp = request_page(url, data, params, method)
 	if resp['success'] != True :
 		print(repr(resp), file=sys.stderr)
 		raise Exception('Not success')
 	return resp
 
-def assert_fail(url, data={}, method=GET) :
-	resp = request_page(url, data, method)
+def assert_fail(url, data={}, params={}, method=GET) :
+	resp = request_page(url, data, params, method)
 	if resp['success'] != False :
 		print(repr(resp), file=sys.stderr)
 		raise Exception('Success')
@@ -184,33 +184,50 @@ def test_download_feedback() :
 			['message'] == 'Assignment not found'
 	assert assert_fail('/api/feedback/course1/challenge/st') \
 			['message'] == 'Student not found'
-	assert assert_fail('/api/feedback/course2/assignment2a/Eric') \
-			['message'] == 'Submission not found'
-	feedback = assert_success('/api/feedback/course1/challenge/Lawrence')
+	meta = assert_success('/api/submission/course1/challenge/Lawrence')
+	timestamp = meta['timestamp']
+	random = meta['random']
+	assert assert_fail('/api/feedback/course1/challenge/Lawrence',
+			params={'timestamp': timestamp})['message'] == \
+			'Please supply random str'
+	assert assert_fail('/api/feedback/course1/challenge/Lawrence',
+			params={'random': random})['message'] == \
+			'Please supply timestamp'
+	assert assert_fail('/api/feedback/course1/challenge/Lawrence',
+			params={'random': random, 'timestamp': 'a'})['message'] == \
+			'Time format incorrect'
+	assert assert_fail('/api/feedback/course2/assignment2a/Eric',
+			params={'random': random, 'timestamp': timestamp})['message'] == \
+			'Submission not found'
+	feedback = assert_success('/api/feedback/course1/challenge/Lawrence', 
+							params={'timestamp': timestamp, 'random': random})
 	assert feedback['files'] == []
 	# Submit again
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsDg=='}]),
-			'timestamp': feedback['timestamp'], 'random': feedback['random']}
+			'timestamp': timestamp, 'random': random}
 	assert_success('/api/feedback/course1/challenge/Lawrence',
 					method=POST, data=data)
 	# Fetch again
-	feedback = assert_success('/api/feedback/course1/challenge/Lawrence')
+	feedback = assert_success('/api/feedback/course1/challenge/Lawrence', 
+							params={'timestamp': timestamp, 'random': random})
 	assert len(feedback['files']) == 1
 	assert feedback['files'][0]['path'] == 'a'
 	assert feedback['files'][0]['content'].replace('\n', '') == 'amtsDg=='
 	# Again, submit again
 	data = {'files': json.dumps([{'path': 'a', 'content': 'bmtsDg=='}]),
-			'timestamp': feedback['timestamp'], 'random': feedback['random']}
+			'timestamp': timestamp, 'random': random}
 	assert_success('/api/feedback/course1/challenge/Lawrence',
 					method=POST, data=data)
 	# Again, fetch again
-	feedback = assert_success('/api/feedback/course1/challenge/Lawrence')
+	feedback = assert_success('/api/feedback/course1/challenge/Lawrence',
+							params={'timestamp': timestamp, 'random': random})
 	assert len(feedback['files']) == 1
 	assert feedback['files'][0]['path'] == 'a'
 	assert feedback['files'][0]['content'].replace('\n', '') == 'bmtsDg=='
 	# Check list_only
-	feedback = assert_success(
-		'/api/feedback/course1/challenge/Lawrence?list_only=true')
+	feedback = assert_success('/api/feedback/course1/challenge/Lawrence',
+							params={'timestamp': timestamp, 'random': random,
+									'list_only': 'true'})
 	assert len(feedback['files']) == 1
 	assert list(feedback['files'][0]) == ['path']
 	assert feedback['files'][0]['path'] == 'a'
