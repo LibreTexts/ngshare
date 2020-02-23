@@ -373,4 +373,7 @@ None
 
 ##### Error messages
 
-(TODO)
+* Course not found
+* Assignment not found
+* Student not found
+* Submission not found
