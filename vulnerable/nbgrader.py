@@ -74,7 +74,7 @@ def release_assignment(course_id, assignment_id) :
 									Assignment.course == course).one_or_none() :
 		return json_error('Assignment already exists')
 	assignment = Assignment(assignment_id, course)
-	json_files_unpack(request.args.get('files'), assignment.files)
+	json_files_unpack(request.form.get('files'), assignment.files)
 	db.commit()
 	return json_success()
 
@@ -132,7 +132,7 @@ def submit_assignment(course_id, assignment_id, student_id) :
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
 	submission = Submission(student, assignment)
-	json_files_unpack(request.args.get('files'), submission.files)
+	json_files_unpack(request.form.get('files'), submission.files)
 	db.commit()
 	return json_success()
 

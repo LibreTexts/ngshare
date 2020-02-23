@@ -72,15 +72,19 @@ def json_files_pack(file_list) :
 		})
 	return ans
 
-def json_files_unpack(json_obj, target) :
+def json_files_unpack(json_str, target) :
 	'''
 		Generate a list of File objects from a JSON file list (directory tree)
-		json_obj: json object as string; raise error when None
+		json_str: json object as string; raise error when None
 		target: a list to put file objects in
 	'''
-	if json_obj is None :
+	if json_str is None :
 		raise JsonError('Please supply files')
-	for i in json.loads(json_obj) :
+	try :
+		json_obj = json.loads(json_str)
+	except json.decoder.JSONDecodeError :
+		raise JsonError('Files cannot be JSON decoded')
+	for i in json_obj :
 		try :
 			content = base64.decodebytes(i['content'].encode())
 		except binascii.Error :

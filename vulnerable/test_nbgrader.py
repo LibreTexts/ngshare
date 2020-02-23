@@ -8,20 +8,20 @@ URL_PREFIX = 'http://127.0.0.1:11111'
 GET = requests.get
 POST = requests.post
 
-def request_page(url, params={}, method=GET) :
+def request_page(url, data={}, method=GET) :
 	assert url.startswith('/') and not url.startswith('//')
-	resp = method(URL_PREFIX + url, params=params)
+	resp = method(URL_PREFIX + url, data=data)
 	return resp.json()
 
-def assert_success(url, params={}, method=GET) :
-	resp = request_page(url, params, method)
+def assert_success(url, data={}, method=GET) :
+	resp = request_page(url, data, method)
 	if resp['success'] != True :
 		print(repr(resp), file=sys.stderr)
 		raise Exception('Not success')
 	return resp
 
-def assert_fail(url, params={}, method=GET) :
-	resp = request_page(url, params, method)
+def assert_fail(url, data={}, method=GET) :
+	resp = request_page(url, data, method)
 	if resp['success'] != False :
 		print(repr(resp), file=sys.stderr)
 		raise Exception('Success')
@@ -53,19 +53,19 @@ def test_download_assignment() :
 			'Assignment not found'
 
 def test_release_assignment() :
-	params = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
+	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
 									{'path': 'b', 'content': 'amtsCg=='}])}
 	assert assert_fail('/api/assignment/jkl/challenger', method=POST, 
-						params=params)['message'] == 'Course not found'
+						data=data)['message'] == 'Course not found'
 	assert assert_fail('/api/assignment/course1/challenger', method=POST
 						)['message'] == 'Please supply files'
 	assert_success('/api/assignment/course1/challenger', method=POST, 
-					params=params)
+					data=data)
 	assert assert_fail('/api/assignment/course1/challenger', method=POST, 
-						params=params)['message'] == 'Assignment already exists'
-	params['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
+						data=data)['message'] == 'Assignment already exists'
+	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
 	assert assert_fail('/api/assignment/course1/challenges', method=POST, 
-			params=params)['message'] == 'Content cannot be base64 decoded'
+			data=data)['message'] == 'Content cannot be base64 decoded'
 
 def test_list_submissions() :
 	assert assert_fail('/api/submissions/jkl/challenge')['message'] == \
@@ -92,7 +92,7 @@ def test_list_student_submission() :
 	assert len(result['submissions']) == 0
 
 def test_submit_assignment() :
-	params = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
+	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
 									{'path': 'b', 'content': 'amtsCg=='}])}
 	assert assert_fail('/api/submission/jkl/challenge/st', method=POST) \
 			['message'] == 'Course not found'
@@ -103,13 +103,15 @@ def test_submit_assignment() :
 	assert assert_fail('/api/submission/course1/challenge/Lawrence',
 			method=POST)['message'] == 'Please supply files'
 	assert_success('/api/submission/course1/challenge/Lawrence',
-			method=POST, params=params)
+			method=POST, data=data)
 	assert_success('/api/submission/course1/challenge/Lawrence',
-			method=POST, params=params)
-	params['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
+			method=POST, data=data)
+	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
 	assert assert_fail('/api/submission/course1/challenge/Lawrence',
-			method=POST, params=params)['message'] == \
+			method=POST, data=data)['message'] == \
 			'Content cannot be base64 decoded'
+	result = assert_success('/api/submissions/course1/challenge/Lawrence')
+	assert len(result['submissions']) == 4	# 2 from init, 2 from this
 
 # def test_download_submission() :
 # def test_upload_feedback() :
