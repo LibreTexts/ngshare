@@ -175,6 +175,7 @@ Used for ExchangeReleaseAssignment.
 * Course not found
 * Assignment already exists
 * Please supply files
+* Files cannot be JSON decoded
 * Content cannot be base64 decoded
 
 ### /api/submissions: Listing submissions
@@ -286,6 +287,7 @@ Used for ExchangeSubmit.
 * Assignment not found
 * Student not found
 * Please supply files
+* Files cannot be JSON decoded
 * Content cannot be base64 decoded
 
 #### GET /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
