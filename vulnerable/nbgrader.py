@@ -23,26 +23,26 @@ Session = sessionmaker(bind=engine)
 if not db_exists:
 	init_test_data(Session)
 
+@app.route('/api/courses')
+@error_catcher
+def list_courses() :
+	'''
+		GET /api/courses
+		List all courses
+	'''
+	db = Session()
+	# TODO: limit to courses user is taking
+	courses = []
+	for i in db.query(Course).filter().all() :
+		courses.append(i.id)
+	return json_success(courses=courses)
+
 @app.route('/api/assignments/<course_id>')
 @error_catcher
 def list_assignments(course_id) :
 	'''
 		GET /api/assignments/<course_id>
 		List all assignments for a course (students+instructors)
-		Response when success
-			{
-				"success": true, 
-				"assignments": [
-					'assignment1',
-					'assignment2',
-					'assignment3'
-				]
-			}
-		Response when course not found
-			{
-				"success": false, 
-				"message": "Course not found"
-			}
 	'''
 	db = Session()
 	course = find_course(db, course_id)

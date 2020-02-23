@@ -37,6 +37,10 @@ def test_init() :
 	os.system('touch vserver.py')
 	time.sleep(2)
 
+def test_list_courses() :
+	assert assert_success('/api/courses')['courses'] == \
+			['course1', 'course2']
+
 def test_list_assignments() :
 	assert assert_success('/api/assignments/course2')['assignments'] == \
 			['assignment2a', 'assignment2b']
