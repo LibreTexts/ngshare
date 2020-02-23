@@ -200,6 +200,7 @@ None
         {
             "student_id": /* student ID */,
             "timestamp": /* submission timestamp */,
+            "random": /* submission random str */,
             "notebooks":
             [
                 {
@@ -235,7 +236,9 @@ None
     "submissions":
     [
         {
+            "student_id": /* student ID */,
             "timestamp": /* submission timestamp */,
+            "random": /* submission random str */,
             "notebooks":
             [
                 {
