@@ -154,12 +154,10 @@ If `list_only` is `true`, the response's file content fields in the encoded dire
 
 Used for ExchangeReleaseAssignment.
 
-##### Request
+##### Request (HTTP POST data)
 
-```javascript
-{
-    "files": /* encoded directory tree */
-}
+```
+files=/* encoded directory tree in JSON */
 ```
 
 ##### Response
@@ -267,13 +265,10 @@ None
 
 Used for ExchangeSubmit.
 
-##### Request
+##### Request (HTTP POST data)
 
-```javascript
-{
-    "timestamp": /* submission timestamp */,
-    "files": /* encoded directory tree */
-}
+```
+files=/* encoded directory tree in JSON */
 ```
 
 ##### Response
@@ -309,6 +304,7 @@ None
 {
     "success": true,
     "timestamp": /* submission timestamp */,
+    "random": /* submission random str */
     "files": /* encoded directory tree */
 }
 ```
@@ -325,13 +321,12 @@ None
 
 Used for ExchangeReleaseFeedback.
 
-##### Request
+##### Request (HTTP POST data)
 
-```javascript
-{
-    "timestamp": /* submission timestamp */,
-    "files": /* encoded directory tree */
-}
+```
+timestamp=/* submission timestamp */&
+random=/* submission random str */&
+files=/* encoded directory tree in JSON */
 ```
 
 ##### Response
@@ -362,6 +357,7 @@ None
 {
     "success": /* true or false*/,
     "timestamp": /* submission timestamp */,
+    "random": /* submission random str */
     "files": /* encoded directory tree */
 }
 ```
