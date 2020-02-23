@@ -21,7 +21,7 @@ def home_page(deduct=lambda x: False) :
 @app.route('/favicon.ico')
 @error_catcher
 def favicon() :
-	return ''
+	return open(os.path.join(BASE_DIR, 'favicon.ico'), 'rb').read()
 
 @app.errorhandler(404)
 @error_catcher
