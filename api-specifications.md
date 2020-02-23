@@ -8,11 +8,11 @@ Last updated 2020-02-22
 
 ### Assignment name
 
-Also referred to as "assignment_id," this is a unique name for an assignment within a course. For example, "Assignment 1".
+Also referred to as `assignment_id`, this is a unique name for an assignment within a course. For example, "Assignment 1".
 
 ### Course name
 
-Also referred to as "course_id," this is a unique name for a course. For example, "NBG 101".
+Also referred to as `course_id`, this is a unique name for a course. For example, "NBG 101".
 
 ### Feedback checksum
 
@@ -20,7 +20,7 @@ The md5 checksum of a feedback file. The feedback file is an HTML document conta
 
 ### Notebook name
 
-Also referred to as "notebook_id," this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
+Also referred to as `notebook_id`, this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
 
 ### Student ID
 
@@ -32,7 +32,7 @@ The ID given to a student. For example, "doe_jane".
 
 ### Timestamp
 
-A timestamp of when a user initiates the assignment submission process. It follows the [format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) "%Y-%m-%d %H:%M:%S.%f %Z". For example, "2020-01-30 10:30:47.524219 UTC".
+A timestamp of when a user initiates the assignment submission process. It follows the [format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) `"%Y-%m-%d %H:%M:%S.%f %Z"`. For example, "2020-01-30 10:30:47.524219 UTC".
 
 ---
 
