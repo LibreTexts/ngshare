@@ -1,27 +1,32 @@
 <!doctype html>
 <head>
   <title>vserver</title>
+  <style>
+    a {
+        color: blue
+    }
+  </style>
 </head>
 <body>
 <h1>Hello, world! from vserver</h1>
 <h2>Promise me that you do not use me in production</h2>
 <p>
   Unix file system APIs (link = sample use):
-  <a href="/read?pathname=/etc/passwd">read</a>
-  <a href="/write?pathname=/tmp/myfile&content=jkljkl==">write</a>
-  <a href="/ls?pathname=/usr">ls</a>
-  <a href="/mkdir?pathname=/tmp/a">mkdir</a>
-  <a href="/chmod?pathname=/tmp/a.txt&mode=511">chmod</a>
-  <a href="/stat?pathname=/tmp">stat</a>
-  <a href="/glob?pathname=/usr/*">glob</a>
-  <a href="/walk?pathname=/dev">walk</a>
-  <a href="/exists?pathname=/tmp">exists</a>
-  <a href="/isdir?pathname=/tmp">isdir</a>
-  <a href="/islink?pathname=/bin/python">islink</a>
-  <a href="/isfile?pathname=/etc/passwd">isfile</a>
-  <a href="/ismount?pathname=/">ismount</a>
-  <a href="/copy?src=/etc/os-release&dst=/tmp/os-release">copy</a>
-  <a href="/copytree?src=/tmp/a&dst=/tmp/b&ignore=%5B%22%3F%22%5D">copytree</a>
+  <a href="/read?pathname=/etc/passwd">read</a>&nbsp;&nbsp;
+  <a href="/write?pathname=/tmp/myfile&content=jkljkl==">write</a>&nbsp;&nbsp;
+  <a href="/ls?pathname=/usr">ls</a>&nbsp;&nbsp;
+  <a href="/mkdir?pathname=/tmp/a">mkdir</a>&nbsp;&nbsp;
+  <a href="/chmod?pathname=/tmp/a.txt&mode=511">chmod</a>&nbsp;&nbsp;
+  <a href="/stat?pathname=/tmp">stat</a>&nbsp;&nbsp;
+  <a href="/glob?pathname=/usr/*">glob</a>&nbsp;&nbsp;
+  <a href="/walk?pathname=/dev">walk</a>&nbsp;&nbsp;
+  <a href="/exists?pathname=/tmp">exists</a>&nbsp;&nbsp;
+  <a href="/isdir?pathname=/tmp">isdir</a>&nbsp;&nbsp;
+  <a href="/islink?pathname=/bin/python">islink</a>&nbsp;&nbsp;
+  <a href="/isfile?pathname=/etc/passwd">isfile</a>&nbsp;&nbsp;
+  <a href="/ismount?pathname=/">ismount</a>&nbsp;&nbsp;
+  <a href="/copy?src=/etc/os-release&dst=/tmp/os-release">copy</a>&nbsp;&nbsp;
+  <a href="/copytree?src=/tmp/a&dst=/tmp/b&ignore=%5B%22%3F%22%5D">copytree</a>&nbsp;&nbsp;
   <a href="/rmtree?pathname=/tmp/b">rmtree</a>
 </p>
 <p>nbgrader APIs:</p>
