@@ -124,14 +124,14 @@ None
 
 *download a copy of an assignment (students+instructors)*
 
-If `list_only` is `true`, the response's file content fields in the encoded directory tree will either be empty or absent. Used for ExchangeFetchAssignment.
+If `list_only` is `true`, `files` only contains `path` (does not contain `content`).
 
-##### Request
+Used for ExchangeFetchAssignment.
 
-```javascript
-{
-    "list_only": /* true or false */
-}
+##### Request (HTTP GET parameter)
+
+```
+"list_only": /* true or false */
 ```
 
 ##### Response
@@ -292,11 +292,15 @@ files=/* encoded directory tree in JSON */
 
 *download a student's submitted assignment (instructors only)*
 
+If `list_only` is `true`, `files` only contains `path` (does not contain `content`).
+
 Used for ExchangeCollect.
 
-##### Request
+##### Request (HTTP GET parameter)
 
-None
+```
+"list_only": /* true or false */
+```
 
 ##### Response
 
@@ -354,11 +358,17 @@ files=/* encoded directory tree in JSON */
 
 *download feedback on a student's assignment (instructors+students, though students are restricted to only viewing their own feedback)*
 
+When feedback is not available, `"files"` will be empty.
+
+If `list_only` is `true`, `files` only contains `path` (does not contain `content`).
+
 Used for ExchangeFetchFeedback.
 
-##### Request
+##### Request (HTTP GET parameter)
 
-None
+```
+"list_only": /* true or false */
+```
 
 ##### Response
 

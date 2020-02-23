@@ -73,14 +73,19 @@ def remove_pathname(pathname) :
 
 # For nbgrader APIs
 
-def json_files_pack(file_list) :
+def json_files_pack(file_list, list_only) :
 	'Generate JSON file list (directory tree) from a list of File objects'
 	ans = []
 	for i in file_list :
-		ans.append({
-			'path': i.filename, 
-			'content': base64.encodebytes(i.contents).decode(),
-		})
+		if list_only :
+			ans.append({
+				'path': i.filename,
+			})
+		else :
+			ans.append({
+				'path': i.filename,
+				'content': base64.encodebytes(i.contents).decode(),
+			})
 	return ans
 
 def json_files_unpack(json_str, target) :

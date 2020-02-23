@@ -55,6 +55,11 @@ def test_download_assignment() :
 			'Course not found'
 	assert assert_fail('/api/assignment/course1/challenger')['message'] == \
 			'Assignment not found'
+	# Check list_only
+	files = assert_success('/api/assignment/course1/challenge?list_only=true') \
+			['files']
+	assert list(files[0]) == ['path']
+	assert files[0]['path'] == 'file2'
 
 def test_release_assignment() :
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
@@ -135,6 +140,12 @@ def test_download_submission() :
 			['content'].replace('\n', '') == 'amtsCg=='
 	assert assert_fail('/api/submission/course2/assignment2a/Eric') \
 			['message'] == 'Submission not found'
+	# Check list_only
+	result = assert_success(
+		'/api/submission/course1/challenge/Lawrence?list_only=true')
+	assert len(result['files']) == 1
+	assert list(result['files'][0]) == ['path']
+	assert result['files'][0]['path'] == 'a'
 
 def test_upload_feedback() :
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
@@ -197,4 +208,9 @@ def test_download_feedback() :
 	assert len(feedback['files']) == 1
 	assert feedback['files'][0]['path'] == 'a'
 	assert feedback['files'][0]['content'].replace('\n', '') == 'bmtsDg=='
-
+	# Check list_only
+	feedback = assert_success(
+		'/api/feedback/course1/challenge/Lawrence?list_only=true')
+	assert len(feedback['files']) == 1
+	assert list(feedback['files'][0]) == ['path']
+	assert feedback['files'][0]['path'] == 'a'
