@@ -342,7 +342,13 @@ files=/* encoded directory tree in JSON */
 
 ##### Error messages
 
-(TODO)
+* Course not found
+* Assignment not found
+* Student not found
+* Submission not found
+* Please supply random str
+* Please supply timestamp
+* Time format incorrect
 
 #### GET /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 

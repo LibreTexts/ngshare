@@ -1,4 +1,5 @@
 import sqlite3
+import datetime
 
 from database.database import *
 
@@ -22,6 +23,8 @@ def init_test_data(Session) :
 	db.add(ac)
 	s1 = Submission(ul, ac)
 	s2 = Submission(ul, ac)
+	s1.timestamp = datetime.datetime(2020, 1, 1, 0, 0, 0, 0)
+	s1.random = '123456789'
 	db.add(s1)
 	db.add(s2)
 	aa.files.append(File('file0', b'00000'))
@@ -30,6 +33,5 @@ def init_test_data(Session) :
 	s1.files.append(File('file3', b'33333'))
 	s2.files.append(File('file4', b'44444'))
 	s1.feedbacks.append(File('file5', b'55555'))
-	s2.feedbacks.append(File('file6', b'66666'))
 	db.commit()
 

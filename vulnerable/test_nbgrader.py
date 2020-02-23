@@ -136,6 +136,65 @@ def test_download_submission() :
 	assert assert_fail('/api/submission/course2/assignment2a/Eric') \
 			['message'] == 'Submission not found'
 
-# def test_upload_feedback() :
-# def test_download_feedback() :
+def test_upload_feedback() :
+	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
+									{'path': 'b', 'content': 'amtsCg=='}]),
+			'timestamp': '2020-01-01 00:00:00.000000 ', 'random': '123456789'}
+	assert assert_fail('/api/feedback/jkl/challenge/st', method=POST,
+			data=data)['message'] == 'Course not found'
+	assert assert_fail('/api/feedback/course1/challenges/st', method=POST,
+			data=data)['message'] == 'Assignment not found'
+	assert assert_fail('/api/feedback/course1/challenge/st', method=POST,
+			data=data)['message'] == 'Student not found'
+	assert_success('/api/feedback/course1/challenge/Lawrence',
+					method=POST, data=data)
+	data['files'] = json.dumps([{'path': 'c', 'content': 'amtsCf=='}])
+	assert_success('/api/feedback/course1/challenge/Lawrence',
+					method=POST, data=data)
+	assert assert_fail('/api/feedback/course1/challenge/Lawrence', method=POST,
+			data={'timestamp': data['timestamp']})['message'] == \
+			'Please supply random str'
+	assert assert_fail('/api/feedback/course1/challenge/Lawrence', method=POST,
+			data={'random': data['random']})['message'] == \
+			'Please supply timestamp'
+	assert assert_fail('/api/feedback/course1/challenge/Lawrence', method=POST,
+			data={'random': data['random'], 'timestamp': 'a'})['message'] == \
+			'Time format incorrect'
+	assert assert_fail('/api/feedback/course2/assignment2a/Eric', method=POST,
+			data=data)['message'] == 'Submission not found'
+	assert assert_fail('/api/feedback/course2/assignment2a/Eric', method=POST,
+			data={'timestamp': data['timestamp'], 'random': ''})['message'] == \
+			'Submission not found'
+
+def test_download_feedback() :
+	assert assert_fail('/api/feedback/jkl/challenge/st') \
+			['message'] == 'Course not found'
+	assert assert_fail('/api/feedback/course1/challenges/st') \
+			['message'] == 'Assignment not found'
+	assert assert_fail('/api/feedback/course1/challenge/st') \
+			['message'] == 'Student not found'
+	assert assert_fail('/api/feedback/course2/assignment2a/Eric') \
+			['message'] == 'Submission not found'
+	feedback = assert_success('/api/feedback/course1/challenge/Lawrence')
+	assert feedback['files'] == []
+	# Submit again
+	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsDg=='}]),
+			'timestamp': feedback['timestamp'], 'random': feedback['random']}
+	assert_success('/api/feedback/course1/challenge/Lawrence',
+					method=POST, data=data)
+	# Fetch again
+	feedback = assert_success('/api/feedback/course1/challenge/Lawrence')
+	assert len(feedback['files']) == 1
+	assert feedback['files'][0]['path'] == 'a'
+	assert feedback['files'][0]['content'].replace('\n', '') == 'amtsDg=='
+	# Again, submit again
+	data = {'files': json.dumps([{'path': 'a', 'content': 'bmtsDg=='}]),
+			'timestamp': feedback['timestamp'], 'random': feedback['random']}
+	assert_success('/api/feedback/course1/challenge/Lawrence',
+					method=POST, data=data)
+	# Again, fetch again
+	feedback = assert_success('/api/feedback/course1/challenge/Lawrence')
+	assert len(feedback['files']) == 1
+	assert feedback['files'][0]['path'] == 'a'
+	assert feedback['files'][0]['content'].replace('\n', '') == 'bmtsDg=='
 

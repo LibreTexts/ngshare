@@ -5,9 +5,10 @@ import os, json, operator
 
 from app import request, app
 from helper import (json_success, json_error, error_catcher, json_files_pack,
-					json_files_unpack, strftime, find_course, find_assignment,
-					find_course_student, find_student_submissions,
-					find_student_latest_submission)
+					json_files_unpack, strftime, strptime, find_course,
+					find_assignment, find_course_student,
+					find_student_submissions, find_student_latest_submission,
+					find_student_submission, JsonError)
 from settings import DB_NAME
 from init import init_test_data
 
@@ -152,7 +153,9 @@ def download_submission(course_id, assignment_id, student_id) :
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
 	submission = find_student_latest_submission(db, assignment, student)
-	return json_success(files=json_files_pack(submission.files))
+	return json_success(files=json_files_pack(submission.files),
+						timestamp=strftime(submission.timestamp),
+						random=submission.random)
 
 @app.route('/api/feedback/<course_id>/<assignment_id>/<student_id>', 
 			methods=["POST"])
@@ -162,7 +165,23 @@ def upload_feedback(course_id, assignment_id, student_id) :
 		POST /api/feedback/<course_id>/<assignment_id>/<student_id>
 		Upload feedback on a student's assignment (instructors only)
 	'''
-	raise NotImplementedError
+	db = Session()
+	course = find_course(db, course_id)
+	assignment = find_assignment(db, course, assignment_id)
+	student = find_course_student(db, course, student_id)
+	if 'timestamp' not in request.form :
+		raise JsonError('Please supply timestamp')
+	timestamp = strptime(request.form.get('timestamp'))
+	if 'random' not in request.form :
+		raise JsonError('Please supply random str')
+	random_str = request.form.get('random')
+	submission = find_student_submission(db, assignment, student, timestamp,
+										random_str)
+	submission.feedbacks.clear()
+	# TODO: does this automatically remove the files?
+	json_files_unpack(request.form.get('files'), submission.feedbacks)
+	db.commit()
+	return json_success()
 
 @app.route('/api/feedback/<course_id>/<assignment_id>/<student_id>')
 @error_catcher
@@ -172,4 +191,12 @@ def download_feedback(course_id, assignment_id, student_id) :
 		Download feedback on a student's assignment
 		 (instructors+students, students restricted to their own submissions)
 	'''
-	raise NotImplementedError
+	db = Session()
+	course = find_course(db, course_id)
+	assignment = find_assignment(db, course, assignment_id)
+	student = find_course_student(db, course, student_id)
+	submission = find_student_latest_submission(db, assignment, student)
+	return json_success(files=json_files_pack(submission.feedbacks),
+						timestamp=strftime(submission.timestamp),
+						random=submission.random)
+

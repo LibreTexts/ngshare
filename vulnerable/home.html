@@ -44,12 +44,12 @@
   Download assignment
 </p>
 <form id="form1" action="/api/assignment/course1/challenger" method="POST">
-  <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]">
+  <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
   <p style="margin-left: 2em">
     POST
       <a href="#" onclick="document.getElementById('form1').submit()">/api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
-    Release assignment (see HTML form action)
+    Release assignment (see HTML form)
   </p>
 </form>
 <p style="margin-left: 2em">
@@ -65,12 +65,12 @@
   List student's submissions
 </p>
 <form id="form2" action="/api/submission/course2/assignment2a/Eric" method="POST">
-  <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]">
+  <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
   <p style="margin-left: 2em">
     POST
       <a href="#" onclick="document.getElementById('form2').submit()">/api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
-    Submit assignment (see HTML form action)
+    Submit assignment (see HTML form)
   </p>
 </form>
 <p style="margin-left: 2em">
@@ -79,14 +79,21 @@
       /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   Download submission
 </p>
-<p style="margin-left: 2em">
-  POST
-    /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;:
-  Upload feedback
-</p>
+<form id="form3" action="/api/feedback/course1/challenge/Lawrence" method="POST">
+  <input type="hidden" name="timestamp" value="2020-01-01 00:00:00.000000 " />
+  <input type="hidden" name="random" value="123456789" />
+  <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
+  <!-- [{"path": "a", "content": "amtsCg=="}] -->
+  <p style="margin-left: 2em">
+    POST
+      <a href="#" onclick="document.getElementById('form3').submit()">/api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
+      Upload feedback (see HTML form)
+  </p>
+</form>
 <p style="margin-left: 2em">
   GET
-    /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;:
+    <a href="/api/feedback/course1/challenge/Lawrence">
+      /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   Download feedback
 </p>
 </body>

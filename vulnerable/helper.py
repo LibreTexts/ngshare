@@ -38,7 +38,13 @@ def strftime(dt) :
 
 def strptime(string) :
 	'Use API specified format to strptime'
-	datetime.datetime.strptime(string, '%Y-%m-%d %H:%M:%S.%f %Z')
+	try :
+		return datetime.datetime.strptime(string, '%Y-%m-%d %H:%M:%S.%f %Z')
+	except ValueError :
+		try :
+			return datetime.datetime.strptime(string, '%Y-%m-%d %H:%M:%S.%f ')
+		except ValueError :
+			raise JsonError('Time format incorrect')
 
 # For unix APIs
 
@@ -131,6 +137,15 @@ def find_student_latest_submission(db, assignment, student) :
 	'Return the latest Submission object from assignment and studnet, or error'
 	submission = find_student_submissions(db, assignment, student).order_by(
 				Submission.timestamp.desc()).first()
+	if submission is None :
+		raise JsonError('Submission not found')
+	return submission
+
+def find_student_submission(db, assignment, student, timestamp, random_str) :
+	'Return the Submission object from timestamp etc, or error'
+	submission = find_student_submissions(db, assignment, student).filter(
+				Submission.timestamp==timestamp,
+				Submission.random==random_str).one_or_none()
 	if submission is None :
 		raise JsonError('Submission not found')
 	return submission
