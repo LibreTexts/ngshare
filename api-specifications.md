@@ -68,10 +68,6 @@ Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyt
 
 List all available courses (students+instructors). Used for ExchangeList.
 
-##### Request
-
-None
-
 ##### Response
 
 ```javascript
@@ -89,6 +85,23 @@ None
 
 (TODO)
 
+#### POST /api/courses
+
+Add a course from current user. Used for TODO.
+
+##### Response
+
+```javascript
+{
+    "success": true
+}
+```
+
+##### Error messages
+
+* Login required (TODO)
+* Course already exists (TODO)
+
 ### /api/assignments: Course assignments
 
 #### GET /api/assignments/&lt;course_id&gt;
@@ -96,10 +109,6 @@ None
 *list all assignments for a course (students+instructors)*
 
 Used for the outbound part of ExchangeList.
-
-##### Request
-
-None
 
 ##### Response
 
@@ -184,10 +193,6 @@ files=/* encoded directory tree in JSON */
 
 Used for the inbound part of ExchangeList.
 
-##### Request
-
-None
-
 ##### Response
 
 ```javascript
@@ -221,10 +226,6 @@ None
 #### GET /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 
 *list all submissions for an assignment from a particular student (instructors+students, though students are restricted to only viewing their own submissions)*
-
-##### Request
-
-None
 
 ##### Response
 
