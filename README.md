@@ -1,7 +1,7 @@
 # ngshare
-[nbgrader](https://github.com/jupyter/nbgrader) sharing service
+[nbgrader](https://github.com/jupyter/nbgrader) sharing service.
 
-**This service is under development. Use this at your own risk**
+**This service is under development. Use this at your own risk.**
 
 This project serves as a backend for nbgrader. We are developing the frontend
- at [nbgrader-k8s](https://github.com/rkevin-arch/nbgrader-k8s)
+ at [nbgrader-k8s](https://github.com/rkevin-arch/nbgrader-k8s).
