@@ -85,9 +85,9 @@ List all available courses (students+instructors). Used for ExchangeList.
 
 (TODO)
 
-#### POST /api/courses
+#### POST /api/courses/&lt;course_id&gt;
 
-Add a course from current user. Used for TODO.
+Create a course. Used for TODO.
 
 ##### Response
 
@@ -125,6 +125,7 @@ Used for the outbound part of ExchangeList.
 
 ##### Error messages
 
+* Login required (TODO)
 * Course not found
 
 ### /api/assignment: Fetching and releasing an assignment
@@ -154,6 +155,7 @@ list_only=/* true or false */
 
 ##### Error messages
 
+* Login required (TODO)
 * Course not found
 * Assignment not found
 
@@ -179,6 +181,7 @@ files=/* encoded directory tree in JSON */
 
 ##### Error messages
 
+* Login required (TODO)
 * Course not found
 * Assignment already exists
 * Please supply files
@@ -220,6 +223,7 @@ Used for the inbound part of ExchangeList.
 
 ##### Error messages
 
+* Login required (TODO)
 * Course not found
 * Assignment not found
 
@@ -254,6 +258,7 @@ Used for the inbound part of ExchangeList.
 
 ##### Error messages
 
+* Login required (TODO)
 * Course not found
 * Assignment not found
 * Student not found
@@ -282,6 +287,7 @@ files=/* encoded directory tree in JSON */
 
 ##### Error messages
 
+* Login required (TODO)
 * Course not found
 * Assignment not found
 * Student not found
@@ -316,6 +322,7 @@ list_only=/* true or false */
 
 ##### Error messages
 
+* Login required (TODO)
 * Course not found
 * Assignment not found
 * Student not found
@@ -349,6 +356,7 @@ files=/* encoded directory tree in JSON */
 
 ##### Error messages
 
+* Login required (TODO)
 * Course not found
 * Assignment not found
 * Student not found
@@ -388,6 +396,7 @@ list_only=/* true or false */
 
 ##### Error messages
 
+* Login required (TODO)
 * Course not found
 * Assignment not found
 * Student not found
