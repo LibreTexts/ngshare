@@ -1,5 +1,4 @@
 # Server API
-
 Last updated 2020-02-22
 
 ---
@@ -7,31 +6,24 @@ Last updated 2020-02-22
 ## Definitions
 
 ### Assignment name
-
 Also referred to as `assignment_id`, this is a unique name for an assignment within a course. For example, "Assignment 1".
 
 ### Course name
-
 Also referred to as `course_id`, this is a unique name for a course. For example, "NBG 101".
 
 ### Feedback checksum
-
 The md5 checksum of a feedback file. The feedback file is an HTML document containing a grader's feedback on a notebook file from a submission.
 
 ### Notebook name
-
 Also referred to as `notebook_id`, this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
 
 ### Student ID
-
 The ID given to a student. For example, "doe_jane".
 
 ### Success
-
 `true` if the request is successful, `false` otherwise. If unsuccessful, the response will only contain the fields `"success"` and `"message"`. The message field contains the error message, if any.
 
 ### Timestamp
-
 A timestamp of when a user initiates the assignment submission process. It follows the [format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) `"%Y-%m-%d %H:%M:%S.%f %Z"`. For example, "2020-01-30 10:30:47.524219 UTC".
 
 ---
@@ -39,7 +31,6 @@ A timestamp of when a user initiates the assignment submission process. It follo
 ## Exchanging multiple files
 
 ### Directory tree
-
 Assignments consist of a directory, notebook files in the root, and optional supplementary files in the root and/or subdirectories. In order to send an entire assignment in one request, a JSON file has a list of maps for each file. The following structure will be referred to as "encoded directory tree."
 
 ```javascript
@@ -53,7 +44,6 @@ Assignments consist of a directory, notebook files in the root, and optional sup
 ```
 
 ### Multiple directory trees and files
-
 Each file and directory tree will be transferred individually.
 
 ---
@@ -70,17 +60,14 @@ To make things easy, we are simply putting the user id in HTTP GET parameter or
 ---
 
 ## API specification
-
 Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyter/nbgrader/issues/659).
 
 ### /api/courses: Courses
 
 #### GET /api/courses
-
 List all available courses (students+instructors). Used for ExchangeList.
 
 ##### Response
-
 ```javascript
 {
     "success": true,
@@ -93,17 +80,14 @@ List all available courses (students+instructors). Used for ExchangeList.
 ```
 
 ##### Error messages
-
 * Login required
 
-### /api/courses: Courses
+### /api/course: Course
 
 #### POST /api/course/&lt;course_id&gt;
-
-Create a course. Used for TODO.
+Create a course. Used for outside Exchange.
 
 ##### Response
-
 ```javascript
 {
     "success": true
@@ -111,20 +95,17 @@ Create a course. Used for TODO.
 ```
 
 ##### Error messages
-
 * Login required
 * Course already exists
 
 ### /api/assignments: Course assignments
 
 #### GET /api/assignments/&lt;course_id&gt;
-
 *list all assignments for a course (students+instructors)*
 
 Used for the outbound part of ExchangeList.
 
 ##### Response
-
 ```javascript
 {
     "success": true,
@@ -137,14 +118,12 @@ Used for the outbound part of ExchangeList.
 ```
 
 ##### Error messages
-
 * Login required
 * Course not found
 
 ### /api/assignment: Fetching and releasing an assignment
 
 #### GET /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;
-
 *download a copy of an assignment (students+instructors)*
 
 If `list_only` is `true`, `files` only contains `path` (does not contain `content`).
@@ -152,13 +131,11 @@ If `list_only` is `true`, `files` only contains `path` (does not contain `conten
 Used for ExchangeFetchAssignment.
 
 ##### Request (HTTP GET parameter)
-
 ```
 list_only=/* true or false */
 ```
 
 ##### Response
-
 ```javascript
 {
     "success": true,
@@ -167,25 +144,21 @@ list_only=/* true or false */
 ```
 
 ##### Error messages
-
 * Login required
 * Course not found
 * Assignment not found
 
 #### POST /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;
-
 *release an assignment (instructors only)*
 
 Used for ExchangeReleaseAssignment.
 
 ##### Request (HTTP POST data)
-
 ```
 files=/* encoded directory tree in JSON */
 ```
 
 ##### Response
-
 ```javascript
 {
     "success": true
@@ -193,7 +166,6 @@ files=/* encoded directory tree in JSON */
 ```
 
 ##### Error messages
-
 * Login required
 * Course not found
 * Assignment already exists
@@ -204,13 +176,11 @@ files=/* encoded directory tree in JSON */
 ### /api/submissions: Listing submissions
 
 #### GET /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;
-
 *list all submissions for an assignment from all students (instructors only)*
 
 Used for the inbound part of ExchangeList.
 
 ##### Response
-
 ```javascript
 {
     "success": true,
@@ -235,17 +205,14 @@ Used for the inbound part of ExchangeList.
 ```
 
 ##### Error messages
-
 * Login required
 * Course not found
 * Assignment not found
 
 #### GET /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
-
 *list all submissions for an assignment from a particular student (instructors+students, though students are restricted to only viewing their own submissions)*
 
 ##### Response
-
 ```javascript
 {
     "success": true,
@@ -270,7 +237,6 @@ Used for the inbound part of ExchangeList.
 ```
 
 ##### Error messages
-
 * Login required
 * Course not found
 * Assignment not found
@@ -279,19 +245,16 @@ Used for the inbound part of ExchangeList.
 ### /api/submission: Collecting and submitting a submission
 
 #### POST /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
-
 *submit a copy of an assignment (students+instructors)*
 
 Used for ExchangeSubmit.
 
 ##### Request (HTTP POST data)
-
 ```
 files=/* encoded directory tree in JSON */
 ```
 
 ##### Response
-
 ```javascript
 {
     "success": true
@@ -299,7 +262,6 @@ files=/* encoded directory tree in JSON */
 ```
 
 ##### Error messages
-
 * Login required
 * Course not found
 * Assignment not found
@@ -309,7 +271,6 @@ files=/* encoded directory tree in JSON */
 * Content cannot be base64 decoded
 
 #### GET /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
-
 *download a student's submitted assignment (instructors only)*
 
 If `list_only` is `true`, `files` only contains `path` (does not contain `content`).
@@ -317,13 +278,11 @@ If `list_only` is `true`, `files` only contains `path` (does not contain `conten
 Used for ExchangeCollect.
 
 ##### Request (HTTP GET parameter)
-
 ```
 list_only=/* true or false */
 ```
 
 ##### Response
-
 ```javascript
 {
     "success": true,
@@ -334,7 +293,6 @@ list_only=/* true or false */
 ```
 
 ##### Error messages
-
 * Login required
 * Course not found
 * Assignment not found
@@ -344,7 +302,6 @@ list_only=/* true or false */
 ### /api/feedback: Fetching and releasing submission feedback
 
 #### POST /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
-
 *upload feedback on a student's assignment (instructors only)*
 
 Old feedback on the same submission will be removed
@@ -352,7 +309,6 @@ Old feedback on the same submission will be removed
 Used for ExchangeReleaseFeedback.
 
 ##### Request (HTTP POST data)
-
 ```
 timestamp=/* submission timestamp */&
 random=/* submission random str */&
@@ -360,7 +316,6 @@ files=/* encoded directory tree in JSON */
 ```
 
 ##### Response
-
 ```javascript
 {
     "success": true
@@ -368,7 +323,6 @@ files=/* encoded directory tree in JSON */
 ```
 
 ##### Error messages
-
 * Login required
 * Course not found
 * Assignment not found
@@ -379,7 +333,6 @@ files=/* encoded directory tree in JSON */
 * Time format incorrect
 
 #### GET /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
-
 *download feedback on a student's assignment (instructors+students, though students are restricted to only viewing their own feedback)*
 
 When feedback is not available, `"files"` will be empty.
@@ -389,7 +342,6 @@ If `list_only` is `true`, `files` only contains `path` (does not contain `conten
 Used for ExchangeFetchFeedback.
 
 ##### Request (HTTP GET parameter)
-
 ```
 timestamp=/* submission timestamp */&
 random=/* submission random str */&
@@ -397,7 +349,6 @@ list_only=/* true or false */
 ```
 
 ##### Response
-
 ```javascript
 {
     "success": /* true or false*/,
@@ -408,7 +359,6 @@ list_only=/* true or false */
 ```
 
 ##### Error messages
-
 * Login required
 * Course not found
 * Assignment not found
