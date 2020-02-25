@@ -164,19 +164,32 @@ def test_list_submissions() :
 def test_list_student_submission() :
 	url = '/api/submissions/'
 	global user
+	user = 'Kevin'
 	assert_fail(url + 'jkl/challenge/st', msg='Course not found')
-	assert_fail(url + 'course1/challenges/st',
-				msg='Assignment not found')
-	assert_fail(url + 'course1/challenge/st',
-				msg='Student not found')
+	assert_fail(url + 'course1/challenges/st', msg='Assignment not found')
+	assert_fail(url + 'course1/challenge/st', msg='Student not found')
 	result = assert_success(url + 'course1/challenge/Lawrence')
 	assert len(result['submissions']) == 2
 	assert set(result['submissions'][0]) == \
 			{'student_id', 'timestamp', 'random'}
+	user = 'Eric'
 	result = assert_success(url + 'course2/assignment2a/Eric')
 	assert len(result['submissions']) == 0
+	user = 'Kevin'
+	assert_fail(url + 'course2/assignment2a/Eric',
+				msg='Permission denied (not course instructor)')
+	user = 'Abigail'
+	assert_fail(url + 'course1/challenge/Lawrence',
+				msg='Permission denied (not course instructor)')
+	user = 'Lawrence'
+	assert_success(url + 'course1/challenge/Lawrence')
+	user = 'Eric'
+	assert_fail(url + 'course1/challenge/Lawrence',
+				msg='Permission denied (not course instructor)')
 
 def test_submit_assignment() :
+	global user
+	user = 'Lawrence'
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
 									{'path': 'b', 'content': 'amtsCg=='}])}
 	assert_fail('/api/submission/jkl/challenge/st', method=POST,
