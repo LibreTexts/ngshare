@@ -32,7 +32,7 @@
 <p>nbgrader APIs:</p>
 <p style="margin-left: 2em">
   GET
-  <a href="/api/courses">
+  <a href="/api/courses?user=Eric">
     /api/courses</a>:
   List courses
 </p>
@@ -46,19 +46,20 @@
 </form>
 <p style="margin-left: 2em">
   GET
-  <a href="/api/assignments/course2">
+  <a href="/api/assignments/course2?user=Eric">
     /api/assignments/&lt;course_id&gt;</a>:
   List assignments
 </p>
 <p style="margin-left: 2em">
   GET
-  <a href="/api/assignment/course1/challenge">
+  <a href="/api/assignment/course1/challenge?user=Eric">
     /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
   Download assignment
 </p>
 <form id="form1" action="/api/assignment/course1/challenger" method="POST">
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
+  <input type="hidden" name="user" value="Eric" />
   <p style="margin-left: 2em">
     POST
       <a href="#" onclick="document.getElementById('form1').submit()">/api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
@@ -67,19 +68,20 @@
 </form>
 <p style="margin-left: 2em">
   GET
-    <a href="/api/submissions/course1/challenge">
+    <a href="/api/submissions/course1/challenge?user=Eric">
       /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
   List submissions
 </p>
 <p style="margin-left: 2em">
   GET
-    <a href="/api/submissions/course1/challenge/Lawrence">
+    <a href="/api/submissions/course1/challenge/Lawrence?user=Eric">
       /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   List student's submissions
 </p>
 <form id="form2" action="/api/submission/course2/assignment2a/Eric" method="POST">
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
+  <input type="hidden" name="user" value="Eric" />
   <p style="margin-left: 2em">
     POST
       <a href="#" onclick="document.getElementById('form2').submit()">/api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
@@ -88,7 +90,7 @@
 </form>
 <p style="margin-left: 2em">
   GET
-    <a href="/api/assignment/course1/challenge">
+    <a href="/api/assignment/course1/challenge?user=Eric">
       /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   Download submission
 </p>
@@ -97,6 +99,7 @@
   <input type="hidden" name="random" value="123456789" />
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
+  <input type="hidden" name="user" value="Eric" />
   <p style="margin-left: 2em">
     POST
       <a href="#" onclick="document.getElementById('form3').submit()">/api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
@@ -105,7 +108,7 @@
 </form>
 <p style="margin-left: 2em">
   GET
-    <a href="/api/feedback/course1/challenge/Lawrence?timestamp=2020-01-01 00:00:00.000000 &random=123456789">
+    <a href="/api/feedback/course1/challenge/Lawrence?timestamp=2020-01-01 00:00:00.000000 &random=123456789&user=Eric">
       /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   Download feedback
 </p>
