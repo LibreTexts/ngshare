@@ -188,42 +188,51 @@ def test_list_student_submission() :
 				msg='Permission denied (not course instructor)')
 
 def test_submit_assignment() :
+	url = '/api/submission/'
 	global user
-	user = 'Lawrence'
+	user = 'Kevin'
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
 									{'path': 'b', 'content': 'amtsCg=='}])}
-	assert_fail('/api/submission/jkl/challenge/st', method=POST,
+	assert_fail(url + 'jkl/challenge/st', method=POST,
 				msg='Course not found')
-	assert_fail('/api/submission/course1/challenges/st', method=POST,
+	assert_fail(url + 'course1/challenges/Kevin', method=POST,
 				msg='Assignment not found')
-	assert_fail('/api/submission/course1/challenge/st', method=POST,
+	assert_fail(url + 'course1/challenge/Kevin', method=POST,
 				msg='Student not found')
-	assert_fail('/api/submission/course1/challenge/Lawrence', method=POST,
+	user = 'Lawrence'
+	assert_fail(url + 'course1/challenge/Lawrence', method=POST,
 				msg='Please supply files')
-	assert_success('/api/submission/course1/challenge/Lawrence',
+	assert_success(url + 'course1/challenge/Lawrence',
 			method=POST, data=data)
 	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg=='}])
-	assert_success('/api/submission/course1/challenge/Lawrence',
+	assert_success(url + 'course1/challenge/Lawrence',
 			method=POST, data=data)
 	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
-	assert_fail('/api/submission/course1/challenge/Lawrence', method=POST,
+	assert_fail(url + 'course1/challenge/Lawrence', method=POST,
 				data=data, msg='Content cannot be base64 decoded')
 	result = assert_success('/api/submissions/course1/challenge/Lawrence')
 	assert len(result['submissions']) == 4	# 2 from init, 2 from this
+	user = 'Kevin'
+	assert_fail(url + 'course1/challenge/Lawrence', method=POST,
+				msg='Permission denied (submitting for someone else)')
+	user = 'Eric'
+	assert_fail(url + 'course1/challenge/Eric', method=POST,
+				msg='Permission denied (not related to course)')
 
 def test_download_submission() :
-	assert_fail('/api/submission/jkl/challenge/st', msg='Course not found')
-	assert_fail('/api/submission/course1/challenges/st', msg='Assignment not found')
-	assert_fail('/api/submission/course1/challenge/st', msg='Student not found')
-	result = assert_success('/api/submission/course1/challenge/Lawrence')
+	url = '/api/submission/'
+	assert_fail(url + 'jkl/challenge/st', msg='Course not found')
+	assert_fail(url + 'course1/challenges/st', msg='Assignment not found')
+	assert_fail(url + 'course1/challenge/st', msg='Student not found')
+	result = assert_success(url + 'course1/challenge/Lawrence')
 	assert len(result['files']) == 1
 	assert next(filter(lambda x: x['path'] == 'a', result['files'])) \
 			['content'].replace('\n', '') == 'amtsCg=='
-	assert_fail('/api/submission/course2/assignment2a/Eric',
+	assert_fail(url + 'course2/assignment2a/Eric',
 				msg='Submission not found')
 	# Check list_only
 	result = assert_success(
-		'/api/submission/course1/challenge/Lawrence?list_only=true')
+		url + 'course1/challenge/Lawrence?list_only=true')
 	assert len(result['files']) == 1
 	assert list(result['files'][0]) == ['path']
 	assert result['files'][0]['path'] == 'a'

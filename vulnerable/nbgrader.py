@@ -152,11 +152,14 @@ def list_student_submission(course_id, assignment_id, student_id) :
 def submit_assignment(course_id, assignment_id, student_id) :
 	'''
 		POST /api/submission/<course_id>/<assignment_id>/<student_id>
-		Submit a copy of an assignment (students+instructors)
+		Submit a copy of an assignment (students+instructors, student_id match)
 	'''
 	db = Session()
-	user = get_user(db)	# TODO: auth logic
+	user = get_user(db)
 	course = find_course(db, course_id)
+	if user.id != student_id :
+		raise JsonError('Permission denied (submitting for someone else)')
+	check_course_related(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
 	submission = Submission(student, assignment)
