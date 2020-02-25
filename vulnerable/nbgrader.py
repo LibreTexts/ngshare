@@ -31,11 +31,10 @@ if not db_exists:
 def list_courses() :
 	'''
 		GET /api/courses
-		List all courses
+		List all available courses the user is taking or teaching (anyone)
 	'''
 	db = Session()
-	user = get_user(db)	# TODO: auth logic
-	# TODO: limit to courses user is taking
+	user = get_user(db)
 	courses = set()
 	for i in user.teaching :
 		courses.add(i.id)
@@ -47,7 +46,7 @@ def list_courses() :
 def add_course(course_id) :
 	'''
 		POST /api/course/<course_id>
-		Add a course
+		Add a course (anyone)
 	'''
 	db = Session()
 	user = get_user(db)
@@ -92,7 +91,7 @@ def release_assignment(course_id, assignment_id) :
 		Release an assignment (instructors only)
 	'''
 	db = Session()
-	user = get_user(db)	# TODO: auth logic
+	user = get_user(db)
 	course = find_course(db, course_id)
 	check_course_instructor(db, course, user)
 	if db.query(Assignment).filter(Assignment.id == assignment_id,
