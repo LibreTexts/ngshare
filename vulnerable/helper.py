@@ -2,7 +2,7 @@
 
 import os, json, sqlite3, base64, binascii, datetime
 
-from app import request
+from app import app, request
 from settings import FS_PREFIX
 
 from database.database import *
@@ -30,6 +30,12 @@ def error_catcher(function) :
 			return e.error
 	call.__name__ = function.__name__ + '_caller'
 	return call
+
+def app_get(url) :
+	return lambda func: app.route(url)(error_catcher(func))
+
+def app_post(url) :
+	return lambda func: app.route(url, methods=["POST"])(error_catcher(func))
 
 def strftime(dt) :
 	'Use API specified format to strftime'
