@@ -7,6 +7,7 @@ import requests
 URL_PREFIX = 'http://127.0.0.1:11111'
 GET = requests.get
 POST = requests.post
+user = None
 
 def request_page(url, data={}, params={}, method=GET) :
 	assert url.startswith('/') and not url.startswith('//')
@@ -14,6 +15,10 @@ def request_page(url, data={}, params={}, method=GET) :
 	return resp.json()
 
 def assert_success(url, data={}, params={}, method=GET) :
+	global user
+	if user is not None :
+		params = params.copy()
+		params['user'] = user
 	resp = request_page(url, data, params, method)
 	if resp['success'] != True :
 		print(repr(resp), file=sys.stderr)
@@ -21,6 +26,10 @@ def assert_success(url, data={}, params={}, method=GET) :
 	return resp
 
 def assert_fail(url, data={}, params={}, method=GET) :
+	global user
+	if user is not None :
+		params = params.copy()
+		params['user'] = user
 	resp = request_page(url, data, params, method)
 	if resp['success'] != False :
 		print(repr(resp), file=sys.stderr)
@@ -38,18 +47,23 @@ def test_init() :
 	time.sleep(2)
 
 def test_list_courses() :
+	global user
+	user = 'Eric'
 	assert assert_success('/api/courses')['courses'] == \
 			['course1', 'course2']
 
 def test_add_courses() :
+	global user
+	user = None
 	assert assert_fail('/api/course/course3', method=POST)['message'] == \
 			'Login required (Please supply user)'
+	user = 'Erics'
 	assert assert_fail('/api/course/course3', method=POST,
 			data={'user': 'Erics'})['message'] == \
 			'Login required (User not found)'
-	assert_success('/api/course/course3', method=POST, data={'user': 'Eric'})
-	assert assert_fail('/api/course/course3', method=POST,
-			data={'user': 'Eric'})['message'] == \
+	user = 'Eric'
+	assert_success('/api/course/course3', method=POST)
+	assert assert_fail('/api/course/course3', method=POST)['message'] == \
 			'Course already exists'
 	assert assert_success('/api/courses')['courses'] == \
 			['course1', 'course2', 'course3']
