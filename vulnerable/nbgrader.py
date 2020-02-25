@@ -34,10 +34,12 @@ def list_courses() :
 	db = Session()
 	user = get_user(db)	# TODO: auth logic
 	# TODO: limit to courses user is taking
-	courses = []
-	for i in db.query(Course).filter().all() :
-		courses.append(i.id)
-	return json_success(courses=courses)
+	courses = set()
+	for i in user.teaching :
+		courses.add(i.id)
+	for i in user.taking :
+		courses.add(i.id)
+	return json_success(courses=sorted(courses))
 
 @app_post('/api/course/<course_id>')
 def add_course(course_id) :

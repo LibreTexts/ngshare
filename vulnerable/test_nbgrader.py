@@ -48,9 +48,14 @@ def test_init() :
 
 def test_list_courses() :
 	global user
+	user = 'Kevin'
+	assert assert_success('/api/courses')['courses'] == ['course1']
+	user = 'Abigail'
+	assert assert_success('/api/courses')['courses'] == ['course2']
+	user = 'Lawrence'
+	assert assert_success('/api/courses')['courses'] == ['course1']
 	user = 'Eric'
-	assert assert_success('/api/courses')['courses'] == \
-			['course1', 'course2']
+	assert assert_success('/api/courses')['courses'] == ['course2']
 
 def test_add_courses() :
 	global user
@@ -58,15 +63,14 @@ def test_add_courses() :
 	assert assert_fail('/api/course/course3', method=POST)['message'] == \
 			'Login required (Please supply user)'
 	user = 'Erics'
-	assert assert_fail('/api/course/course3', method=POST,
-			data={'user': 'Erics'})['message'] == \
+	assert assert_fail('/api/course/course3', method=POST)['message'] == \
 			'Login required (User not found)'
 	user = 'Eric'
 	assert_success('/api/course/course3', method=POST)
 	assert assert_fail('/api/course/course3', method=POST)['message'] == \
 			'Course already exists'
 	assert assert_success('/api/courses')['courses'] == \
-			['course1', 'course2', 'course3']
+			['course2', 'course3']
 
 def test_list_assignments() :
 	assert assert_success('/api/assignments/course2')['assignments'] == \
