@@ -25,7 +25,7 @@ def assert_success(url, data={}, params={}, method=GET) :
 		raise Exception('Not success')
 	return resp
 
-def assert_fail(url, data={}, params={}, method=GET) :
+def assert_fail(url, data={}, params={}, method=GET, msg=None) :
 	global user
 	if user is not None :
 		params = params.copy()
@@ -34,6 +34,8 @@ def assert_fail(url, data={}, params={}, method=GET) :
 	if resp['success'] != False :
 		print(repr(resp), file=sys.stderr)
 		raise Exception('Success')
+	if msg is not None :
+		assert resp['message'] == msg
 	return resp
 
 # Run init.py before running the test
@@ -47,30 +49,35 @@ def test_init() :
 	time.sleep(2)
 
 def test_list_courses() :
-	global user
-	user = 'Kevin'
-	assert assert_success('/api/courses')['courses'] == ['course1']
-	user = 'Abigail'
-	assert assert_success('/api/courses')['courses'] == ['course2']
-	user = 'Lawrence'
-	assert assert_success('/api/courses')['courses'] == ['course1']
-	user = 'Eric'
-	assert assert_success('/api/courses')['courses'] == ['course2']
-
-def test_add_courses() :
+	url = '/api/courses'
 	global user
 	user = None
-	assert assert_fail('/api/course/course3', method=POST)['message'] == \
-			'Login required (Please supply user)'
-	user = 'Erics'
-	assert assert_fail('/api/course/course3', method=POST)['message'] == \
-			'Login required (User not found)'
+	assert assert_fail(url, msg='Login required (Please supply user)')
+	user = 'Nobody'
+	assert assert_fail(url, msg='Login required (User not found)')
+	user = 'Kevin'
+	assert assert_success(url)['courses'] == ['course1']
+	user = 'Abigail'
+	assert assert_success(url)['courses'] == ['course2']
+	user = 'Lawrence'
+	assert assert_success(url)['courses'] == ['course1']
 	user = 'Eric'
-	assert_success('/api/course/course3', method=POST)
-	assert assert_fail('/api/course/course3', method=POST)['message'] == \
-			'Course already exists'
-	assert assert_success('/api/courses')['courses'] == \
-			['course2', 'course3']
+	assert assert_success(url)['courses'] == ['course2']
+
+def test_add_courses() :
+	url = '/api/course/%s'
+	global user
+	user = None
+	assert assert_fail(url % 'course3', method=POST,
+						msg='Login required (Please supply user)')
+	user = 'Erics'
+	assert assert_fail(url % 'course3', method=POST,
+						msg='Login required (User not found)')
+	user = 'Eric'
+	assert_success(url % 'course3', method=POST)
+	assert assert_fail(url % 'course3', method=POST,
+						msg='Course already exists')
+	assert assert_success('/api/courses')['courses'] == ['course2', 'course3']
 
 def test_list_assignments() :
 	assert assert_success('/api/assignments/course2')['assignments'] == \
