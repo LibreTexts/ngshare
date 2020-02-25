@@ -2,7 +2,7 @@
 	Vulnerable server
 '''
 
-from app import request, app
+from app import request, app, send_from_directory
 import os, sys
 
 BASE_DIR = os.path.dirname(__file__)
@@ -21,7 +21,7 @@ def home_page(deduct=lambda x: False) :
 @app.route('/favicon.ico')
 @error_catcher
 def favicon() :
-	return ''
+	return send_from_directory(BASE_DIR, 'favicon.ico', mimetype='image/png')
 
 @app.errorhandler(404)
 @error_catcher

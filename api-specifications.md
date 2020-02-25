@@ -70,11 +70,10 @@ List all available courses (students+instructors). Used for ExchangeList.
 
 ##### Error messages
 (TODO)
-
-### /api/courses: Courses
+### /api/course: Course
 
 #### POST /api/course/&lt;course_id&gt;
-Create a course. Used for TODO.
+Create a course. Used for outside Exchange.
 
 ##### Response
 ```javascript
