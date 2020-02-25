@@ -65,7 +65,7 @@ Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyt
 ### /api/courses: Courses
 
 #### GET /api/courses
-List all available courses (students+instructors). Used for ExchangeList.
+List all available courses taking or teaching (students+instructors). Used for ExchangeList.
 
 ##### Response
 ```javascript
@@ -85,7 +85,7 @@ List all available courses (students+instructors). Used for ExchangeList.
 ### /api/course: Course
 
 #### POST /api/course/&lt;course_id&gt;
-Create a course. Used for outside Exchange.
+Create a course (anyone logged in). Used for outside Exchange.
 
 ##### Response
 ```javascript
