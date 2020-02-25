@@ -5,6 +5,7 @@
     a {
         color: blue
     }
+    i { color: red }
   </style>
 </head>
 <body>
@@ -46,7 +47,7 @@
 </form>
 <p style="margin-left: 2em">
   GET
-  <a href="/api/assignments/course2?user=Eric">
+  <a href="/api/assignments/course2?user=Abigail">
     /api/assignments/&lt;course_id&gt;</a>:
   List assignments
 </p>
@@ -55,6 +56,7 @@
   <a href="/api/assignment/course1/challenge?user=Eric">
     /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
   Download assignment
+  <i>(TODO: auth, test, home.html)</i>
 </p>
 <form id="form1" action="/api/assignment/course1/challenger" method="POST">
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
@@ -64,6 +66,7 @@
     POST
       <a href="#" onclick="document.getElementById('form1').submit()">/api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
     Release assignment (see HTML form)
+    <i>(TODO: auth, test, home.html)</i>
   </p>
 </form>
 <p style="margin-left: 2em">
@@ -71,12 +74,14 @@
     <a href="/api/submissions/course1/challenge?user=Eric">
       /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
   List submissions
+  <i>(TODO: auth, test, home.html)</i>
 </p>
 <p style="margin-left: 2em">
   GET
     <a href="/api/submissions/course1/challenge/Lawrence?user=Eric">
       /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   List student's submissions
+  <i>(TODO: auth, test, home.html)</i>
 </p>
 <form id="form2" action="/api/submission/course2/assignment2a/Eric" method="POST">
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
@@ -86,6 +91,7 @@
     POST
       <a href="#" onclick="document.getElementById('form2').submit()">/api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
     Submit assignment (see HTML form)
+    <i>(TODO: auth, test, home.html)</i>
   </p>
 </form>
 <p style="margin-left: 2em">
@@ -93,6 +99,7 @@
     <a href="/api/assignment/course1/challenge?user=Eric">
       /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   Download submission
+  <i>(TODO: auth, test, home.html)</i>
 </p>
 <form id="form3" action="/api/feedback/course1/challenge/Lawrence" method="POST">
   <input type="hidden" name="timestamp" value="2020-01-01 00:00:00.000000 " />
@@ -103,7 +110,8 @@
   <p style="margin-left: 2em">
     POST
       <a href="#" onclick="document.getElementById('form3').submit()">/api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
-      Upload feedback (see HTML form)
+    Upload feedback (see HTML form)
+    <i>(TODO: auth, test, home.html)</i>
   </p>
 </form>
 <p style="margin-left: 2em">
@@ -111,5 +119,6 @@
     <a href="/api/feedback/course1/challenge/Lawrence?timestamp=2020-01-01 00:00:00.000000 &random=123456789&user=Eric">
       /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   Download feedback
+  <i>(TODO: auth, test, home.html)</i>
 </p>
 </body>

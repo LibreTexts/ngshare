@@ -81,6 +81,17 @@ def test_add_courses() :
 
 def test_list_assignments() :
 	url = '/api/assignments/%s'
+	global user
+	user = 'Kevin'
+	assert_fail(url % 'course2',
+				msg='Permission denied (not related to course)')
+	user = 'Abigail'
+	assert assert_success(url % 'course2')['assignments'] == \
+			['assignment2a', 'assignment2b']
+	user = 'Lawrence'
+	assert_fail(url % 'course2',
+				msg='Permission denied (not related to course)')
+	user = 'Eric'
 	assert assert_success(url % 'course2')['assignments'] == \
 			['assignment2a', 'assignment2b']
 	assert assert_fail(url % 'jkl', msg='Course not found')

@@ -8,7 +8,9 @@ from helper import (json_success, error_catcher, json_files_pack,
 					json_files_unpack, strftime, strptime, get_user,
 					find_course, find_assignment, find_course_student,
 					find_student_submissions, find_student_latest_submission,
-					find_student_submission, JsonError, app_get, app_post)
+					find_student_submission, JsonError, app_get, app_post,
+					check_course_student, check_course_instructor,
+					check_course_related)
 from settings import DB_NAME
 from init import init_test_data
 
@@ -63,8 +65,9 @@ def list_assignments(course_id) :
 		List all assignments for a course (students+instructors)
 	'''
 	db = Session()
-	user = get_user(db)	# TODO: auth logic
+	user = get_user(db)
 	course = find_course(db, course_id)
+	check_course_related(db, course, user)
 	assignments = course.assignments
 	return json_success(assignments=list(map(lambda x: x.id, assignments)))
 
