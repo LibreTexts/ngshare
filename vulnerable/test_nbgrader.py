@@ -65,49 +65,53 @@ def test_list_courses() :
 	assert assert_success(url)['courses'] == ['course2']
 
 def test_add_courses() :
-	url = '/api/course/%s'
+	url = '/api/course/'
 	global user
 	user = None
-	assert assert_fail(url % 'course3', method=POST,
+	assert assert_fail(url + 'course3', method=POST,
 						msg='Login required (Please supply user)')
 	user = 'Erics'
-	assert assert_fail(url % 'course3', method=POST,
+	assert assert_fail(url + 'course3', method=POST,
 						msg='Login required (User not found)')
 	user = 'Eric'
-	assert_success(url % 'course3', method=POST)
-	assert assert_fail(url % 'course3', method=POST,
+	assert_success(url + 'course3', method=POST)
+	assert assert_fail(url + 'course3', method=POST,
 						msg='Course already exists')
 	assert assert_success('/api/courses')['courses'] == ['course2', 'course3']
 
 def test_list_assignments() :
-	url = '/api/assignments/%s'
+	url = '/api/assignments/'
 	global user
 	user = 'Kevin'
-	assert_fail(url % 'course2',
+	assert_fail(url + 'course2',
 				msg='Permission denied (not related to course)')
 	user = 'Abigail'
-	assert assert_success(url % 'course2')['assignments'] == \
+	assert assert_success(url + 'course2')['assignments'] == \
 			['assignment2a', 'assignment2b']
 	user = 'Lawrence'
-	assert_fail(url % 'course2',
+	assert_fail(url + 'course2',
 				msg='Permission denied (not related to course)')
 	user = 'Eric'
-	assert assert_success(url % 'course2')['assignments'] == \
+	assert assert_success(url + 'course2')['assignments'] == \
 			['assignment2a', 'assignment2b']
-	assert assert_fail(url % 'jkl', msg='Course not found')
+	assert assert_fail(url + 'jkl', msg='Course not found')
 
 def test_download_assignment() :
-	files = assert_success('/api/assignment/course1/challenge')['files']
+	url = '/api/assignment/'
+	global user
+	user = 'Kevin'
+	files = assert_success(url + 'course1/challenge')['files']
 	assert files[0]['path'] == 'file2'
 	assert base64.b64decode(files[0]['content'].encode()) == b'22222'
-	assert assert_fail('/api/assignment/jkl/challenger', msg='Course not found')
-	assert assert_fail('/api/assignment/course1/challenger',
-						msg='Assignment not found')
+	assert assert_fail(url + 'jkl/challenger', msg='Course not found')
+	assert assert_fail(url + 'course1/challenger', msg='Assignment not found')
 	# Check list_only
-	files = assert_success('/api/assignment/course1/challenge?list_only=true') \
-			['files']
+	files = assert_success(url + 'course1/challenge?list_only=true')['files']
 	assert list(files[0]) == ['path']
 	assert files[0]['path'] == 'file2'
+	user = 'Eric'
+	assert assert_fail(url + 'course1/challenge',
+						msg='Permission denied (not related to course)')
 
 def test_release_assignment() :
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},

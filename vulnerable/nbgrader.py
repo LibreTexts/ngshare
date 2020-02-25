@@ -78,8 +78,9 @@ def download_assignment(course_id, assignment_id) :
 		Download a copy of an assignment (students+instructors)
 	'''
 	db = Session()
-	user = get_user(db)	# TODO: auth logic
+	user = get_user(db)
 	course = find_course(db, course_id)
+	check_course_related(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
 	list_only = request.args.get('list_only', 'false') == 'true'
 	return json_success(files=json_files_pack(assignment.files, list_only))
