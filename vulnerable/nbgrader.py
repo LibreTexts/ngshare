@@ -3,12 +3,12 @@
 
 import os, json, operator
 
-from app import request, app
+from app import request
 from helper import (json_success, error_catcher, json_files_pack,
 					json_files_unpack, strftime, strptime, get_user,
 					find_course, find_assignment, find_course_student,
 					find_student_submissions, find_student_latest_submission,
-					find_student_submission, JsonError)
+					find_student_submission, JsonError, app_get, app_post)
 from settings import DB_NAME
 from init import init_test_data
 
@@ -25,8 +25,7 @@ Session = sessionmaker(bind=engine)
 if not db_exists:
 	init_test_data(Session)
 
-@app.route('/api/courses')
-@error_catcher
+@app_get('/api/courses')
 def list_courses() :
 	'''
 		GET /api/courses
@@ -40,8 +39,7 @@ def list_courses() :
 		courses.append(i.id)
 	return json_success(courses=courses)
 
-@app.route('/api/course/<course_id>', methods=["POST"])
-@error_catcher
+@app_post('/api/course/<course_id>')
 def add_course(course_id) :
 	'''
 		POST /api/course/<course_id>
@@ -56,8 +54,7 @@ def add_course(course_id) :
 	db.commit()
 	return json_success()
 
-@app.route('/api/assignments/<course_id>')
-@error_catcher
+@app_get('/api/assignments/<course_id>')
 def list_assignments(course_id) :
 	'''
 		GET /api/assignments/<course_id>
@@ -69,8 +66,7 @@ def list_assignments(course_id) :
 	assignments = course.assignments
 	return json_success(assignments=list(map(lambda x: x.id, assignments)))
 
-@app.route('/api/assignment/<course_id>/<assignment_id>')
-@error_catcher
+@app_get('/api/assignment/<course_id>/<assignment_id>')
 def download_assignment(course_id, assignment_id) :
 	'''
 		GET /api/assignment/<course_id>/<assignment_id>
@@ -83,8 +79,7 @@ def download_assignment(course_id, assignment_id) :
 	list_only = request.args.get('list_only', 'false') == 'true'
 	return json_success(files=json_files_pack(assignment.files, list_only))
 
-@app.route('/api/assignment/<course_id>/<assignment_id>', methods=["POST"])
-@error_catcher
+@app_post('/api/assignment/<course_id>/<assignment_id>')
 def release_assignment(course_id, assignment_id) :
 	'''
 		POST /api/assignment/<course_id>/<assignment_id>
@@ -101,8 +96,7 @@ def release_assignment(course_id, assignment_id) :
 	db.commit()
 	return json_success()
 
-@app.route('/api/submissions/<course_id>/<assignment_id>')
-@error_catcher
+@app_get('/api/submissions/<course_id>/<assignment_id>')
 def list_submissions(course_id, assignment_id) :
 	'''
 		GET /api/submissions/<course_id>/<assignment_id>
@@ -123,8 +117,7 @@ def list_submissions(course_id, assignment_id) :
 		})
 	return json_success(submissions=submissions)
 
-@app.route('/api/submissions/<course_id>/<assignment_id>/<student_id>')
-@error_catcher
+@app_get('/api/submissions/<course_id>/<assignment_id>/<student_id>')
 def list_student_submission(course_id, assignment_id, student_id) :
 	'''
 		GET /api/submissions/<course_id>/<assignment_id>/<student_id>
@@ -146,9 +139,7 @@ def list_student_submission(course_id, assignment_id, student_id) :
 		})
 	return json_success(submissions=submissions)
 
-@app.route('/api/submission/<course_id>/<assignment_id>/<student_id>', 
-			methods=["POST"])
-@error_catcher
+@app_post('/api/submission/<course_id>/<assignment_id>/<student_id>')
 def submit_assignment(course_id, assignment_id, student_id) :
 	'''
 		POST /api/submission/<course_id>/<assignment_id>/<student_id>
@@ -164,8 +155,7 @@ def submit_assignment(course_id, assignment_id, student_id) :
 	db.commit()
 	return json_success()
 
-@app.route('/api/submission/<course_id>/<assignment_id>/<student_id>')
-@error_catcher
+@app_get('/api/submission/<course_id>/<assignment_id>/<student_id>')
 def download_submission(course_id, assignment_id, student_id) :
 	'''
 		GET /api/submission/<course_id>/<assignment_id>/<student_id>
@@ -183,9 +173,7 @@ def download_submission(course_id, assignment_id, student_id) :
 						timestamp=strftime(submission.timestamp),
 						random=submission.random)
 
-@app.route('/api/feedback/<course_id>/<assignment_id>/<student_id>', 
-			methods=["POST"])
-@error_catcher
+@app_post('/api/feedback/<course_id>/<assignment_id>/<student_id>')
 def upload_feedback(course_id, assignment_id, student_id) :
 	'''
 		POST /api/feedback/<course_id>/<assignment_id>/<student_id>
@@ -210,8 +198,7 @@ def upload_feedback(course_id, assignment_id, student_id) :
 	db.commit()
 	return json_success()
 
-@app.route('/api/feedback/<course_id>/<assignment_id>/<student_id>')
-@error_catcher
+@app_get('/api/feedback/<course_id>/<assignment_id>/<student_id>')
 def download_feedback(course_id, assignment_id, student_id) :
 	'''
 		GET /api/feedback/<course_id>/<assignment_id>/<student_id>
