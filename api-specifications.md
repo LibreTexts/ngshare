@@ -119,6 +119,7 @@ Used for the outbound part of ExchangeList.
 
 ##### Error messages
 * Login required
+* Permission denied
 * Course not found
 
 ### /api/assignment: Fetching and releasing an assignment
@@ -145,6 +146,7 @@ list_only=/* true or false */
 
 ##### Error messages
 * Login required
+* Permission denied
 * Course not found
 * Assignment not found
 
@@ -167,6 +169,7 @@ files=/* encoded directory tree in JSON */
 
 ##### Error messages
 * Login required
+* Permission denied
 * Course not found
 * Assignment already exists
 * Please supply files
@@ -206,6 +209,7 @@ Used for the inbound part of ExchangeList.
 
 ##### Error messages
 * Login required
+* Permission denied
 * Course not found
 * Assignment not found
 
@@ -238,6 +242,7 @@ Used for the inbound part of ExchangeList.
 
 ##### Error messages
 * Login required
+* Permission denied
 * Course not found
 * Assignment not found
 * Student not found
@@ -245,7 +250,7 @@ Used for the inbound part of ExchangeList.
 ### /api/submission: Collecting and submitting a submission
 
 #### POST /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
-*submit a copy of an assignment (students+instructors)*
+*submit a copy of an assignment (students+instructors; `student_id` must match, including for instructors)*
 
 Used for ExchangeSubmit.
 
@@ -263,6 +268,7 @@ files=/* encoded directory tree in JSON */
 
 ##### Error messages
 * Login required
+* Permission denied
 * Course not found
 * Assignment not found
 * Student not found
@@ -294,6 +300,7 @@ list_only=/* true or false */
 
 ##### Error messages
 * Login required
+* Permission denied
 * Course not found
 * Assignment not found
 * Student not found
@@ -324,6 +331,7 @@ files=/* encoded directory tree in JSON */
 
 ##### Error messages
 * Login required
+* Permission denied
 * Course not found
 * Assignment not found
 * Student not found
@@ -360,6 +368,7 @@ list_only=/* true or false */
 
 ##### Error messages
 * Login required
+* Permission denied
 * Course not found
 * Assignment not found
 * Student not found
