@@ -110,8 +110,9 @@ def list_submissions(course_id, assignment_id) :
 		 (instructors only)
 	'''
 	db = Session()
-	user = get_user(db)	# TODO: auth logic
+	user = get_user(db)
 	course = find_course(db, course_id)
+	check_course_instructor(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
 	submissions = []
 	for submission in assignment.submissions :

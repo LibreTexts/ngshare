@@ -140,29 +140,40 @@ def test_release_assignment() :
 				data=data, msg='Permission denied (not course instructor)')
 
 def test_list_submissions() :
-	assert_fail('/api/submissions/jkl/challenge', msg='Course not found')
-	assert_fail('/api/submissions/course1/challenges',
+	url = '/api/submissions/'
+	global user
+	user = 'Kevin'
+	assert_fail(url + 'jkl/challenge', msg='Course not found')
+	assert_fail(url + 'course1/challenges',
 				msg='Assignment not found')
-	result = assert_success('/api/submissions/course1/challenge')
+	result = assert_success(url + 'course1/challenge')
 	assert len(result['submissions']) == 2
 	assert set(result['submissions'][0]) == \
 			{'student_id', 'timestamp', 'random'}
 	assert result['submissions'][0]['student_id'] == 'Lawrence'
 	assert result['submissions'][1]['student_id'] == 'Lawrence'
-	result = assert_success('/api/submissions/course2/assignment2a')
+	user = 'Abigail'
+	result = assert_success(url + 'course2/assignment2a')
 	assert len(result['submissions']) == 0
+	user = 'Eric'
+	assert_fail(url + 'course1/challenges',
+				msg='Permission denied (not course instructor)')
+	assert_fail(url + 'course2/assignment2a',
+				msg='Permission denied (not course instructor)')
 
 def test_list_student_submission() :
-	assert_fail('/api/submissions/jkl/challenge/st', msg='Course not found')
-	assert_fail('/api/submissions/course1/challenges/st',
+	url = '/api/submissions/'
+	global user
+	assert_fail(url + 'jkl/challenge/st', msg='Course not found')
+	assert_fail(url + 'course1/challenges/st',
 				msg='Assignment not found')
-	assert_fail('/api/submissions/course1/challenge/st',
+	assert_fail(url + 'course1/challenge/st',
 				msg='Student not found')
-	result = assert_success('/api/submissions/course1/challenge/Lawrence')
+	result = assert_success(url + 'course1/challenge/Lawrence')
 	assert len(result['submissions']) == 2
 	assert set(result['submissions'][0]) == \
 			{'student_id', 'timestamp', 'random'}
-	result = assert_success('/api/submissions/course2/assignment2a/Eric')
+	result = assert_success(url + 'course2/assignment2a/Eric')
 	assert len(result['submissions']) == 0
 
 def test_submit_assignment() :
