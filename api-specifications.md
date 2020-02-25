@@ -85,7 +85,9 @@ List all available courses (students+instructors). Used for ExchangeList.
 
 (TODO)
 
-#### POST /api/courses/&lt;course_id&gt;
+### /api/courses: Courses
+
+#### POST /api/course/&lt;course_id&gt;
 
 Create a course. Used for TODO.
 

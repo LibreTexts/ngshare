@@ -4,9 +4,9 @@
 import os, json, operator
 
 from app import request, app
-from helper import (json_success, json_error, error_catcher, json_files_pack,
-					json_files_unpack, strftime, strptime, find_course,
-					find_assignment, find_course_student,
+from helper import (json_success, error_catcher, json_files_pack,
+					json_files_unpack, strftime, strptime, get_user,
+					find_course, find_assignment, find_course_student,
 					find_student_submissions, find_student_latest_submission,
 					find_student_submission, JsonError)
 from settings import DB_NAME
@@ -38,6 +38,22 @@ def list_courses() :
 	for i in db.query(Course).filter().all() :
 		courses.append(i.id)
 	return json_success(courses=courses)
+
+@app.route('/api/course/<course_id>', methods=["POST"])
+@error_catcher
+def add_course(course_id) :
+	'''
+		POST /api/course/<course_id>
+		Add a course
+	'''
+	db = Session()
+	user = get_user(db)
+	if db.query(Course).filter(Course.id == course_id).one_or_none() :
+		raise JsonError('Course already exists')
+	course = Course(course_id, user)
+	db.add(course)
+	db.commit()
+	return json_success()
 
 @app.route('/api/assignments/<course_id>')
 @error_catcher
@@ -75,7 +91,7 @@ def release_assignment(course_id, assignment_id) :
 	course = find_course(db, course_id)
 	if db.query(Assignment).filter(Assignment.id == assignment_id,
 									Assignment.course == course).one_or_none() :
-		return json_error('Assignment already exists')
+		raise JsonError('Assignment already exists')
 	assignment = Assignment(assignment_id, course)
 	json_files_unpack(request.form.get('files'), assignment.files)
 	db.commit()

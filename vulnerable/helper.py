@@ -73,6 +73,18 @@ def remove_pathname(pathname) :
 
 # For nbgrader APIs
 
+def get_user(db) :
+	# TODO: user nbgrader API
+	username = request.args.get('user')
+	if username is None :
+		username = request.form.get('user')
+		if username is None :
+			raise JsonError('Login required (Please supply user)')
+	user = db.query(User).filter(User.id == username).one_or_none()
+	if user is None :
+		raise JsonError('Login required (User not found)')
+	return user
+
 def json_files_pack(file_list, list_only) :
 	'Generate JSON file list (directory tree) from a list of File objects'
 	ans = []

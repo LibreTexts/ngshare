@@ -41,6 +41,19 @@ def test_list_courses() :
 	assert assert_success('/api/courses')['courses'] == \
 			['course1', 'course2']
 
+def test_add_courses() :
+	assert assert_fail('/api/course/course3', method=POST)['message'] == \
+			'Login required (Please supply user)'
+	assert assert_fail('/api/course/course3', method=POST,
+			data={'user': 'Erics'})['message'] == \
+			'Login required (User not found)'
+	assert_success('/api/course/course3', method=POST, data={'user': 'Eric'})
+	assert assert_fail('/api/course/course3', method=POST,
+			data={'user': 'Eric'})['message'] == \
+			'Course already exists'
+	assert assert_success('/api/courses')['courses'] == \
+			['course1', 'course2', 'course3']
+
 def test_list_assignments() :
 	assert assert_success('/api/assignments/course2')['assignments'] == \
 			['assignment2a', 'assignment2b']
