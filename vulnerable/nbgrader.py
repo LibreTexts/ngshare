@@ -94,6 +94,7 @@ def release_assignment(course_id, assignment_id) :
 	db = Session()
 	user = get_user(db)	# TODO: auth logic
 	course = find_course(db, course_id)
+	check_course_instructor(db, course, user)
 	if db.query(Assignment).filter(Assignment.id == assignment_id,
 									Assignment.course == course).one_or_none() :
 		raise JsonError('Assignment already exists')

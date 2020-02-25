@@ -52,9 +52,9 @@ def test_list_courses() :
 	url = '/api/courses'
 	global user
 	user = None
-	assert assert_fail(url, msg='Login required (Please supply user)')
+	assert_fail(url, msg='Login required (Please supply user)')
 	user = 'Nobody'
-	assert assert_fail(url, msg='Login required (User not found)')
+	assert_fail(url, msg='Login required (User not found)')
 	user = 'Kevin'
 	assert assert_success(url)['courses'] == ['course1']
 	user = 'Abigail'
@@ -68,15 +68,14 @@ def test_add_courses() :
 	url = '/api/course/'
 	global user
 	user = None
-	assert assert_fail(url + 'course3', method=POST,
-						msg='Login required (Please supply user)')
+	assert_fail(url + 'course3', method=POST,
+				msg='Login required (Please supply user)')
 	user = 'Erics'
-	assert assert_fail(url + 'course3', method=POST,
-						msg='Login required (User not found)')
+	assert_fail(url + 'course3', method=POST,
+				msg='Login required (User not found)')
 	user = 'Eric'
 	assert_success(url + 'course3', method=POST)
-	assert assert_fail(url + 'course3', method=POST,
-						msg='Course already exists')
+	assert_fail(url + 'course3', method=POST, msg='Course already exists')
 	assert assert_success('/api/courses')['courses'] == ['course2', 'course3']
 
 def test_list_assignments() :
@@ -94,7 +93,7 @@ def test_list_assignments() :
 	user = 'Eric'
 	assert assert_success(url + 'course2')['assignments'] == \
 			['assignment2a', 'assignment2b']
-	assert assert_fail(url + 'jkl', msg='Course not found')
+	assert_fail(url + 'jkl', msg='Course not found')
 
 def test_download_assignment() :
 	url = '/api/assignment/'
@@ -103,35 +102,47 @@ def test_download_assignment() :
 	files = assert_success(url + 'course1/challenge')['files']
 	assert files[0]['path'] == 'file2'
 	assert base64.b64decode(files[0]['content'].encode()) == b'22222'
-	assert assert_fail(url + 'jkl/challenger', msg='Course not found')
-	assert assert_fail(url + 'course1/challenger', msg='Assignment not found')
+	assert_fail(url + 'jkl/challenger', msg='Course not found')
+	assert_fail(url + 'course1/challenger', msg='Assignment not found')
 	# Check list_only
 	files = assert_success(url + 'course1/challenge?list_only=true')['files']
 	assert list(files[0]) == ['path']
 	assert files[0]['path'] == 'file2'
 	user = 'Eric'
-	assert assert_fail(url + 'course1/challenge',
-						msg='Permission denied (not related to course)')
+	assert_fail(url + 'course1/challenge',
+				msg='Permission denied (not related to course)')
 
 def test_release_assignment() :
+	url = '/api/assignment/'
+	global user
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
 									{'path': 'b', 'content': 'amtsCg=='}])}
-	assert assert_fail('/api/assignment/jkl/challenger', method=POST, 
-						data=data, msg='Course not found')
-	assert assert_fail('/api/assignment/course1/challenger', method=POST
-						, msg='Please supply files')
-	assert_success('/api/assignment/course1/challenger', method=POST, 
+	user = 'Kevin'
+	assert_fail(url + 'jkl/challenger', method=POST, 
+				data=data, msg='Course not found')
+	assert_fail(url + 'course1/challenger', method=POST,
+				msg='Please supply files')
+	assert_success(url + 'course1/challenger', method=POST, 
 					data=data)
-	assert assert_fail('/api/assignment/course1/challenger', method=POST, 
-						data=data, msg='Assignment already exists')
+	assert_fail(url + 'course1/challenger', method=POST, 
+				data=data, msg='Assignment already exists')
 	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
-	assert assert_fail('/api/assignment/course1/challenges', method=POST, 
-			data=data, msg='Content cannot be base64 decoded')
+	assert_fail(url + 'course1/challenges', method=POST, 
+				data=data, msg='Content cannot be base64 decoded')
+	user = 'Abigail'
+	assert_fail(url + 'course1/challenger', method=POST, 
+				data=data, msg='Permission denied (not course instructor)')
+	user = 'Lawrence'
+	assert_fail(url + 'course1/challenger', method=POST, 
+				data=data, msg='Permission denied (not course instructor)')
+	user = 'Eric'
+	assert_fail(url + 'course1/challenger', method=POST, 
+				data=data, msg='Permission denied (not course instructor)')
 
 def test_list_submissions() :
-	assert assert_fail('/api/submissions/jkl/challenge', msg='Course not found')
-	assert assert_fail('/api/submissions/course1/challenges',
-						msg='Assignment not found')
+	assert_fail('/api/submissions/jkl/challenge', msg='Course not found')
+	assert_fail('/api/submissions/course1/challenges',
+				msg='Assignment not found')
 	result = assert_success('/api/submissions/course1/challenge')
 	assert len(result['submissions']) == 2
 	assert set(result['submissions'][0]) == \
@@ -142,12 +153,11 @@ def test_list_submissions() :
 	assert len(result['submissions']) == 0
 
 def test_list_student_submission() :
-	assert assert_fail('/api/submissions/jkl/challenge/st',
-						msg='Course not found')
-	assert assert_fail('/api/submissions/course1/challenges/st',
-						msg='Assignment not found')
-	assert assert_fail('/api/submissions/course1/challenge/st',
-						msg='Student not found')
+	assert_fail('/api/submissions/jkl/challenge/st', msg='Course not found')
+	assert_fail('/api/submissions/course1/challenges/st',
+				msg='Assignment not found')
+	assert_fail('/api/submissions/course1/challenge/st',
+				msg='Student not found')
 	result = assert_success('/api/submissions/course1/challenge/Lawrence')
 	assert len(result['submissions']) == 2
 	assert set(result['submissions'][0]) == \
@@ -158,38 +168,35 @@ def test_list_student_submission() :
 def test_submit_assignment() :
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
 									{'path': 'b', 'content': 'amtsCg=='}])}
-	assert assert_fail('/api/submission/jkl/challenge/st', method=POST,
-						msg='Course not found')
-	assert assert_fail('/api/submission/course1/challenges/st', method=POST,
-						msg='Assignment not found')
-	assert assert_fail('/api/submission/course1/challenge/st', method=POST,
-						msg='Student not found')
-	assert assert_fail('/api/submission/course1/challenge/Lawrence',
-			method=POST, msg='Please supply files')
+	assert_fail('/api/submission/jkl/challenge/st', method=POST,
+				msg='Course not found')
+	assert_fail('/api/submission/course1/challenges/st', method=POST,
+				msg='Assignment not found')
+	assert_fail('/api/submission/course1/challenge/st', method=POST,
+				msg='Student not found')
+	assert_fail('/api/submission/course1/challenge/Lawrence', method=POST,
+				msg='Please supply files')
 	assert_success('/api/submission/course1/challenge/Lawrence',
 			method=POST, data=data)
 	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg=='}])
 	assert_success('/api/submission/course1/challenge/Lawrence',
 			method=POST, data=data)
 	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
-	assert assert_fail('/api/submission/course1/challenge/Lawrence',
-			method=POST, data=data, msg='Content cannot be base64 decoded')
+	assert_fail('/api/submission/course1/challenge/Lawrence', method=POST,
+				data=data, msg='Content cannot be base64 decoded')
 	result = assert_success('/api/submissions/course1/challenge/Lawrence')
 	assert len(result['submissions']) == 4	# 2 from init, 2 from this
 
 def test_download_submission() :
-	assert assert_fail('/api/submission/jkl/challenge/st',
-						msg='Course not found')
-	assert assert_fail('/api/submission/course1/challenges/st',
-						msg='Assignment not found')
-	assert assert_fail('/api/submission/course1/challenge/st',
-						msg='Student not found')
+	assert_fail('/api/submission/jkl/challenge/st', msg='Course not found')
+	assert_fail('/api/submission/course1/challenges/st', msg='Assignment not found')
+	assert_fail('/api/submission/course1/challenge/st', msg='Student not found')
 	result = assert_success('/api/submission/course1/challenge/Lawrence')
 	assert len(result['files']) == 1
 	assert next(filter(lambda x: x['path'] == 'a', result['files'])) \
 			['content'].replace('\n', '') == 'amtsCg=='
-	assert assert_fail('/api/submission/course2/assignment2a/Eric',
-						msg='Submission not found')
+	assert_fail('/api/submission/course2/assignment2a/Eric',
+				msg='Submission not found')
 	# Check list_only
 	result = assert_success(
 		'/api/submission/course1/challenge/Lawrence?list_only=true')
@@ -201,51 +208,48 @@ def test_upload_feedback() :
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
 									{'path': 'b', 'content': 'amtsCg=='}]),
 			'timestamp': '2020-01-01 00:00:00.000000 ', 'random': '123456789'}
-	assert assert_fail('/api/feedback/jkl/challenge/st', method=POST,
-			data=data, msg='Course not found')
-	assert assert_fail('/api/feedback/course1/challenges/st', method=POST,
-			data=data, msg='Assignment not found')
-	assert assert_fail('/api/feedback/course1/challenge/st', method=POST,
-			data=data, msg='Student not found')
+	assert_fail('/api/feedback/jkl/challenge/st', method=POST, data=data,
+				msg='Course not found')
+	assert_fail('/api/feedback/course1/challenges/st', method=POST, data=data,
+				msg='Assignment not found')
+	assert_fail('/api/feedback/course1/challenge/st', method=POST, data=data,
+				msg='Student not found')
 	assert_success('/api/feedback/course1/challenge/Lawrence',
 					method=POST, data=data)
 	data['files'] = json.dumps([{'path': 'c', 'content': 'amtsCf=='}])
 	assert_success('/api/feedback/course1/challenge/Lawrence',
 					method=POST, data=data)
-	assert assert_fail('/api/feedback/course1/challenge/Lawrence', method=POST,
-			data={'timestamp': data['timestamp']},
-			msg='Please supply random str')
-	assert assert_fail('/api/feedback/course1/challenge/Lawrence', method=POST,
-			data={'random': data['random']}, msg='Please supply timestamp')
-	assert assert_fail('/api/feedback/course1/challenge/Lawrence', method=POST,
-			data={'random': data['random'], 'timestamp': 'a'},
-			msg='Time format incorrect')
-	assert assert_fail('/api/feedback/course2/assignment2a/Eric', method=POST,
-			data=data, msg='Submission not found')
-	assert assert_fail('/api/feedback/course2/assignment2a/Eric', method=POST,
-			data={'timestamp': data['timestamp'], 'random': ''},
-			msg='Submission not found')
+	assert_fail('/api/feedback/course1/challenge/Lawrence', method=POST,
+				data={'timestamp': data['timestamp']},
+				msg='Please supply random str')
+	assert_fail('/api/feedback/course1/challenge/Lawrence', method=POST,
+				data={'random': data['random']}, msg='Please supply timestamp')
+	assert_fail('/api/feedback/course1/challenge/Lawrence', method=POST,
+				data={'random': data['random'], 'timestamp': 'a'},
+				msg='Time format incorrect')
+	assert_fail('/api/feedback/course2/assignment2a/Eric', method=POST,
+				data=data, msg='Submission not found')
+	assert_fail('/api/feedback/course2/assignment2a/Eric', method=POST,
+				data={'timestamp': data['timestamp'], 'random': ''},
+				msg='Submission not found')
 
 def test_download_feedback() :
-	assert assert_fail('/api/feedback/jkl/challenge/st',
-						msg='Course not found')
-	assert assert_fail('/api/feedback/course1/challenges/st',
-						msg='Assignment not found')
-	assert assert_fail('/api/feedback/course1/challenge/st',
-						msg='Student not found')
+	assert_fail('/api/feedback/jkl/challenge/st', msg='Course not found')
+	assert_fail('/api/feedback/course1/challenges/st', msg='Assignment not found')
+	assert_fail('/api/feedback/course1/challenge/st', msg='Student not found')
 	meta = assert_success('/api/submission/course1/challenge/Lawrence')
 	timestamp = meta['timestamp']
 	random = meta['random']
-	assert assert_fail('/api/feedback/course1/challenge/Lawrence',
-			params={'timestamp': timestamp}, msg='Please supply random str')
-	assert assert_fail('/api/feedback/course1/challenge/Lawrence',
-			params={'random': random}, msg='Please supply timestamp')
-	assert assert_fail('/api/feedback/course1/challenge/Lawrence',
-			params={'random': random, 'timestamp': 'a'},
-			msg='Time format incorrect')
-	assert assert_fail('/api/feedback/course2/assignment2a/Eric',
-			params={'random': random, 'timestamp': timestamp},
-			msg='Submission not found')
+	assert_fail('/api/feedback/course1/challenge/Lawrence',
+				params={'timestamp': timestamp}, msg='Please supply random str')
+	assert_fail('/api/feedback/course1/challenge/Lawrence',
+				params={'random': random}, msg='Please supply timestamp')
+	assert_fail('/api/feedback/course1/challenge/Lawrence',
+				params={'random': random, 'timestamp': 'a'},
+				msg='Time format incorrect')
+	assert_fail('/api/feedback/course2/assignment2a/Eric',
+				params={'random': random, 'timestamp': timestamp},
+				msg='Submission not found')
 	feedback = assert_success('/api/feedback/course1/challenge/Lawrence', 
 							params={'timestamp': timestamp, 'random': random})
 	assert feedback['files'] == []
