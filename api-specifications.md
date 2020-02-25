@@ -58,6 +58,17 @@ Each file and directory tree will be transferred individually.
 
 ---
 
+## Authentication
+
+### vserver
+To make things easy, we are simply putting the user id in HTTP GET parameter or
+ POST data using key `user`.
+
+### ngshare
+(TODO)
+
+---
+
 ## API specification
 
 Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyter/nbgrader/issues/659).
@@ -83,7 +94,7 @@ List all available courses (students+instructors). Used for ExchangeList.
 
 ##### Error messages
 
-(TODO)
+* Login required
 
 ### /api/courses: Courses
 
@@ -101,8 +112,8 @@ Create a course. Used for TODO.
 
 ##### Error messages
 
-* Login required (TODO)
-* Course already exists (TODO)
+* Login required
+* Course already exists
 
 ### /api/assignments: Course assignments
 
@@ -127,7 +138,7 @@ Used for the outbound part of ExchangeList.
 
 ##### Error messages
 
-* Login required (TODO)
+* Login required
 * Course not found
 
 ### /api/assignment: Fetching and releasing an assignment
@@ -157,7 +168,7 @@ list_only=/* true or false */
 
 ##### Error messages
 
-* Login required (TODO)
+* Login required
 * Course not found
 * Assignment not found
 
@@ -183,7 +194,7 @@ files=/* encoded directory tree in JSON */
 
 ##### Error messages
 
-* Login required (TODO)
+* Login required
 * Course not found
 * Assignment already exists
 * Please supply files
@@ -225,7 +236,7 @@ Used for the inbound part of ExchangeList.
 
 ##### Error messages
 
-* Login required (TODO)
+* Login required
 * Course not found
 * Assignment not found
 
@@ -260,7 +271,7 @@ Used for the inbound part of ExchangeList.
 
 ##### Error messages
 
-* Login required (TODO)
+* Login required
 * Course not found
 * Assignment not found
 * Student not found
@@ -289,7 +300,7 @@ files=/* encoded directory tree in JSON */
 
 ##### Error messages
 
-* Login required (TODO)
+* Login required
 * Course not found
 * Assignment not found
 * Student not found
@@ -324,7 +335,7 @@ list_only=/* true or false */
 
 ##### Error messages
 
-* Login required (TODO)
+* Login required
 * Course not found
 * Assignment not found
 * Student not found
@@ -358,7 +369,7 @@ files=/* encoded directory tree in JSON */
 
 ##### Error messages
 
-* Login required (TODO)
+* Login required
 * Course not found
 * Assignment not found
 * Student not found
@@ -398,7 +409,7 @@ list_only=/* true or false */
 
 ##### Error messages
 
-* Login required (TODO)
+* Login required
 * Course not found
 * Assignment not found
 * Student not found

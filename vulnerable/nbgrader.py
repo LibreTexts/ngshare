@@ -33,6 +33,7 @@ def list_courses() :
 		List all courses
 	'''
 	db = Session()
+	user = get_user(db)	# TODO: auth logic
 	# TODO: limit to courses user is taking
 	courses = []
 	for i in db.query(Course).filter().all() :
@@ -63,6 +64,7 @@ def list_assignments(course_id) :
 		List all assignments for a course (students+instructors)
 	'''
 	db = Session()
+	user = get_user(db)	# TODO: auth logic
 	course = find_course(db, course_id)
 	assignments = course.assignments
 	return json_success(assignments=list(map(lambda x: x.id, assignments)))
@@ -75,6 +77,7 @@ def download_assignment(course_id, assignment_id) :
 		Download a copy of an assignment (students+instructors)
 	'''
 	db = Session()
+	user = get_user(db)	# TODO: auth logic
 	course = find_course(db, course_id)
 	assignment = find_assignment(db, course, assignment_id)
 	list_only = request.args.get('list_only', 'false') == 'true'
@@ -88,6 +91,7 @@ def release_assignment(course_id, assignment_id) :
 		Release an assignment (instructors only)
 	'''
 	db = Session()
+	user = get_user(db)	# TODO: auth logic
 	course = find_course(db, course_id)
 	if db.query(Assignment).filter(Assignment.id == assignment_id,
 									Assignment.course == course).one_or_none() :
@@ -106,6 +110,7 @@ def list_submissions(course_id, assignment_id) :
 		 (instructors only)
 	'''
 	db = Session()
+	user = get_user(db)	# TODO: auth logic
 	course = find_course(db, course_id)
 	assignment = find_assignment(db, course, assignment_id)
 	submissions = []
@@ -127,6 +132,7 @@ def list_student_submission(course_id, assignment_id, student_id) :
 		 (instructors+students, students restricted to their own submissions)
 	'''
 	db = Session()
+	user = get_user(db)	# TODO: auth logic
 	course = find_course(db, course_id)
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
@@ -149,6 +155,7 @@ def submit_assignment(course_id, assignment_id, student_id) :
 		Submit a copy of an assignment (students+instructors)
 	'''
 	db = Session()
+	user = get_user(db)	# TODO: auth logic
 	course = find_course(db, course_id)
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
@@ -166,6 +173,7 @@ def download_submission(course_id, assignment_id, student_id) :
 		TODO: maybe allow student to see their own submissions?
 	'''
 	db = Session()
+	user = get_user(db)	# TODO: auth logic
 	course = find_course(db, course_id)
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
@@ -184,6 +192,7 @@ def upload_feedback(course_id, assignment_id, student_id) :
 		Upload feedback on a student's assignment (instructors only)
 	'''
 	db = Session()
+	user = get_user(db)	# TODO: auth logic
 	course = find_course(db, course_id)
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
@@ -210,6 +219,7 @@ def download_feedback(course_id, assignment_id, student_id) :
 		 (instructors+students, students restricted to their own submissions)
 	'''
 	db = Session()
+	user = get_user(db)	# TODO: auth logic
 	course = find_course(db, course_id)
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
