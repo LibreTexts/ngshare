@@ -32,10 +32,18 @@
 <p>nbgrader APIs:</p>
 <p style="margin-left: 2em">
   GET
-  <a href="/api/assignments/course2">
+  <a href="/api/courses">
     /api/courses</a>:
   List courses
 </p>
+<form id="form0" action="/api/course/course3" method="POST">
+  <input type="hidden" name="user" value="Eric" />
+  <p style="margin-left: 2em">
+    POST
+      <a href="#" onclick="document.getElementById('form0').submit()">/api/course/&lt;course_id&gt;</a>:
+    Create course
+  </p>
+</form>
 <p style="margin-left: 2em">
   GET
   <a href="/api/assignments/course2">
