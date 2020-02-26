@@ -286,22 +286,23 @@ def test_download_feedback() :
 	random = meta['random']
 	assert_fail(url + 'course1/challenge/Lawrence',
 				params={'timestamp': timestamp}, msg='Please supply random str')
-	assert_fail(url + 'course1/challenge/Lawrence',
-				params={'random': random}, msg='Please supply timestamp')
+	assert_fail(url + 'course1/challenge/Lawrence', params={'random': random},
+				msg='Please supply timestamp')
 	assert_fail(url + 'course1/challenge/Lawrence',
 				params={'random': random, 'timestamp': 'a'},
 				msg='Time format incorrect')
+	user = 'Eric'
 	assert_fail(url + 'course2/assignment2a/Eric',
 				params={'random': random, 'timestamp': timestamp},
 				msg='Submission not found')
+	user = 'Kevin'
 	feedback = assert_success(url + 'course1/challenge/Lawrence', 
 							params={'timestamp': timestamp, 'random': random})
 	assert feedback['files'] == []
 	# Submit again
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsDg=='}]),
 			'timestamp': timestamp, 'random': random}
-	assert_success(url + 'course1/challenge/Lawrence',
-					method=POST, data=data)
+	assert_success(url + 'course1/challenge/Lawrence', method=POST, data=data)
 	# Fetch again
 	feedback = assert_success(url + 'course1/challenge/Lawrence', 
 							params={'timestamp': timestamp, 'random': random})
@@ -311,8 +312,7 @@ def test_download_feedback() :
 	# Again, submit again
 	data = {'files': json.dumps([{'path': 'a', 'content': 'bmtsDg=='}]),
 			'timestamp': timestamp, 'random': random}
-	assert_success(url + 'course1/challenge/Lawrence',
-					method=POST, data=data)
+	assert_success(url + 'course1/challenge/Lawrence', method=POST, data=data)
 	# Again, fetch again
 	feedback = assert_success(url + 'course1/challenge/Lawrence',
 							params={'timestamp': timestamp, 'random': random})
@@ -326,3 +326,17 @@ def test_download_feedback() :
 	assert len(feedback['files']) == 1
 	assert list(feedback['files'][0]) == ['path']
 	assert feedback['files'][0]['path'] == 'a'
+	# Permission check
+	user = 'Kevin'
+	assert_fail(url + 'course1/challenge/Lawrence',
+				msg='Please supply timestamp')
+	user = 'Abigail'
+	assert_fail(url + 'course1/challenge/Lawrence',
+				msg='Permission denied (not course instructor)')
+	user = 'Lawrence'
+	assert_fail(url + 'course1/challenge/Lawrence',
+				msg='Please supply timestamp')
+	user = 'Eric'
+	assert_fail(url + 'course1/challenge/Lawrence',
+				msg='Permission denied (not course instructor)')
+

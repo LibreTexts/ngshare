@@ -223,8 +223,10 @@ def download_feedback(course_id, assignment_id, student_id) :
 		 (instructors+students, students restricted to their own submissions)
 	'''
 	db = Session()
-	user = get_user(db)	# TODO: auth logic
+	user = get_user(db)
 	course = find_course(db, course_id)
+	if user.id != student_id :
+		check_course_instructor(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
 	if 'timestamp' not in request.args :
