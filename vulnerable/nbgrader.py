@@ -178,8 +178,9 @@ def download_submission(course_id, assignment_id, student_id) :
 		TODO: maybe allow student to see their own submissions?
 	'''
 	db = Session()
-	user = get_user(db)	# TODO: auth logic
+	user = get_user(db)
 	course = find_course(db, course_id)
+	check_course_instructor(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
 	submission = find_student_latest_submission(db, assignment, student)
@@ -195,8 +196,9 @@ def upload_feedback(course_id, assignment_id, student_id) :
 		Upload feedback on a student's assignment (instructors only)
 	'''
 	db = Session()
-	user = get_user(db)	# TODO: auth logic
+	user = get_user(db)
 	course = find_course(db, course_id)
+	check_course_instructor(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
 	student = find_course_student(db, course, student_id)
 	if 'timestamp' not in request.form :
