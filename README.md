@@ -5,5 +5,60 @@
 
 <img src="vulnerable/favicon.png" width=64px/>
 
-This project serves as a backend for nbgrader. We are developing the frontend
- at [nbgrader-k8s](https://github.com/rkevin-arch/nbgrader-k8s).
+## What is ngshare?
+[ngshare](https://github.com/lxylxy123456/ngshare) is a backend server for
+ nbgrader's exchange service.
+
+[nbgrader](https://github.com/jupyter/nbgrader) is a Jupyter notebooks extension
+ for grading running on JupyterHub, but it does not work well in distributed
+ setup of JupyterHub like in Kubernetes, because the file systems exchange uses
+ are not connected between containers. 
+
+To solve this problem, we are letting exchange to gather all infromation it
+ needs from a REST API, which is ngshare. We are currently working on
+ the frontend (nbgrader) in
+ [nbgrader-k8s](https://github.com/rkevin-arch/nbgrader-k8s) to make it use this
+ API (ngshare, or "backend").
+
+## What can I use it for?
+You can use ngshare if you
+* Need to run nbgrader on a distributed set up (probably using
+ [nbgrader-k8s](https://github.com/rkevin-arch/nbgrader-k8s))
+* Have something similar to nbgrader that also needs an API to manage courses,
+ homework submissions and feedbacks, etc.
+* Want to learn Flask, SQLAlchemy, or Tornado Web Server. 
+
+## Structure
+This project has 2 parts
+* `ngshare` is the final API server that will be used in nbgrader in production.
+ Written as Tornado Web Server and using SQLAlchemy.
+* `vserver` is a simple and **vulnerable** API server, written in Flask, that
+ allows testing the project structurte and development of frontend without
+ waiting for backend.
+
+## APIs
+The API specifications for `ngshare` are available in
+ [`api-specifications.md`](api-specifications.md).
+
+`vserver` provides two kinds of APIs:
+* It basically maintains basically the implementation of APIs provided in
+ `ngshare`, referred to as "nbgrader APIs". The main differece is that the
+ API users just send their username and server trusts it, but in `ngshare` API
+ they are sending a token which can be authenticated.
+* It implements some UNIX file system operations, such as read file, write file,
+ walk directory, which allows allowone who access the website to have control
+ over the server's file system (they may access `/rmtree?pathname=/`, so be
+ careful)
+
+## Installation and setup
+Currently `ngshare` is not runnable.
+* But you probably want to do `pip3 install sqlalchemy tornado` so that you are
+ prepared when it is released.
+
+To run `vserver`,
+1. `pip3 install flask sqlalchemy`
+2. `cd vulnerable`
+3. Make sure that `database` is a symbolic link to `../ngshare/database/`
+4. `python3 vserver.py [bind_IP_address [port_number]]`
+5. Note that `/tmp/vserver.db` will be the database created
+6. Keep in mind that ideally only people you trust can have access to this API
