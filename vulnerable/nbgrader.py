@@ -1,5 +1,11 @@
-# nbgrader APIs
-# https://github.com/jupyter/nbgrader/issues/659
+'''
+	nbgrader APIs for vserver
+	Similar to https://github.com/jupyter/nbgrader/issues/659
+	Authentication
+		To make things easy, we are simply putting the user id in HTTP GET
+		 parameter or POST data using key `user`.
+		For example: /api/courses?user=Eric
+'''
 
 import os, json, operator
 

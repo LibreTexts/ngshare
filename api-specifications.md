@@ -50,11 +50,6 @@ Each file and directory tree will be transferred individually.
 
 ## Authentication
 
-### vserver
-To make things easy, we are simply putting the user id in HTTP GET parameter or
- POST data using key `user`.
-
-### ngshare
 (TODO)
 
 ---
