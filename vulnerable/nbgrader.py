@@ -154,21 +154,18 @@ def list_student_submission(course_id, assignment_id, student_id) :
 		})
 	return json_success(submissions=submissions)
 
-@app_post('/api/submission/<course_id>/<assignment_id>/<student_id>')
-def submit_assignment(course_id, assignment_id, student_id) :
+@app_post('/api/submission/<course_id>/<assignment_id>')
+def submit_assignment(course_id, assignment_id) :
 	'''
-		POST /api/submission/<course_id>/<assignment_id>/<student_id>
-		Submit a copy of an assignment (students+instructors, student_id match)
+		POST /api/submission/<course_id>/<assignment_id>
+		Submit a copy of an assignment (students+instructors)
 	'''
 	db = Session()
 	user = get_user(db)
 	course = find_course(db, course_id)
-	if user.id != student_id :
-		raise JsonError('Permission denied (submitting for someone else)')
 	check_course_related(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
-	student = find_course_student(db, course, student_id)
-	submission = Submission(student, assignment)
+	submission = Submission(user, assignment)
 	json_files_unpack(request.form.get('files'), submission.files)
 	db.commit()
 	return json_success()

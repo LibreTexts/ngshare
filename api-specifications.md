@@ -244,8 +244,8 @@ Used for the inbound part of ExchangeList.
 
 ### /api/submission: Collecting and submitting a submission
 
-#### POST /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
-*submit a copy of an assignment (students+instructors; `student_id` must match, including for instructors)*
+#### POST /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;
+*submit a copy of an assignment (students+instructors)*
 
 Used for ExchangeSubmit.
 
@@ -266,7 +266,6 @@ files=/* encoded directory tree in JSON */
 * Permission denied
 * Course not found
 * Assignment not found
-* Student not found
 * Please supply files
 * Files cannot be JSON decoded
 * Content cannot be base64 decoded

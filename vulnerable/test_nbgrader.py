@@ -193,30 +193,25 @@ def test_submit_assignment() :
 	user = 'Kevin'
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
 									{'path': 'b', 'content': 'amtsCg=='}])}
-	assert_fail(url + 'jkl/challenge/st', method=POST,
+	assert_fail(url + 'jkl/challenge', method=POST,
 				msg='Course not found')
-	assert_fail(url + 'course1/challenges/Kevin', method=POST,
+	assert_fail(url + 'course1/challenges', method=POST,
 				msg='Assignment not found')
-	assert_fail(url + 'course1/challenge/Kevin', method=POST,
-				msg='Student not found')
 	user = 'Lawrence'
-	assert_fail(url + 'course1/challenge/Lawrence', method=POST,
+	assert_fail(url + 'course1/challenge', method=POST,
 				msg='Please supply files')
-	assert_success(url + 'course1/challenge/Lawrence',
-			method=POST, data=data)
+	assert_success(url + 'course1/challenge', method=POST, data=data)
 	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg=='}])
-	assert_success(url + 'course1/challenge/Lawrence',
+	assert_success(url + 'course1/challenge',
 			method=POST, data=data)
 	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
-	assert_fail(url + 'course1/challenge/Lawrence', method=POST,
+	assert_fail(url + 'course1/challenge', method=POST,
 				data=data, msg='Content cannot be base64 decoded')
-	result = assert_success('/api/submissions/course1/challenge/Lawrence')
-	assert len(result['submissions']) == 4	# 2 from init, 2 from this
 	user = 'Kevin'
-	assert_fail(url + 'course1/challenge/Lawrence', method=POST,
-				msg='Permission denied (submitting for someone else)')
+	result = assert_success('/api/submissions/course1/challenge')
+	assert len(result['submissions']) == 4	# 2 from init, 2 from this
 	user = 'Eric'
-	assert_fail(url + 'course1/challenge/Eric', method=POST,
+	assert_fail(url + 'course1/challenge', method=POST,
 				msg='Permission denied (not related to course)')
 
 def test_download_submission() :
