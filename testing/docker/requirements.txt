@@ -1,0 +1,17 @@
+pytest>=4.5
+pytest-cov
+pytest-rerunfailures
+pytest-xdist
+pytest-mypy
+coverage
+selenium
+sphinx
+sphinx_rtd_theme
+sphinx-autodoc-typehints
+codecov
+nbval
+requests-mock
+notebook
+qtconsole
+ipywidgets
+widgetsnbextension

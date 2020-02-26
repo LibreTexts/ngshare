@@ -1,0 +1,2 @@
+FROM jupyterhub/k8s-hub:0.9.0-beta.3.n027.hb7da682
+COPY ngshare/ /ngshare/
