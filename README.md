@@ -55,11 +55,11 @@ The API specifications for `ngshare` are available in
 ### ngshare
 
 #### Preperation
-1. Clone `https://github.com/lxylxy123456/ngshare`
-2. Clone `https://github.com/lxylxy123456/nbgrader`
+1. `git clone https://github.com/lxylxy123456/ngshare`
+2. `git clone https://github.com/lxylxy123456/nbgrader`
 3. Skip 4 - 7 if using docker
-4. Clone `https://github.com/rkevin-arch/zero-to-jupyterhub-k8s`
-5. `cd zero-to-jupyterhub-k8s` 
+4. `git clone https://github.com/rkevin-arch/zero-to-jupyterhub-k8s`
+5. `cd zero-to-jupyterhub-k8s`
 6. `chartpress` (`pip3 install` if you do not have it)
 7. `cd ..`
 8. `cd ngshare/testing`
