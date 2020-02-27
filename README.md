@@ -62,11 +62,14 @@ The API specifications for `ngshare` are available in
 5. `cd zero-to-jupyterhub-k8s`
 6. `chartpress` (`pip3 install` if you do not have it)
 7. `cd ..`
-8. `cd ngshare/testing`
+8. Skip 9 if using Kubenetes
+9. install `docker-compose` using package manager
+ (`apt`, `yum`, `dnf`, `pacman`, etc.)
+10. `cd ngshare/testing`
 
 #### Docker
 1. `cd docker`
-2. `docker compose build && docker compose up`
+2. `docker-compose build && docker-compose up`
 3. Open `firefox http://localhost:8000`
 4. If you want to stop the server, Press Ctrl+C once, then wait until exit
 
