@@ -51,11 +51,30 @@ The API specifications for `ngshare` are available in
  careful)
 
 ## Installation and setup
-Currently `ngshare` is not runnable.
-* But you probably want to do `pip3 install sqlalchemy tornado` so that you are
- prepared when it is released.
 
-To run `vserver`,
+### ngshare
+
+#### Preperation
+1. Clone `https://github.com/lxylxy123456/ngshare`
+2. Clone `https://github.com/lxylxy123456/nbgrader`
+3. Skip 4 - 7 if using docker
+4. Clone `https://github.com/rkevin-arch/zero-to-jupyterhub-k8s`
+5. `cd zero-to-jupyterhub-k8s` 
+6. `chartpress` (`pip3 install` if you do not have it)
+7. `cd ..`
+8. `cd ngshare/testing`
+
+#### Docker
+1. `cd docker`
+2. `docker compose build && docker compose up`
+3. Open `firefox http://localhost:8000`
+4. If you want to stop the server, Press Ctrl+C once, then wait until exit
+
+#### Kubenetes
+1. `cd minikube`
+2. See `./test.sh` for help, then you know everything
+
+### vserver
 1. `pip3 install flask sqlalchemy`
 2. `cd vulnerable`
 3. Make sure that `database` is a symbolic link to `../ngshare/database/`
