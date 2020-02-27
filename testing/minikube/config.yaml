@@ -1,0 +1,25 @@
+# https://zero-to-jupyterhub.readthedocs.io/en/latest/reference/reference.html
+proxy:
+  secretToken: "854435796d7622af12aecb5f55c3553c08b8a7137bf195affc5f9aa78ab0183f"
+  # it's fine to keep the secret token public, since it's only for testing anyway
+  # same reason why we're disabling https
+  https:
+    enabled: false
+singleuser:
+  memory:
+    limit: 512M
+    guarantee: 128M
+auth:
+  admin:
+    users:
+      - rkevin
+hub:
+  image:
+    name: hub-testing
+    tag: 0.0.1
+    imagePullPolicy: Always
+singleuser:
+  image:
+    name: singleuser-testing
+    tag: 0.0.1
+    imagePullPolicy: Always

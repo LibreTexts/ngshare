@@ -1,0 +1,17 @@
+version: '3'
+services:
+  jupyterhub:
+    image: jht
+    ports:
+      - 127.0.0.1:8000:8000
+    build:
+      # context is actually one directory above ngshare root
+      context: .
+    volumes:
+      # for some reason pip needs rw access. oh well
+      # this expects the nbgrader repo to be cloned
+      # in the parent directory of the repo root
+      # (https://github.com/rkevin-arch/nbgrader-k8s)
+      - ../../../nbgrader-k8s:/srv/src/nbgrader:rw
+      - ../../ngshare:/ngshare:ro
+      - ./data:/srv/ngshare/:rw
