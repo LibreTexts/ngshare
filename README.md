@@ -3,7 +3,7 @@
 
 **This service is under development. Use this at your own risk.**
 
-<img src="vulnerable/favicon.png" width=64px/>
+<img src="vulnerable/favicon.png" width="64px" />
 
 ## What is ngshare?
 [ngshare](https://github.com/lxylxy123456/ngshare) is a backend server for
