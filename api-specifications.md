@@ -33,6 +33,8 @@ A timestamp of when a user initiates the assignment submission process. It follo
 ### Directory tree
 Assignments consist of a directory, notebook files in the root, and optional supplementary files in the root and/or subdirectories. In order to send an entire assignment in one request, a JSON file has a list of maps for each file. The following structure will be referred to as "encoded directory tree."
 
+`path` should be in Unix style, and should be relative. For example: `a.ipynb` or `notes/a.txt`. Pathnames not following this style will be rejected by server with error "Illegal path".
+
 ```javascript
 [
     {
@@ -168,6 +170,7 @@ files=/* encoded directory tree in JSON */
 * Course not found
 * Assignment already exists
 * Please supply files
+* Illegal path
 * Files cannot be JSON decoded
 * Content cannot be base64 decoded
 
@@ -267,6 +270,7 @@ files=/* encoded directory tree in JSON */
 * Course not found
 * Assignment not found
 * Please supply files
+* Illegal path
 * Files cannot be JSON decoded
 * Content cannot be base64 decoded
 
@@ -333,6 +337,10 @@ files=/* encoded directory tree in JSON */
 * Please supply random str
 * Please supply timestamp
 * Time format incorrect
+* Please supply files
+* Illegal path
+* Files cannot be JSON decoded
+* Content cannot be base64 decoded
 
 #### GET /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 *download feedback on a student's assignment (instructors+students, though students are restricted to only viewing their own feedback)*
