@@ -3,7 +3,7 @@
 
 **This service is under development. Use this at your own risk.**
 
-<img src="vulnerable/favicon.png" width=64px/>
+<img src="vulnerable/favicon.png" width="64px" />
 
 ## What is ngshare?
 [ngshare](https://github.com/lxylxy123456/ngshare) is a backend server for
@@ -51,11 +51,33 @@ The API specifications for `ngshare` are available in
  careful)
 
 ## Installation and setup
-Currently `ngshare` is not runnable.
-* But you probably want to do `pip3 install sqlalchemy tornado` so that you are
- prepared when it is released.
 
-To run `vserver`,
+### ngshare
+
+#### Preperation
+1. `git clone https://github.com/lxylxy123456/ngshare`
+2. `git clone https://github.com/lxylxy123456/nbgrader`
+3. Skip 4 - 7 if using docker
+4. `git clone https://github.com/rkevin-arch/zero-to-jupyterhub-k8s`
+5. `cd zero-to-jupyterhub-k8s`
+6. `chartpress` (`pip3 install` if you do not have it)
+7. `cd ..`
+8. Skip 9 if using Kubenetes
+9. install `docker-compose` using package manager
+ (`apt`, `yum`, `dnf`, `pacman`, etc.)
+10. `cd ngshare/testing`
+
+#### Docker
+1. `cd docker`
+2. `docker-compose build && docker-compose up`
+3. Open `firefox http://localhost:8000`
+4. If you want to stop the server, Press Ctrl+C once, then wait until exit
+
+#### Kubenetes
+1. `cd minikube`
+2. See `./test.sh` for help, then you know everything
+
+### vserver
 1. `pip3 install flask sqlalchemy`
 2. `cd vulnerable`
 3. Make sure that `database` is a symbolic link to `../ngshare/database/`

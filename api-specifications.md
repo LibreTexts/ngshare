@@ -48,13 +48,19 @@ Each file and directory tree will be transferred individually.
 
 ---
 
+## Authentication
+
+(TODO)
+
+---
+
 ## API specification
 Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyter/nbgrader/issues/659).
 
 ### /api/courses: Courses
 
 #### GET /api/courses
-List all available courses (students+instructors). Used for ExchangeList.
+List all available courses taking or teaching (students+instructors). Used for ExchangeList.
 
 ##### Response
 ```javascript
@@ -69,11 +75,12 @@ List all available courses (students+instructors). Used for ExchangeList.
 ```
 
 ##### Error messages
-(TODO)
+* Login required
+
 ### /api/course: Course
 
 #### POST /api/course/&lt;course_id&gt;
-Create a course. Used for outside Exchange.
+Create a course (anyone logged in). Used for outside Exchange.
 
 ##### Response
 ```javascript
@@ -83,8 +90,8 @@ Create a course. Used for outside Exchange.
 ```
 
 ##### Error messages
-* Login required (TODO)
-* Course already exists (TODO)
+* Login required
+* Course already exists
 
 ### /api/assignments: Course assignments
 
@@ -106,7 +113,8 @@ Used for the outbound part of ExchangeList.
 ```
 
 ##### Error messages
-* Login required (TODO)
+* Login required
+* Permission denied
 * Course not found
 
 ### /api/assignment: Fetching and releasing an assignment
@@ -132,7 +140,8 @@ list_only=/* true or false */
 ```
 
 ##### Error messages
-* Login required (TODO)
+* Login required
+* Permission denied
 * Course not found
 * Assignment not found
 
@@ -154,7 +163,8 @@ files=/* encoded directory tree in JSON */
 ```
 
 ##### Error messages
-* Login required (TODO)
+* Login required
+* Permission denied
 * Course not found
 * Assignment already exists
 * Please supply files
@@ -193,7 +203,8 @@ Used for the inbound part of ExchangeList.
 ```
 
 ##### Error messages
-* Login required (TODO)
+* Login required
+* Permission denied
 * Course not found
 * Assignment not found
 
@@ -225,14 +236,15 @@ Used for the inbound part of ExchangeList.
 ```
 
 ##### Error messages
-* Login required (TODO)
+* Login required
+* Permission denied
 * Course not found
 * Assignment not found
 * Student not found
 
 ### /api/submission: Collecting and submitting a submission
 
-#### POST /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
+#### POST /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;
 *submit a copy of an assignment (students+instructors)*
 
 Used for ExchangeSubmit.
@@ -250,10 +262,10 @@ files=/* encoded directory tree in JSON */
 ```
 
 ##### Error messages
-* Login required (TODO)
+* Login required
+* Permission denied
 * Course not found
 * Assignment not found
-* Student not found
 * Please supply files
 * Files cannot be JSON decoded
 * Content cannot be base64 decoded
@@ -281,7 +293,8 @@ list_only=/* true or false */
 ```
 
 ##### Error messages
-* Login required (TODO)
+* Login required
+* Permission denied
 * Course not found
 * Assignment not found
 * Student not found
@@ -311,7 +324,8 @@ files=/* encoded directory tree in JSON */
 ```
 
 ##### Error messages
-* Login required (TODO)
+* Login required
+* Permission denied
 * Course not found
 * Assignment not found
 * Student not found
@@ -347,7 +361,8 @@ list_only=/* true or false */
 ```
 
 ##### Error messages
-* Login required (TODO)
+* Login required
+* Permission denied
 * Course not found
 * Assignment not found
 * Student not found
