@@ -154,7 +154,7 @@ def find_student_submissions(db, assignment, student) :
 	'Return a list of Submission objects from assignment and student'
 	return db.query(Submission).filter(
 		Submission.assignment == assignment,
-		Submission.student == student.id)
+		Submission.student == student)
 
 def find_student_latest_submission(db, assignment, student) :
 	'Return the latest Submission object from assignment and studnet, or error'
