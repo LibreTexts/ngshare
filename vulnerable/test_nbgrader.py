@@ -129,6 +129,10 @@ def test_release_assignment() :
 	data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
 	assert_fail(url + 'course1/challenges', method=POST, 
 				data=data, msg='Content cannot be base64 decoded')
+	for pathname in ['/a', '/', '', '../etc', 'a/./a.py', 'a/.'] :
+		data['files'] = json.dumps([{'path': pathname, 'content': ''}])
+		assert_fail(url + 'course1/challenges', method=POST, 
+					data=data, msg='Illegal path')
 	user = 'Abigail'
 	assert_fail(url + 'course1/challenger', method=POST, 
 				data=data, msg='Permission denied (not course instructor)')

@@ -79,6 +79,31 @@ def remove_pathname(pathname) :
 
 # For nbgrader APIs
 
+def path_check(pathname) :
+	'''
+		Return whether a pathname (for file, in director tree) is safe
+		Current policy:
+			Not empty
+			os.path.abspath resolves to a child address
+			Path does not contain ('.', '..', '', '/')
+		Note: os.path.abspath is used instead of os.path.realpath to prevent
+		 symbolic link issues, because the file is not on server
+		Note: os.path.abspath is not 100% safe
+		Note: currently only using Linux pathname conventions
+	'''
+	if not pathname :
+		return False
+	path = pathname
+	while path :
+		path, name = os.path.split(path)
+		if name in ('.', '..', '', '/') :
+			return False
+	working = os.path.abspath('.')
+	target = os.path.abspath(pathname)
+	if os.path.commonpath([working, target]) != working :
+		return False
+	return True
+
 def get_user(db) :
 	# TODO: user nbgrader API
 	username = request.args.get('user')
@@ -119,6 +144,8 @@ def json_files_unpack(json_str, target) :
 	except json.decoder.JSONDecodeError :
 		raise JsonError('Files cannot be JSON decoded')
 	for i in json_obj :
+		if not path_check(i['path']) :
+			raise JsonError('Illegal path')
 		try :
 			content = base64.decodebytes(i['content'].encode())
 		except binascii.Error :
