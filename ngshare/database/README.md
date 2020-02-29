@@ -30,3 +30,6 @@ pip3 install eralchemy
 eralchemy -i sqlite:////tmp/vserver.db -o /tmp/vserver.pdf
 ```
 
+### Entity Relation diagram (manually maintained)
+![Entity Relation diagram](er.pdf)
+
