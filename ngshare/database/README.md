@@ -27,9 +27,9 @@ These should not be worried about when designing high-level database structure.
 ## Generate a graph using [eralchemy](https://pypi.org/project/ERAlchemy/)
 ```
 pip3 install eralchemy
-eralchemy -i sqlite:////tmp/vserver.db -o /tmp/vserver.pdf
+eralchemy -i sqlite:////tmp/vserver.db -o er.png
 ```
 
 ### Entity Relation diagram (manually maintained)
-![Entity Relation diagram](er.pdf)
+![Entity Relation diagram](er.png)
 
