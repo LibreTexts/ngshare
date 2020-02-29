@@ -36,6 +36,8 @@ This project has 2 parts
  allows testing the project structurte and development of frontend without
  waiting for backend.
 
+The database structure is documented in [ngshare/database](ngshare/database).
+
 ## APIs
 The API specifications for `ngshare` are available in
  [`api-specifications.md`](api-specifications.md).
