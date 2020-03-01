@@ -7,6 +7,22 @@ from settings import FS_PREFIX
 
 from database.database import *
 
+# Initialize database for nbgrader
+from settings import DB_NAME
+from init import init_test_data
+from database.database import *
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+db_exists = os.path.exists('/tmp/vserver.db')
+engine = create_engine(DB_NAME)
+Base.metadata.bind = engine
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+if not db_exists:
+	init_test_data(Session)
+
+# Usual HTTP helpers
+
 def json_success(msg=None, **kwargs) :
 	assert 'success' not in kwargs and 'message' not in kwargs
 	resp = {'success': True, **kwargs}
@@ -23,11 +39,26 @@ class JsonError(Exception) :
 		self.error = json_error(msg, **kwargs)
 
 def error_catcher(function) :
-	def call(*args, **kwargs) :
-		try :
-			return function(*args, **kwargs)
-		except JsonError as e :
-			return e.error
+	if function.__code__.co_varnames and \
+		function.__code__.co_varnames[0] == 'db' :
+		# nbgrader API, need database
+		def call(*args, **kwargs) :
+			db = Session()
+			try :
+				resp = function(db, *args, **kwargs)
+			except JsonError as e :
+				resp = e.error
+			finally :
+				db.close()
+			return resp
+	else :
+		# unix file system API
+		def call(*args, **kwargs) :
+			try :
+				resp = function(*args, **kwargs)
+			except JsonError as e :
+				resp = e.error
+			return resp
 	call.__name__ = function.__name__ + '_caller'
 	return call
 
