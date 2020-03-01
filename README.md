@@ -17,13 +17,13 @@
 To solve this problem, we are letting exchange to gather all infromation it
  needs from a REST API, which is ngshare. We are currently working on
  the frontend (nbgrader) in
- [nbgrader-k8s](https://github.com/rkevin-arch/nbgrader-k8s) to make it use this
+ [lxylxy123456/nbgrader](https://github.com/lxylxy123456/nbgrader) to make it use this
  API (ngshare, or "backend").
 
 ## What can I use it for?
 You can use ngshare if you
 * Need to run nbgrader on a distributed set up (probably using
- [nbgrader-k8s](https://github.com/rkevin-arch/nbgrader-k8s))
+ [lxylxy123456/nbgrader](https://github.com/lxylxy123456/nbgrader))
 * Have something similar to nbgrader that also needs an API to manage courses,
  homework submissions and feedbacks, etc.
 * Want to learn Flask, SQLAlchemy, or Tornado Web Server. 
