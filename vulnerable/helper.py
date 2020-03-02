@@ -7,6 +7,22 @@ from settings import FS_PREFIX
 
 from database.database import *
 
+# Initialize database for nbgrader
+from settings import DB_NAME
+from init import init_test_data
+from database.database import *
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+db_exists = os.path.exists('/tmp/vserver.db')
+engine = create_engine(DB_NAME)
+Base.metadata.bind = engine
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+if not db_exists:
+	init_test_data(Session)
+
+# Usual HTTP helpers
+
 def json_success(msg=None, **kwargs) :
 	assert 'success' not in kwargs and 'message' not in kwargs
 	resp = {'success': True, **kwargs}
@@ -23,11 +39,26 @@ class JsonError(Exception) :
 		self.error = json_error(msg, **kwargs)
 
 def error_catcher(function) :
-	def call(*args, **kwargs) :
-		try :
-			return function(*args, **kwargs)
-		except JsonError as e :
-			return e.error
+	if function.__code__.co_varnames and \
+		function.__code__.co_varnames[0] == 'db' :
+		# nbgrader API, need database
+		def call(*args, **kwargs) :
+			db = Session()
+			try :
+				resp = function(db, *args, **kwargs)
+			except JsonError as e :
+				resp = e.error
+			finally :
+				db.close()
+			return resp
+	else :
+		# unix file system API
+		def call(*args, **kwargs) :
+			try :
+				resp = function(*args, **kwargs)
+			except JsonError as e :
+				resp = e.error
+			return resp
 	call.__name__ = function.__name__ + '_caller'
 	return call
 
@@ -79,6 +110,31 @@ def remove_pathname(pathname) :
 
 # For nbgrader APIs
 
+def path_check(pathname) :
+	'''
+		Return whether a pathname (for file, in director tree) is safe
+		Current policy:
+			Not empty
+			os.path.abspath resolves to a child address
+			Path does not contain ('.', '..', '', '/')
+		Note: os.path.abspath is used instead of os.path.realpath to prevent
+		 symbolic link issues, because the file is not on server
+		Note: os.path.abspath is not 100% safe
+		Note: currently only using Linux pathname conventions
+	'''
+	if not pathname :
+		return False
+	path = pathname
+	while path :
+		path, name = os.path.split(path)
+		if name in ('.', '..', '', '/') :
+			return False
+	working = os.path.abspath('.')
+	target = os.path.abspath(pathname)
+	if os.path.commonpath([working, target]) != working :
+		return False
+	return True
+
 def get_user(db) :
 	# TODO: user nbgrader API
 	username = request.args.get('user')
@@ -119,6 +175,8 @@ def json_files_unpack(json_str, target) :
 	except json.decoder.JSONDecodeError :
 		raise JsonError('Files cannot be JSON decoded')
 	for i in json_obj :
+		if not path_check(i['path']) :
+			raise JsonError('Illegal path')
 		try :
 			content = base64.decodebytes(i['content'].encode())
 		except binascii.Error :
@@ -154,7 +212,7 @@ def find_student_submissions(db, assignment, student) :
 	'Return a list of Submission objects from assignment and student'
 	return db.query(Submission).filter(
 		Submission.assignment == assignment,
-		Submission.student == student.id)
+		Submission.student == student)
 
 def find_student_latest_submission(db, assignment, student) :
 	'Return the latest Submission object from assignment and studnet, or error'
@@ -172,3 +230,29 @@ def find_student_submission(db, assignment, student, timestamp, random_str) :
 	if submission is None :
 		raise JsonError('Submission not found')
 	return submission
+
+# Auth APIs
+
+def is_course_student(db, course, user) :
+	'Return whether user is a student in the course'
+	return course in user.taking
+
+def is_course_instructor(db, course, user) :
+	'Return whether user is an instructor in the course'
+	return course in user.teaching
+
+def check_course_student(db, course, user) :
+	'Assert user is a student in the course'
+	if not is_course_student(db, course, user) :
+		raise JsonError('Permission denied (not course student)')
+
+def check_course_instructor(db, course, user) :
+	'Assert user is an instructor in the course'
+	if not is_course_instructor(db, course, user) :
+		raise JsonError('Permission denied (not course instructor)')
+
+def check_course_related(db, course, user) :
+	'Assert user is a student or an instructor in the course'
+	if not is_course_instructor(db, course, user) and \
+		not is_course_student(db, course, user) :
+		raise JsonError('Permission denied (not related to course)')
