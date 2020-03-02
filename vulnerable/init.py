@@ -24,7 +24,7 @@ def init_test_data(Session) :
 	s1 = Submission(ul, ac)
 	s2 = Submission(ul, ac)
 	s1.timestamp = datetime.datetime(2020, 1, 1, 0, 0, 0, 0)
-	s1.random = '123456789'
+	s1.random = '12345678-90ab-cdef-0123-456789abcdef'
 	db.add(s1)
 	db.add(s2)
 	aa.files.append(File('file0', b'00000'))

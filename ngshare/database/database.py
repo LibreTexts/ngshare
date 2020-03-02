@@ -6,8 +6,7 @@
 # pylint: disable=too-few-public-methods
 # pylint: disable=fixme
 
-import os
-import base64
+import uuid
 import datetime
 
 from sqlalchemy import Table, Column, INTEGER, TEXT, BLOB, TIMESTAMP, BOOLEAN, ForeignKey
@@ -129,7 +128,7 @@ class Submission(Base):
 
     def __init__(self, student, assignment):
         self.timestamp = datetime.datetime.now()
-        self.random = base64.urlsafe_b64encode(os.urandom(9)).decode('ascii')
+        self.random = str(uuid.uuid4())
         self.student = student
         self.assignment = assignment
 

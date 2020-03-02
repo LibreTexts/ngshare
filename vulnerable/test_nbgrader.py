@@ -248,7 +248,8 @@ def test_upload_feedback() :
 	user = 'Kevin'
 	data = {'files': json.dumps([{'path': 'a', 'content': 'amtsCg=='},
 									{'path': 'b', 'content': 'amtsCg=='}]),
-			'timestamp': '2020-01-01 00:00:00.000000 ', 'random': '123456789'}
+			'timestamp': '2020-01-01 00:00:00.000000 ',
+			'random': '12345678-90ab-cdef-0123-456789abcdef'}
 	assert_fail(url + 'jkl/challenge/st', method=POST, data=data,
 				msg='Course not found')
 	assert_fail(url + 'course1/challenges/st', method=POST, data=data,
