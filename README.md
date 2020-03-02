@@ -15,15 +15,63 @@
  are not connected between containers. 
 
 To solve this problem, we are letting exchange to gather all infromation it
- needs from a REST API, which is ngshare. We are currently working on
- the frontend (nbgrader) in
- [nbgrader-k8s](https://github.com/rkevin-arch/nbgrader-k8s) to make it use this
- API (ngshare, or "backend").
+ needs from a set of REST APIs, which is implemented by ngshare. This server
+ will be a JupyterHub managed service.
+
+We are currently working on the frontend (nbgrader) in
+ [an nbgrader fork](https://github.com/lxylxy123456/nbgrader) to make it use
+ this API (ngshare, or "backend").
+
+## Why ngshare?
+The major problem we need to solve is that nbgrader exchange mechanism uses
+ a directory in Unix file system (exchange directory), which cannot be shared
+ between containers when JupyterHub runs on Kubenetes.
+
+We brainstormed a few possible solutions before starting the ngshare project:
+* hubshare
+	* [hubshare](https://github.com/jupyterhub/hubshare) is a directory sharing
+	 service for JupyterHub. 
+	* Pros
+		* Universal solution that can be integrated with nbgrader.
+	* Cons
+		* Lots of work to implement HubShare. 
+		* nbgrader exchange mechanism need to be reworked.
+		* Too general, does not have permission control specific to classes &
+		 assignment. 
+* NFS
+	* Another solution is to let every container access a shared file system
+	 through NFS (Network File System).
+	* Pros
+		* Very doable. Does not "require" input from the Jupyter community.
+	* Cons
+		* Not a universal solution.
+* Kubernetes Persistent Volume Claim
+	* [Kubernetes Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+	 allows containers to request shared file systems.
+	* Pros
+		* More universal than the NFS solution. Does not "require" input from
+		 the Jupyter community.
+	* Cons
+		* Difficult to work around limitations regarding multiple writers per
+		 volume. Need to find a way to have correct permissions for students and
+		 instructors.
+
+We decided to find a fourth solution, which is creating a service similar to
+ hubshare but more specialized for nbgrader.
+* ngshare
+	* ngshare implements a set of [REST APIs](api-specifications.md) designed
+	 for nbgrader exchange mechanism.
+	* Pros
+		* Universal solution that can be integrated with nbgrader.
+		* **Fully controlled APIs by this project.**
+	* Cons
+		* Work needs to be done to implement ngshare.
+		* nbgrader exchange mechanism needs to be reworked. 
 
 ## What can I use it for?
 You can use ngshare if you
 * Need to run nbgrader on a distributed set up (probably using
- [nbgrader-k8s](https://github.com/rkevin-arch/nbgrader-k8s))
+ [this forked nbgrader reop](https://github.com/lxylxy123456/nbgrader))
 * Have something similar to nbgrader that also needs an API to manage courses,
  homework submissions and feedbacks, etc.
 * Want to learn Flask, SQLAlchemy, or Tornado Web Server. 
