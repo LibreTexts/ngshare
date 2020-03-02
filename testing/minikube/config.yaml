@@ -23,3 +23,5 @@ singleuser:
     name: singleuser-testing
     tag: 0.0.1
     imagePullPolicy: Always
+debug:
+  enabled: true
