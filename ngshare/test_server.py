@@ -22,12 +22,7 @@ Session = sessionmaker(bind=engine)
 class TestCreateCourseHandler(HubAuthenticated, RequestHandler):
     @authenticated
     def post(self, courseid):
-        user_model = self.get_current_user()
-        db = Session()
-        user = db.query(User).filter(User.id == user_model['name']).one_or_none()
-        if not user:
-            user = User(user_model['name'])
-            db.add(user)
+        user = User.from_jupyterhub_user(self.get_current_user())
         if db.query(Course).filter(Course.id == courseid).one_or_none():
             self.write("Failure: Course exists\n")
             return
@@ -61,7 +56,8 @@ def main():
             (os.environ['JUPYTERHUB_SERVICE_PREFIX'], TestGetCoursesHandler),
             (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'createcourse/([^/]+)?', TestCreateCourseHandler),
             (r'.*', Test404Handler),
-        ]
+        ],
+        autoreload=True
     )
 
     http_server = HTTPServer(app)
