@@ -33,11 +33,17 @@ We brainstormed a few possible solutions before starting the ngshare project:
 	 service for JupyterHub. 
 	* Pros
 		* Universal solution that can be integrated with nbgrader.
+		* Similar service desired by nbgrader developer 
+		 (see
+		 [jupyter/nbgrader#659](https://github.com/jupyter/nbgrader/issues/659)
+		 )
 	* Cons
 		* Lots of work to implement HubShare. 
 		* nbgrader exchange mechanism need to be reworked.
-		* Too general, does not have permission control specific to classes &
-		 assignment. 
+		* Too generic, does not have permission control specific to classes &
+		 assignment. (see
+		 [this comment](https://github.com/jupyter/nbgrader/issues/659#issuecomment-431762792)
+		 )
 * NFS
 	* Another solution is to let every container access a shared file system
 	 through NFS (Network File System).
@@ -56,8 +62,9 @@ We brainstormed a few possible solutions before starting the ngshare project:
 		 volume. Need to find a way to have correct permissions for students and
 		 instructors.
 
-We decided to find a fourth solution, which is creating a service similar to
- hubshare but more specialized for nbgrader.
+The best solution we think is the first one, but the generic problem still need
+ to be solved. So we decided to find a fourth solution, which is creating a
+ service similar to hubshare but more specialized for nbgrader.
 * ngshare
 	* ngshare implements a set of [REST APIs](api-specifications.md) designed
 	 for nbgrader exchange mechanism.
@@ -67,6 +74,31 @@ We decided to find a fourth solution, which is creating a service similar to
 	* Cons
 		* Work needs to be done to implement ngshare.
 		* nbgrader exchange mechanism needs to be reworked. 
+
+## Developing ngshare
+The development of ngshare (backend) requires collaborating with frontend
+ development and requires solving technical issues, so our plan breaks the
+ development into different stages.
+1. Develop vserver (see [#Structure](#Structure)) with Unix file system APIs.
+ This allows frontend to forward all file system calls (e.g. read file, write
+ file) to another server. It allows frontend to test the idea when backend is
+ implementing next stage.
+2. Develop vserver with nbgrader APIs (e.g. create course, release assignment).
+ After this the frontend can begin large changes to the exchange mechanism
+ by replacing file system calls with nbgrader API calls. At this point no
+ authentication is made.
+3. Add authentication to vserver nbgrader APIs. To make things simple the
+ frontend just needs to send the username, and the backend trusts what frontend
+ does. During the first three stages, the backend can concurrently investigate
+ how to set up a JupyterHub service.
+4. Port vserver's nbgrader APIs to ngshare (final API server). There should be
+ minimal effort in both backend and frontend as long as JupyterHub service can
+ be set up correctly. The front end need to change the address of the server
+ and send an API token instead of username; the backend need to copy the logic
+ of vserver.
+
+Currently we have completed stage 3, and are still investigating the way to set
+ up JupyterHub service for stage 4. 
 
 ## What can I use it for?
 You can use ngshare if you
