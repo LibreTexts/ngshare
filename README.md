@@ -71,7 +71,7 @@ We decided to find a fourth solution, which is creating a service similar to
 ## What can I use it for?
 You can use ngshare if you
 * Need to run nbgrader on a distributed set up (probably using
- [this forked nbgrader reop](https://github.com/lxylxy123456/nbgrader))
+ [lxylxy123456/nbgrader](https://github.com/lxylxy123456/nbgrader))
 * Have something similar to nbgrader that also needs an API to manage courses,
  homework submissions and feedbacks, etc.
 * Want to learn Flask, SQLAlchemy, or Tornado Web Server. 
@@ -120,7 +120,7 @@ The API specifications for `ngshare` are available in
 #### Docker
 1. `cd docker`
 2. `docker-compose build && docker-compose up`
-3. Open `firefox http://localhost:8000`
+3. Open `http://localhost:8000`
 4. If you want to stop the server, Press Ctrl+C once, then wait until exit
 
 #### Kubenetes
