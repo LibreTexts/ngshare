@@ -35,15 +35,13 @@ We brainstormed a few possible solutions before starting the ngshare project:
 		* Universal solution that can be integrated with nbgrader.
 		* Similar service desired by nbgrader developer 
 		 (see
-		 [jupyter/nbgrader#659](https://github.com/jupyter/nbgrader/issues/659)
-		 )
+		 [jupyter/nbgrader#659](https://github.com/jupyter/nbgrader/issues/659))
 	* Cons
 		* Lots of work to implement HubShare. 
 		* nbgrader exchange mechanism need to be reworked.
 		* Too generic, does not have permission control specific to classes &
 		 assignment. (see
-		 [this comment](https://github.com/jupyter/nbgrader/issues/659#issuecomment-431762792)
-		 )
+		 [this comment](https://github.com/jupyter/nbgrader/issues/659#issuecomment-431762792))
 * NFS
 	* Another solution is to let every container access a shared file system
 	 through NFS (Network File System).
