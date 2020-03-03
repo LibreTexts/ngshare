@@ -68,9 +68,10 @@ class User(Base):
     @staticmethod
     def from_jupyterhub_user(user_model, db):
         'Import users from JupyterHub'
-        user = db.query(User).filter(User.id == user_model.name).one_or_none()
+        user_name = user_model['name']
+        user = db.query(User).filter(User.id == user_name).one_or_none()
         if user is None:
-            user = User(user_model.name)
+            user = User(user_name)
             db.add(user)
             db.commit()
         return user
