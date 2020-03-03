@@ -188,7 +188,11 @@ class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
     def prepare(self):
         'Provide a db object'
         self.db = Session()
-        self.user = User.from_jupyterhub_user(self.get_current_user(), self.db)
+        current_user = self.get_current_user()
+        if current_user is not None:
+            self.user = User.from_jupyterhub_user(current_user, self.db)
+        else:
+            self.user = None
 
     def on_finish(self):
         self.db.close()
@@ -221,6 +225,7 @@ class InitDatabase(MyRequestHandler):
         db.query(Assignment).delete()
         db.query(Submission).delete()
         db.query(File).delete()
+        db.commit()
         uk = User('Kevin')
         ua = User('Abigail')
         ul = User('Lawrence')
@@ -304,7 +309,7 @@ class DownloadReleaseAssignment(MyRequestHandler):
         if self.db.query(Assignment).filter(
             Assignment.id == assignment_id,
             Assignment.course == course).one_or_none():
-            raise JsonError('Assignment already exists')
+            self.json_error('Assignment already exists')
         assignment = Assignment(assignment_id, course)
         files = self.get_argument('files', None)
         self.json_files_unpack(files, assignment.files)
