@@ -37,33 +37,37 @@ class MyHelpers:
     def path_check(self, pathname):
         0/0
 
-    def find_course(db, course_id) :
+    def find_course(self, course_id):
         'Return a Course object from id, or raise error'
-        course = db.query(Course).filter(Course.id == course_id).one_or_none()
-        if course is None :
+        qry = self.db.query(Course)
+        course = qry.filter(Course.id == course_id).one_or_none()
+        if course is None:
             self.json_error('Course not found')
         return course
 
-    def check_course_student(db, course, user) :
+    def is_course_student(self, course, user) :
+        'Return whether user is a student in the course'
+        return course in user.taking
+
+    def is_course_instructor(self, course, user) :
+        'Return whether user is an instructor in the course'
+        return course in user.teaching
+
+    def check_course_student(self, course, user):
         'Assert user is a student in the course'
-        self.json_error('Permission denied 0/0')
-        0/0
-        if not is_course_student(db, course, user) :
+        if not self.is_course_student(course, user):
             self.json_error('Permission denied (not course student)')
-            0/0
 
-    def check_course_instructor(db, course, user) :
+    def check_course_instructor(self, course, user):
         'Assert user is an instructor in the course'
-        if not is_course_instructor(db, course, user) :
+        if not self.is_course_instructor(course, user):
             self.json_error('Permission denied (not course instructor)')
-            0/0
 
-    def check_course_related(db, course, user) :
+    def check_course_related(self, course, user):
         'Assert user is a student or an instructor in the course'
-        if not is_course_instructor(db, course, user) and \
-            not is_course_student(db, course, user) :
+        if not self.is_course_instructor(course, user) and \
+            not self.is_course_student(course, user):
             self.json_error('Permission denied (not related to course)')
-            0/0
 
 class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
     'Custom request handler for ngshare'
@@ -75,7 +79,7 @@ class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
             resp['message'] = msg
         self.finish(json.dumps(resp))
 
-    def json_error(self, msg, **kwargs) :
+    def json_error(self, msg, **kwargs):
         'Return error as a JSON object'
         assert 'success' not in kwargs and 'message' not in kwargs
         self.finish(json.dumps({'success': False, 'message': msg, **kwargs}))
@@ -123,32 +127,22 @@ class AddCourse(MyRequestHandler):
     @authenticated
     def post(self, course_id):
         'Add a course (anyone)'
-        if self.db.query(Course).filter(Course.id == course_id).one_or_none() :
+        if self.db.query(Course).filter(Course.id == course_id).one_or_none():
             self.json_error('Course already exists')
         course = Course(course_id, self.user)
         self.db.add(course)
         self.db.commit()
         self.json_success()
 
-class TestCreateCourseHandler(HubAuthenticated, RequestHandler):
+class ListAssignments(MyRequestHandler):
+    '/api/assignments/<course_id>'
     @authenticated
-    def post(self, courseid):
-        db = Session()
-        user = User.from_jupyterhub_user(self.get_current_user(), db)
-        if db.query(Course).filter(Course.id == courseid).one_or_none():
-            self.write("Failure: Course exists\n")
-            return
-        newcourse = Course(courseid, user)
-        db.add(newcourse)
-        db.commit()
-        self.write("Success\n")
-
-class TestGetCoursesHandler(RequestHandler):
-    def get(self):
-        db = Session()
-        for c in db.query(Course).all():
-            self.write("Found course %s, taught by instructors %s\n" %
-                       (c.id, [i.id for i in c.instructors]))
+    def get(self, course_id):
+        'List all assignments for a course (students+instructors)'
+        course = self.find_course(course_id)
+        self.check_course_related(course, self.user)
+        assignments = course.assignments
+        self.json_success(assignments=list(map(lambda x: x.id, assignments)))
 
 class Test404Handler(RequestHandler):
     '404 handler'
@@ -179,6 +173,8 @@ def main():
              ListCourses),
             (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'course/([^/]+)',
              AddCourse),
+            (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'assignments/([^/]+)',
+             ListAssignments),
             (r'.*', Test404Handler),
         ],
         autoreload=True

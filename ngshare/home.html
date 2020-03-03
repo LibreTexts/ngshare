@@ -14,12 +14,11 @@
 </h1>
 <p>
   GET
-  <a href="/services/ngshare/courses?user=Eric">
+  <a href="/services/ngshare/courses">
     /api/courses</a>:
   List courses
 </p>
 <form id="form0" action="/services/ngshare/course/course3" method="POST">
-  <input type="hidden" name="user" value="Eric" />
   <p>
     POST
       <a href="#" onclick="document.getElementById('form0').submit()">/api/course/&lt;course_id&gt;</a>:
@@ -28,20 +27,19 @@
 </form>
 <p>
   GET
-  <a href="/services/ngshare/assignments/course2?user=Abigail">
+  <a href="/services/ngshare/assignments/course2">
     /api/assignments/&lt;course_id&gt;</a>:
   List assignments
 </p>
 <p>
   GET
-  <a href="/services/ngshare/assignment/course1/challenge?user=Lawrence">
+  <a href="/services/ngshare/assignment/course1/challenge">
     /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
   Download assignment
 </p>
 <form id="form1" action="/services/ngshare/assignment/course1/challenger" method="POST">
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
-  <input type="hidden" name="user" value="Kevin" />
   <p>
     POST
       <a href="#" onclick="document.getElementById('form1').submit()">/api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
@@ -50,20 +48,19 @@
 </form>
 <p>
   GET
-    <a href="/services/ngshare/submissions/course1/challenge?user=Kevin">
+    <a href="/services/ngshare/submissions/course1/challenge">
       /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
   List submissions
 </p>
 <p>
   GET
-    <a href="/services/ngshare/submissions/course1/challenge/Lawrence?user=Kevin">
+    <a href="/services/ngshare/submissions/course1/challenge/Lawrence">
       /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   List student's submissions
 </p>
 <form id="form2" action="/services/ngshare/submission/course2/assignment2a" method="POST">
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
-  <input type="hidden" name="user" value="Eric" />
   <p>
     POST
       <a href="#" onclick="document.getElementById('form2').submit()">/api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
@@ -72,7 +69,7 @@
 </form>
 <p>
   GET
-    <a href="/services/ngshare/submission/course1/challenge/Lawrence?user=Kevin">
+    <a href="/services/ngshare/submission/course1/challenge/Lawrence">
       /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   Download submission
 </p>
@@ -81,7 +78,6 @@
   <input type="hidden" name="random" value="12345678-90ab-cdef-0123-456789abcdef" />
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
-  <input type="hidden" name="user" value="Kevin" />
   <p>
     POST
       <a href="#" onclick="document.getElementById('form3').submit()">/api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
@@ -90,7 +86,7 @@
 </form>
 <p>
   GET
-    <a href="/services/ngshare/feedback/course1/challenge/Lawrence?timestamp=2020-01-01 00:00:00.000000 &random=12345678-90ab-cdef-0123-456789abcdef&user=Lawrence">
+    <a href="/services/ngshare/feedback/course1/challenge/Lawrence?timestamp=2020-01-01 00:00:00.000000 &random=12345678-90ab-cdef-0123-456789abcdef">
       /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   Download feedback
 </p>
