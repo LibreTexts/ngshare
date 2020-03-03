@@ -38,15 +38,19 @@ class MyRequestHandler(RequestHandler):
         resp = {'success': True, **kwargs}
         if msg is not None:
             resp['message'] = msg
-        self.write(json.dumps(resp))
+        self.finish(json.dumps(resp))
+    def prepare(self):
+        'Provide a db object'
+        self.db = Session()
+    def on_finish(self):
+        self.db.close()
 
-class ListCourses(HubAuthenticated, MyRequestHandler, RequestHandler):
+class ListCourses(HubAuthenticated, MyRequestHandler):
     '/api/courses'
     @authenticated
     def get(self):
         'List all available courses the user is taking or teaching (anyone)'
-        db = Session()
-        user = User.from_jupyterhub_user(self.get_current_user(), db)
+        user = User.from_jupyterhub_user(self.get_current_user(), self.db)
         courses = set()
         for i in user.teaching:
             courses.add(i.id)
