@@ -88,6 +88,24 @@ class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
     def on_finish(self):
         self.db.close()
 
+class HomePage(MyRequestHandler):
+    '/api/'
+    @authenticated
+    def get(self):
+        'Display an HTML page for debugging'
+        pwd = os.path.dirname(os.path.realpath(__file__))
+        file_name = os.path.join(pwd, 'home.html')
+        self.write(open(file_name).read())
+
+class Favicon(MyRequestHandler):
+    '/api/favicon.ico'
+    @authenticated
+    def get(self):
+        'Serve favicon'
+        pwd = os.path.dirname(os.path.realpath(__file__))
+        file_name = os.path.join(pwd, 'favicon.ico')
+        self.write(open(file_name, 'rb').read())
+
 class ListCourses(MyRequestHandler):
     '/api/courses'
     @authenticated
@@ -154,9 +172,9 @@ def main():
     app = Application(
         [
             (os.environ['JUPYTERHUB_SERVICE_PREFIX'],
-             TestGetCoursesHandler),
-            (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'createcourse/([^/]+)?',
-             TestCreateCourseHandler),
+             HomePage),
+            (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'favicon.ico',
+             Favicon),
             (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'courses',
              ListCourses),
             (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'course/([^/]+)',
