@@ -2,36 +2,46 @@
     ngshare Tornado server
 '''
 
-from database.database import Base, User, Course, Assignment, Submission, File
-import json
-import os
-import argparse
-from urllib.parse import urlparse
+# pylint: disable=invalid-name
+# pylint: disable=abstract-method
+# pylint: disable=no-member
+# pylint: disable=no-self-use
+# pylint: disable=attribute-defined-outside-init
+# pylint: disable=invalid-name
 
-import base64, binascii, datetime
+import os
+import json
+import argparse
+import base64
+import binascii
+import datetime
+from urllib.parse import urlparse
 
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application, authenticated, RequestHandler, Finish
-
 from jupyterhub.services.auth import HubAuthenticated
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+from database.database import Base, User, Course, Assignment, Submission, File
 engine = create_engine('sqlite:////srv/ngshare/ngshare.db')
 Base.metadata.bind = engine
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
-# pylint: disable=invalid-name
-# pylint: disable=abstract-method
-
 class MyHelpers:
     'Helper functions for database accesses'
+    def json_error(self, msg, **kwargs):
+        'Abstract method resolved in MyRequestHandler'
+        raise NotImplementedError
+
     def strftime(self, dt):
+        'Use API specified format to strftime'
         return dt.strftime('%Y-%m-%d %H:%M:%S.%f %Z')
 
     def strptime(self, string):
+        'Use API specified format to strptime'
         0/0
 
     def path_check(self, pathname):
@@ -112,10 +122,10 @@ class MyHelpers:
             self.json_error('Assignment not found')
         return assignment
 
-    def find_course_student(self, course, student_id):    
+    def find_course_student(self, course, student_id):
         'Return a Student object from course and id, or raise error'
         student = self.db.query(User).filter(
-            User.id == student_id, 
+            User.id == student_id,
             User.taking.contains(course)).one_or_none()
         if student is None:
             self.json_error('Student not found')
@@ -138,8 +148,8 @@ class MyHelpers:
     def find_student_submission(self, assignment, student, timestamp, random_str):
         'Return the Submission object from timestamp etc, or error'
         submission = self.find_student_submissions(assignment, student).filter(
-                    Submission.timestamp==timestamp,
-                    Submission.random==random_str).one_or_none()
+            Submission.timestamp == timestamp,
+            Submission.random == random_str).one_or_none()
         if submission is None:
             self.json_error('Submission not found')
         return submission
@@ -216,8 +226,10 @@ class Favicon(MyRequestHandler):
         self.write(open(file_name, 'rb').read())
 
 class InitDatabase(MyRequestHandler):
+    '/initialize-Data6ase'
     @authenticated
     def get(self):
+        'Initialize database'
         # Dangerous: do not use in production
         db = self.db
         db.query(User).delete()
@@ -307,8 +319,8 @@ class DownloadReleaseAssignment(MyRequestHandler):
         course = self.find_course(course_id)
         self.check_course_instructor(course, self.user)
         if self.db.query(Assignment).filter(
-            Assignment.id == assignment_id,
-            Assignment.course == course).one_or_none():
+                Assignment.id == assignment_id,
+                Assignment.course == course).one_or_none():
             self.json_error('Assignment already exists')
         assignment = Assignment(assignment_id, course)
         files = self.get_argument('files', None)
