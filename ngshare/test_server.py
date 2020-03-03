@@ -8,11 +8,11 @@ import os
 import argparse
 from urllib.parse import urlparse
 
+import base64, binascii
+
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-from tornado.web import Application
-from tornado.web import authenticated
-from tornado.web import RequestHandler
+from tornado.web import Application, authenticated, RequestHandler, Finish
 
 from jupyterhub.services.auth import HubAuthenticated
 
@@ -35,7 +35,65 @@ class MyHelpers:
         0/0
 
     def path_check(self, pathname):
-        0/0
+        '''
+            Return whether a pathname (for file, in director tree) is safe
+            Current policy:
+                Not empty
+                os.path.abspath resolves to a child address
+                Path does not contain ('.', '..', '', '/')
+            Note: os.path.abspath is used instead of os.path.realpath to prevent
+             symbolic link issues, because the file is not on server
+            Note: os.path.abspath is not 100% safe
+            Note: currently only using Linux pathname conventions
+        '''
+        if not pathname:
+            return False
+        path = pathname
+        while path:
+            path, name = os.path.split(path)
+            if name in ('.', '..', '', '/'):
+                return False
+        working = os.path.abspath('.')
+        target = os.path.abspath(pathname)
+        if os.path.commonpath([working, target]) != working:
+            return False
+        return True
+
+    def json_files_pack(self, file_list, list_only):
+        'Generate JSON file list (directory tree) from a list of File objects'
+        ans = []
+        for i in file_list:
+            if list_only:
+                ans.append({
+                    'path': i.filename,
+                })
+            else:
+                ans.append({
+                    'path': i.filename,
+                    'content': base64.encodebytes(i.contents).decode(),
+                })
+        return ans
+
+    def json_files_unpack(self, json_str, target):
+        '''
+            Generate a list of File objects from a JSON file list (directory tree)
+            json_str: json object as string; raise error when None
+            target: a list to put file objects in
+        '''
+        if json_str is None:
+            self.json_error('Please supply files')
+        try:
+            json_obj = json.loads(json_str)
+        except json.decoder.JSONDecodeError:
+            self.json_error('Files cannot be JSON decoded')
+        for i in json_obj:
+            if not self.path_check(i['path']):
+                self.json_error('Illegal path')
+            try:
+                content = base64.decodebytes(i['content'].encode())
+            except binascii.Error:
+                self.json_error('Content cannot be base64 decoded')
+            target.append(File(i['path'], content))
 
     def find_course(self, course_id):
         'Return a Course object from id, or raise error'
@@ -45,11 +103,54 @@ class MyHelpers:
             self.json_error('Course not found')
         return course
 
-    def is_course_student(self, course, user) :
+    def find_assignment(self, course, assignment_id):
+        'Return an Assignment object from course and id, or raise error'
+        assignment = self.db.query(Assignment).filter(
+            Assignment.id == assignment_id,
+            Assignment.course == course).one_or_none()
+        if assignment is None:
+            self.json_error('Assignment not found')
+        return assignment
+
+    def find_course_student(self, course, student_id):    
+        'Return a Student object from course and id, or raise error'
+        student = self.db.query(User).filter(
+            User.id == student_id, 
+            User.taking.contains(course)).one_or_none()
+        if student is None:
+            self.json_error('Student not found')
+        return student
+
+    def find_student_submissions(self, assignment, student):
+        'Return a list of Submission objects from assignment and student'
+        return self.db.query(Submission).filter(
+            Submission.assignment == assignment,
+            Submission.student == student)
+
+    def find_student_latest_submission(self, assignment, student):
+        'Return the latest Submission object from assignment and studnet, or error'
+        submission = self.find_student_submissions(assignment, student) \
+                    .order_by(Submission.timestamp.desc()).first()
+        if submission is None:
+            self.json_error('Submission not found')
+        return submission
+
+    def find_student_submission(self, assignment, student, timestamp, random_str):
+        'Return the Submission object from timestamp etc, or error'
+        submission = self.find_student_submissions(assignment, student).filter(
+                    Submission.timestamp==timestamp,
+                    Submission.random==random_str).one_or_none()
+        if submission is None:
+            self.json_error('Submission not found')
+        return submission
+
+    # Auth APIs
+
+    def is_course_student(self, course, user):
         'Return whether user is a student in the course'
         return course in user.taking
 
-    def is_course_instructor(self, course, user) :
+    def is_course_instructor(self, course, user):
         'Return whether user is an instructor in the course'
         return course in user.teaching
 
@@ -77,12 +178,12 @@ class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
         resp = {'success': True, **kwargs}
         if msg is not None:
             resp['message'] = msg
-        self.finish(json.dumps(resp))
+        raise Finish(json.dumps(resp))
 
     def json_error(self, msg, **kwargs):
         'Return error as a JSON object'
         assert 'success' not in kwargs and 'message' not in kwargs
-        self.finish(json.dumps({'success': False, 'message': msg, **kwargs}))
+        raise Finish(json.dumps({'success': False, 'message': msg, **kwargs}))
 
     def prepare(self):
         'Provide a db object'
@@ -144,6 +245,31 @@ class ListAssignments(MyRequestHandler):
         assignments = course.assignments
         self.json_success(assignments=list(map(lambda x: x.id, assignments)))
 
+class DownloadReleaseAssignment(MyRequestHandler):
+    '/api/assignment/<course_id>/<assignment_id>'
+    def get(self, course_id, assignment_id):
+        'Download a copy of an assignment (students+instructors)'
+        course = self.find_course(course_id)
+        self.check_course_related(course, self.user)
+        assignment = self.find_assignment(course, assignment_id)
+        list_only = self.get_argument('list_only', 'false') == 'true'
+        files = self.json_files_pack(assignment.files, list_only)
+        self.json_success(files=files)
+
+    def post(self, course_id, assignment_id):
+        'Release an assignment (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course, self.user)
+        if self.db.query(Assignment).filter(
+            Assignment.id == assignment_id,
+            Assignment.course == course).one_or_none():
+            raise JsonError('Assignment already exists')
+        assignment = Assignment(assignment_id, course)
+        files = self.get_argument('files', None)
+        self.json_files_unpack(files, assignment.files)
+        self.db.commit()
+        self.json_success()
+
 class Test404Handler(RequestHandler):
     '404 handler'
     def get(self):
@@ -163,18 +289,15 @@ def main():
     if args.jupyterhub_api_url is not None:
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
 
+    prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
     app = Application(
         [
-            (os.environ['JUPYTERHUB_SERVICE_PREFIX'],
-             HomePage),
-            (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'favicon.ico',
-             Favicon),
-            (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'courses',
-             ListCourses),
-            (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'course/([^/]+)',
-             AddCourse),
-            (os.environ['JUPYTERHUB_SERVICE_PREFIX'] + 'assignments/([^/]+)',
-             ListAssignments),
+            (prefix, HomePage),
+            (prefix + 'favicon.ico', Favicon),
+            (prefix + 'courses', ListCourses),
+            (prefix + 'course/([^/]+)', AddCourse),
+            (prefix + 'assignments/([^/]+)', ListAssignments),
+            (prefix + 'assignment/([^/]+)/([^/]+)', DownloadReleaseAssignment),
             (r'.*', Test404Handler),
         ],
         autoreload=True
