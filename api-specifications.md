@@ -1,5 +1,5 @@
 # Server API
-Last updated 2020-02-22
+Last updated 2020-03-03
 
 ---
 
@@ -190,7 +190,6 @@ Used for the inbound part of ExchangeList.
         {
             "student_id": /* student ID */,
             "timestamp": /* submission timestamp */,
-            "random": /* submission random str */,
             "notebooks":
             [
                 {
@@ -223,7 +222,6 @@ Used for the inbound part of ExchangeList.
         {
             "student_id": /* student ID */,
             "timestamp": /* submission timestamp */,
-            "random": /* submission random str */,
             "notebooks":
             [
                 {
@@ -291,7 +289,6 @@ list_only=/* true or false */
 {
     "success": true,
     "timestamp": /* submission timestamp */,
-    "random": /* submission random str */
     "files": /* encoded directory tree */
 }
 ```
@@ -316,7 +313,6 @@ Used for ExchangeReleaseFeedback.
 ##### Request (HTTP POST data)
 ```
 timestamp=/* submission timestamp */&
-random=/* submission random str */&
 files=/* encoded directory tree in JSON */
 ```
 
@@ -334,7 +330,6 @@ files=/* encoded directory tree in JSON */
 * Assignment not found
 * Student not found
 * Submission not found
-* Please supply random str
 * Please supply timestamp
 * Time format incorrect
 * Please supply files
@@ -354,7 +349,6 @@ Used for ExchangeFetchFeedback.
 ##### Request (HTTP GET parameter)
 ```
 timestamp=/* submission timestamp */&
-random=/* submission random str */&
 list_only=/* true or false */
 ```
 
@@ -363,7 +357,6 @@ list_only=/* true or false */
 {
     "success": /* true or false*/,
     "timestamp": /* submission timestamp */,
-    "random": /* submission random str */
     "files": /* encoded directory tree */
 }
 ```
@@ -375,6 +368,5 @@ list_only=/* true or false */
 * Assignment not found
 * Student not found
 * Submission not found
-* Please supply random str
 * Please supply timestamp
 * Time format incorrect
