@@ -23,16 +23,19 @@ if not db_exists:
 
 # Usual HTTP helpers
 
+def f(x) :
+	return '<h1>%s</h1>' % x
+
 def json_success(msg=None, **kwargs) :
 	assert 'success' not in kwargs and 'message' not in kwargs
 	resp = {'success': True, **kwargs}
 	if msg is not None :
 		resp['message'] = msg
-	return json.dumps(resp)
+	return f(json.dumps(resp))
 
 def json_error(msg, **kwargs) :
 	assert 'success' not in kwargs and 'message' not in kwargs
-	return json.dumps({'success': False, 'message': msg, **kwargs})
+	return f(json.dumps({'success': False, 'message': msg, **kwargs}))
 
 class JsonError(Exception) :
 	def __init__(self, msg, **kwargs) :
