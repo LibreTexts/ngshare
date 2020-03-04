@@ -145,11 +145,10 @@ class MyHelpers:
             self.json_error('Submission not found')
         return submission
 
-    def find_student_submission(self, assignment, student, timestamp, random_str):
+    def find_student_submission(self, assignment, student, timestamp):
         'Return the Submission object from timestamp etc, or error'
         submission = self.find_student_submissions(assignment, student).filter(
-            Submission.timestamp == timestamp,
-            Submission.random == random_str).one_or_none()
+            Submission.timestamp == timestamp).one_or_none()
         if submission is None:
             self.json_error('Submission not found')
         return submission
@@ -257,7 +256,6 @@ class InitDatabase(MyRequestHandler):
         s1 = Submission(ul, ac)
         s2 = Submission(ul, ac)
         s1.timestamp = datetime.datetime(2020, 1, 1, 0, 0, 0, 0)
-        s1.random = '12345678-90ab-cdef-0123-456789abcdef'
         db.add(s1)
         db.add(s2)
         aa.files.append(File('file0', b'00000'))

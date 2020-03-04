@@ -106,7 +106,6 @@ def list_submissions(db, course_id, assignment_id) :
 		submissions.append({
 			'student_id': submission.student.id, 
 			'timestamp': strftime(submission.timestamp), 
-			'random': submission.random, 
 			# TODO: "notebooks": [], 
 		})
 	return json_success(submissions=submissions)
@@ -129,7 +128,6 @@ def list_student_submission(db, course_id, assignment_id, student_id) :
 		submissions.append({
 			'student_id': submission.student.id, 
 			'timestamp': strftime(submission.timestamp), 
-			'random': submission.random, 
 			# TODO: "notebooks": [], 
 		})
 	return json_success(submissions=submissions)
@@ -164,8 +162,7 @@ def download_submission(db, course_id, assignment_id, student_id) :
 	submission = find_student_latest_submission(db, assignment, student)
 	list_only = request.args.get('list_only', 'false') == 'true'
 	return json_success(files=json_files_pack(submission.files, list_only),
-						timestamp=strftime(submission.timestamp),
-						random=submission.random)
+						timestamp=strftime(submission.timestamp))
 
 @app_post('/api/feedback/<course_id>/<assignment_id>/<student_id>')
 def upload_feedback(db, course_id, assignment_id, student_id) :
@@ -181,11 +178,7 @@ def upload_feedback(db, course_id, assignment_id, student_id) :
 	if 'timestamp' not in request.form :
 		raise JsonError('Please supply timestamp')
 	timestamp = strptime(request.form.get('timestamp'))
-	if 'random' not in request.form :
-		raise JsonError('Please supply random str')
-	random_str = request.form.get('random')
-	submission = find_student_submission(db, assignment, student, timestamp,
-										random_str)
+	submission = find_student_submission(db, assignment, student, timestamp)
 	submission.feedbacks.clear()
 	# TODO: does this automatically remove the files?
 	json_files_unpack(request.form.get('files'), submission.feedbacks)
@@ -208,13 +201,8 @@ def download_feedback(db, course_id, assignment_id, student_id) :
 	if 'timestamp' not in request.args :
 		raise JsonError('Please supply timestamp')
 	timestamp = strptime(request.args.get('timestamp'))
-	if 'random' not in request.args :
-		raise JsonError('Please supply random str')
-	random_str = request.args.get('random')
-	submission = find_student_submission(db, assignment, student, timestamp,
-										random_str)
+	submission = find_student_submission(db, assignment, student, timestamp)
 	list_only = request.args.get('list_only', 'false') == 'true'
 	return json_success(files=json_files_pack(submission.feedbacks, list_only),
-						timestamp=strftime(submission.timestamp),
-						random=submission.random)
+						timestamp=strftime(submission.timestamp))
 

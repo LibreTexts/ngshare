@@ -121,7 +121,6 @@ class Submission(Base):
     _id = Column(INTEGER, primary_key=True)
     assignment_id = Column(INTEGER, ForeignKey("assignments._id"))
     timestamp = Column(TIMESTAMP)
-    random = Column(TEXT)
     student_id = Column(TEXT, ForeignKey("users.id"))
     files = relationship("File", secondary=submission_files_assoc_table)
     feedbacks = relationship("File", secondary=feedback_files_assoc_table)
@@ -129,7 +128,6 @@ class Submission(Base):
 
     def __init__(self, student, assignment):
         self.timestamp = datetime.datetime.now()
-        self.random = str(uuid.uuid4())
         self.student = student
         self.assignment = assignment
 
