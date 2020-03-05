@@ -199,8 +199,8 @@ def find_assignment(db, course, assignment_id) :
 		raise JsonError('Assignment not found')
 	return assignment
 
-def find_course_student(db, course, student_id) :	
-	'Return a Student object from course and id, or raise error'
+def find_course_user(db, course, student_id) :	
+	'Return a student or instructor as User object from course and id'
 	student = db.query(User).filter(
 		User.id == student_id, 
 		User.taking.contains(course)).one_or_none()
@@ -250,7 +250,7 @@ def check_course_instructor(db, course, user) :
 	if not is_course_instructor(db, course, user) :
 		raise JsonError('Permission denied (not course instructor)')
 
-def check_course_related(db, course, user) :
+def check_course_user(db, course, user) :
 	'Assert user is a student or an instructor in the course'
 	if not is_course_instructor(db, course, user) and \
 		not is_course_student(db, course, user) :

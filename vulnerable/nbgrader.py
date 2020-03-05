@@ -12,11 +12,10 @@ import os, json, operator
 from app import request
 from helper import (json_success, error_catcher, json_files_pack,
 					json_files_unpack, strftime, strptime, get_user,
-					find_course, find_assignment, find_course_student,
+					find_course, find_assignment, find_course_user,
 					find_student_submissions, find_student_latest_submission,
 					find_student_submission, JsonError, app_get, app_post,
-					check_course_student, check_course_instructor,
-					check_course_related)
+					check_course_instructor, check_course_user)
 
 from database.database import *
 
@@ -56,7 +55,7 @@ def list_assignments(db, course_id) :
 	'''
 	user = get_user(db)
 	course = find_course(db, course_id)
-	check_course_related(db, course, user)
+	check_course_user(db, course, user)
 	assignments = course.assignments
 	return json_success(assignments=list(map(lambda x: x.id, assignments)))
 
@@ -68,7 +67,7 @@ def download_assignment(db, course_id, assignment_id) :
 	'''
 	user = get_user(db)
 	course = find_course(db, course_id)
-	check_course_related(db, course, user)
+	check_course_user(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
 	list_only = request.args.get('list_only', 'false') == 'true'
 	return json_success(files=json_files_pack(assignment.files, list_only))
@@ -122,7 +121,7 @@ def list_student_submission(db, course_id, assignment_id, student_id) :
 	if user.id != student_id :
 		check_course_instructor(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
-	student = find_course_student(db, course, student_id)
+	student = find_course_user(db, course, student_id)
 	submissions = []
 	for submission in find_student_submissions(db, assignment, student) :
 		submissions.append({
@@ -140,7 +139,7 @@ def submit_assignment(db, course_id, assignment_id) :
 	'''
 	user = get_user(db)
 	course = find_course(db, course_id)
-	check_course_related(db, course, user)
+	check_course_user(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
 	submission = Submission(user, assignment)
 	json_files_unpack(request.form.get('files'), submission.files)
@@ -158,7 +157,7 @@ def download_submission(db, course_id, assignment_id, student_id) :
 	course = find_course(db, course_id)
 	check_course_instructor(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
-	student = find_course_student(db, course, student_id)
+	student = find_course_user(db, course, student_id)
 	submission = find_student_latest_submission(db, assignment, student)
 	list_only = request.args.get('list_only', 'false') == 'true'
 	return json_success(files=json_files_pack(submission.files, list_only),
@@ -174,7 +173,7 @@ def upload_feedback(db, course_id, assignment_id, student_id) :
 	course = find_course(db, course_id)
 	check_course_instructor(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
-	student = find_course_student(db, course, student_id)
+	student = find_course_user(db, course, student_id)
 	if 'timestamp' not in request.form :
 		raise JsonError('Please supply timestamp')
 	timestamp = strptime(request.form.get('timestamp'))
@@ -197,7 +196,7 @@ def download_feedback(db, course_id, assignment_id, student_id) :
 	if user.id != student_id :
 		check_course_instructor(db, course, user)
 	assignment = find_assignment(db, course, assignment_id)
-	student = find_course_student(db, course, student_id)
+	student = find_course_user(db, course, student_id)
 	if 'timestamp' not in request.args :
 		raise JsonError('Please supply timestamp')
 	timestamp = strptime(request.args.get('timestamp'))
