@@ -254,8 +254,9 @@ def test_download_submission():
     # Test get_latest
     result = assert_success(url + 'course1/challenge/lawrence',
                             params={'get_latest': 'true'})
-    assert len(result['files']) == 1
-    file_obj = next(filter(lambda x: x['path'] == 'a', result['files']))
+    files = result['submissions'][0]['files']
+    assert len(files) == 1
+    file_obj = next(filter(lambda x: x['path'] == 'a', files))
     assert base64.b64decode(file_obj['content'].encode()) == b'jkl\n'
     assert file_obj['checksum'] == hashlib.md5(b'jkl\n').hexdigest()
     user = 'abigail'
@@ -265,10 +266,11 @@ def test_download_submission():
     user = 'kevin'
     result = assert_success(url + 'course1/challenge/lawrence',
                             params={'list_only': 'true', 'get_latest': 'true'})
-    assert len(result['files']) == 1
-    assert set(result['files'][0]) == {'path', 'checksum'}
-    assert result['files'][0]['path'] == 'a'
-    assert result['files'][0]['checksum'] == hashlib.md5(b'jkl\n').hexdigest()
+    files = result['submissions'][0]['files']
+    assert len(files) == 1
+    assert set(files[0]) == {'path', 'checksum'}
+    assert files[0]['path'] == 'a'
+    assert files[0]['checksum'] == hashlib.md5(b'jkl\n').hexdigest()
     # TODO: test timestamp
     # TODO: test timestamp with list_only
     # TODO: test get_all (fails)
@@ -318,7 +320,7 @@ def test_download_feedback():
     assert_fail(url + 'course1/challenge/st', msg='Student not found')
     meta = assert_success('/api/submission/course1/challenge/lawrence',
                           params={'get_latest': 'true'})
-    timestamp = meta['timestamp']
+    timestamp = meta['submissions'][0]['timestamp']
     assert_fail(url + 'course1/challenge/lawrence', params={},
                 msg='Please supply timestamp')
     assert_fail(url + 'course1/challenge/lawrence', params={'timestamp': 'a'},

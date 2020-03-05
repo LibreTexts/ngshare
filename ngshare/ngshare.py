@@ -366,8 +366,11 @@ class DownloadAssignment(MyRequestHandler):
         ans = []
         for submission in submissions:
             files = self.json_files_pack(submission.files, list_only)
-        self.json_success(files=files,
-                          timestamp=self.strftime(submission.timestamp))
+            ans.append({
+                'files': files,
+                'timestamp': self.strftime(submission.timestamp),
+            })
+        self.json_success(submissions=ans)
 
 class UploadDownloadFeedback(MyRequestHandler):
     '/api/feedback/<course_id>/<assignment_id>/<student_id>'
