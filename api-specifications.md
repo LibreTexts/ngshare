@@ -1,5 +1,5 @@
 # Server API
-Last updated 2020-03-03
+Last updated 2020-03-04
 
 ---
 
@@ -39,7 +39,8 @@ Assignments consist of a directory, notebook files in the root, and optional sup
 [
     {
         "path": /* file path relative to the root */,
-        "content": /* base64 encoded file contents */
+        "content": /* base64 encoded file contents */,
+        "checksum": /* md5 checksum of file contents */
     },
     ...
 ]
@@ -124,7 +125,7 @@ Used for the outbound part of ExchangeList.
 #### GET /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;
 *download a copy of an assignment (students+instructors)*
 
-If `list_only` is `true`, `files` only contains `path` (does not contain `content`).
+If `list_only` is `true`, `files` only contains `path` and `checksum` (does not contain `content`).
 
 Used for ExchangeFetchAssignment.
 
@@ -189,15 +190,7 @@ Used for the inbound part of ExchangeList.
     [
         {
             "student_id": /* student ID */,
-            "timestamp": /* submission timestamp */,
-            "notebooks":
-            [
-                {
-                    "notebook_id": /* name of notebook */,
-                    "feedback_checksum": /* md5 checksum, or "" */
-                },
-                ...
-            ]
+            "timestamp": /* submission timestamp */
         },
         ...
     ]
@@ -221,15 +214,7 @@ Used for the inbound part of ExchangeList.
     [
         {
             "student_id": /* student ID */,
-            "timestamp": /* submission timestamp */,
-            "notebooks":
-            [
-                {
-                    "notebook_id": /* name of notebook */,
-                    "feedback_checksum": /* md5 checksum, or "" */
-                },
-                ...
-            ]
+            "timestamp": /* submission timestamp */
         },
         ...
     ]
@@ -275,22 +260,28 @@ files=/* encoded directory tree in JSON */
 #### GET /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 *download a student's submitted assignment (instructors only)*
 
-If `list_only` is `true`, `files` only contains `path` (does not contain `content`).
+If `list_only` is `true`, `files` only contains `path` and `checksum` (does not contain `content`). `get_all`, `get_latest`, and `timestamp` are mutually exclusive and exactly one must be provided.
 
 Used for ExchangeCollect.
 
 ##### Request (HTTP GET parameter)
 ```
-list_only=/* true or false */
+list_only=/* true or false */&
+get_all=/* true or false */&
+get_latest=/* true or false */&
+timestamp=/* submission timestamp */
 ```
 
 ##### Response
 ```javascript
-{
-    "success": true,
-    "timestamp": /* submission timestamp */,
-    "files": /* encoded directory tree */
-}
+[
+    {
+        "success": true,
+        "timestamp": /* submission timestamp */,
+        "files": /* encoded directory tree */
+    },
+    ...
+]
 ```
 
 ##### Error messages
@@ -300,6 +291,7 @@ list_only=/* true or false */
 * Assignment not found
 * Student not found
 * Submission not found
+* Please supply exactly one of get_all, get_latest, and timestamp
 
 ### /api/feedback: Fetching and releasing submission feedback
 
@@ -342,7 +334,7 @@ files=/* encoded directory tree in JSON */
 
 When feedback is not available, `"files"` will be empty.
 
-If `list_only` is `true`, `files` only contains `path` (does not contain `content`).
+If `list_only` is `true`, `files` only contains `path` and `checksum` (does not contain `content`).
 
 Used for ExchangeFetchFeedback.
 
