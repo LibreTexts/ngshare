@@ -240,11 +240,6 @@ def is_course_instructor(db, course, user) :
 	'Return whether user is an instructor in the course'
 	return course in user.teaching
 
-def check_course_student(db, course, user) :
-	'Assert user is a student in the course'
-	if not is_course_student(db, course, user) :
-		raise JsonError('Permission denied (not course student)')
-
 def check_course_instructor(db, course, user) :
 	'Assert user is an instructor in the course'
 	if not is_course_instructor(db, course, user) :

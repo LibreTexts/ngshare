@@ -122,8 +122,8 @@ class MyHelpers:
             self.json_error('Assignment not found')
         return assignment
 
-    def find_course_student(self, course, student_id):
-        'Return a Student object from course and id, or raise error'
+    def find_course_user(self, course, student_id):
+        'Return a student or instructor as User object from course and id'
         student = self.db.query(User).filter(
             User.id == student_id,
             User.taking.contains(course)).one_or_none()
@@ -163,17 +163,12 @@ class MyHelpers:
         'Return whether user is an instructor in the course'
         return course in user.teaching
 
-    def check_course_student(self, course, user):
-        'Assert user is a student in the course'
-        if not self.is_course_student(course, user):
-            self.json_error('Permission denied (not course student)')
-
     def check_course_instructor(self, course, user):
         'Assert user is an instructor in the course'
         if not self.is_course_instructor(course, user):
             self.json_error('Permission denied (not course instructor)')
 
-    def check_course_related(self, course, user):
+    def check_course_user(self, course, user):
         'Assert user is a student or an instructor in the course'
         if not self.is_course_instructor(course, user) and \
             not self.is_course_student(course, user):
@@ -297,7 +292,7 @@ class ListAssignments(MyRequestHandler):
     def get(self, course_id):
         'List all assignments for a course (students+instructors)'
         course = self.find_course(course_id)
-        self.check_course_related(course, self.user)
+        self.check_course_user(course, self.user)
         assignments = course.assignments
         self.json_success(assignments=list(map(lambda x: x.id, assignments)))
 
@@ -306,7 +301,7 @@ class DownloadReleaseAssignment(MyRequestHandler):
     def get(self, course_id, assignment_id):
         'Download a copy of an assignment (students+instructors)'
         course = self.find_course(course_id)
-        self.check_course_related(course, self.user)
+        self.check_course_user(course, self.user)
         assignment = self.find_assignment(course, assignment_id)
         list_only = self.get_argument('list_only', 'false') == 'true'
         files = self.json_files_pack(assignment.files, list_only)
