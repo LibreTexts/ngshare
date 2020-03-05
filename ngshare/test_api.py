@@ -138,7 +138,6 @@ def test_release_assignment() :
 	assert_fail(url + 'course1/challenger', method=POST, 
 				data=data, msg='Permission denied (not course instructor)')
 
-'''
 def test_list_submissions() :
 	url = '/api/submissions/'
 	global user
@@ -328,4 +327,3 @@ def test_download_feedback() :
 	user = 'eric'
 	assert_fail(url + 'course1/challenge/lawrence',
 				msg='Permission denied (not course instructor)')
-'''

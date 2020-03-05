@@ -19,7 +19,8 @@ from urllib.parse import urlparse
 
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-from tornado.web import Application, authenticated, RequestHandler, Finish
+from tornado.web import (Application, authenticated, RequestHandler, Finish,
+                         MissingArgumentError)
 from jupyterhub.services.auth import HubAuthenticated
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -43,8 +44,8 @@ class MyHelpers:
                                               '%Y-%m-%d %H:%M:%S.%f %Z')
         except ValueError :
             try :
-                return datetime.datetime.strptime(string, 
-                                                  '%Y-%m-%d %H:%M:%S.%f ')
+                return datetime.datetime.strptime(string.strip(), 
+                                                  '%Y-%m-%d %H:%M:%S.%f')
             except ValueError :
                 self.json_error('Time format incorrect')
 
@@ -167,12 +168,12 @@ class MyHelpers:
         'Return whether user is an instructor in the course'
         return course in user.teaching
 
-    def check_course_instructor(self, course, user):
+    def check_course_instructor(self, course, user):    # TODO: remove user
         'Assert user is an instructor in the course'
         if not self.is_course_instructor(course, user):
             self.json_error('Permission denied (not course instructor)')
 
-    def check_course_user(self, course, user):
+    def check_course_user(self, course, user):    # TODO: remove user
         'Assert user is a student or an instructor in the course'
         if not self.is_course_instructor(course, user) and \
             not self.is_course_student(course, user):
@@ -325,6 +326,121 @@ class DownloadReleaseAssignment(MyRequestHandler):
         self.db.commit()
         self.json_success()
 
+class ListSubmissions(MyRequestHandler):
+    '/api/submissions/<course_id>/<assignment_id>'
+    def get(self, course_id, assignment_id):
+        '''
+            List all submissions for an assignment from all students
+             (instructors only)
+        '''
+        course = self.find_course(course_id)
+        self.check_course_instructor(course, self.user)
+        assignment = self.find_assignment(course, assignment_id)
+        submissions = []
+        for submission in assignment.submissions :
+            submissions.append({
+                'student_id': submission.student.id, 
+                'timestamp': self.strftime(submission.timestamp), 
+                # TODO: "notebooks": [], 
+            })
+        self.json_success(submissions=submissions)
+
+class ListStudentSubmissions(MyRequestHandler):
+    '/api/submissions/<course_id>/<assignment_id>/<student_id>'
+    def get(self, course_id, assignment_id, student_id) :
+        '''
+            List all submissions for an assignment from a particular student 
+             (instructors+students,
+              students restricted to their own submissions)
+        '''
+        course = self.find_course(course_id)
+        if self.user.id != student_id :
+            self.check_course_instructor(course, self.user)
+        assignment = self.find_assignment(course, assignment_id)
+        student = self.find_course_user(course, student_id)
+        submissions = []
+        for submission in self.find_student_submissions(assignment, student) :
+            submissions.append({
+                'student_id': submission.student.id, 
+                'timestamp': self.strftime(submission.timestamp), 
+                # TODO: "notebooks": [], 
+            })
+        self.json_success(submissions=submissions)
+
+class SubmitAssignment(MyRequestHandler):
+    '/api/submission/<course_id>/<assignment_id>'
+    def post(self, course_id, assignment_id) :
+        'Submit a copy of an assignment (students+instructors)'
+        course = self.find_course(course_id)
+        self.check_course_user(course, self.user)
+        assignment = self.find_assignment(course, assignment_id)
+        submission = Submission(self.user, assignment)
+        files = self.get_body_argument('files', None)
+        self.json_files_unpack(files, submission.files)
+        self.db.commit()
+        self.json_success()
+
+class DownloadAssignment(MyRequestHandler):
+    '/api/submission/<course_id>/<assignment_id>/<student_id>'
+    def get(self, course_id, assignment_id, student_id) :
+        '''
+            Download a student's submitted assignment (instructors only)
+            TODO: maybe allow student to see their own submissions?
+        '''
+        course = self.find_course(course_id)
+        self.check_course_instructor(course, self.user)
+        assignment = self.find_assignment(course, assignment_id)
+        student = self.find_course_user(course, student_id)
+        submission = self.find_student_latest_submission(assignment, student)
+        list_only = self.get_argument('list_only', 'false') == 'true'
+        files = self.json_files_pack(submission.files, list_only)
+        self.json_success(files=files,
+                          timestamp=self.strftime(submission.timestamp))
+
+class UploadDownloadFeedback(MyRequestHandler):
+    '/api/feedback/<course_id>/<assignment_id>/<student_id>'
+    def post(self, course_id, assignment_id, student_id) :
+        '''
+            POST /api/feedback/<course_id>/<assignment_id>/<student_id>
+            Upload feedback on a student's assignment (instructors only)
+        '''
+        course = self.find_course(course_id)
+        self.check_course_instructor(course, self.user)
+        assignment = self.find_assignment(course, assignment_id)
+        student = self.find_course_user(course, student_id)
+        try:
+            timestamp = self.strptime(self.get_body_argument('timestamp'))
+        except MissingArgumentError:
+            self.json_error('Please supply timestamp')
+        submission = self.find_student_submission(assignment, student, timestamp)
+        submission.feedbacks.clear()
+        # TODO: does this automatically remove the files?
+        files = self.get_body_argument('files', None)
+        self.json_files_unpack(files, submission.feedbacks)
+        self.db.commit()
+        self.json_success()
+
+    def get(self, course_id, assignment_id, student_id) :
+        '''
+            GET /api/feedback/<course_id>/<assignment_id>/<student_id>
+            Download feedback on a student's assignment
+             (instructors+students, students restricted to their own submissions)
+        '''
+        course = self.find_course(course_id)
+        if self.user.id != student_id :
+            self.check_course_instructor(course, self.user)
+        assignment = self.find_assignment(course, assignment_id)
+        student = self.find_course_user(course, student_id)
+        try:
+            timestamp = self.strptime(self.get_query_argument('timestamp'))
+        except MissingArgumentError:
+            self.json_error('Please supply timestamp')
+        submission = self.find_student_submission(assignment, student, timestamp)
+        list_only = self.get_argument('list_only', 'false') == 'true'
+        files = self.json_files_pack(submission.feedbacks, list_only)
+        self.json_success(files=files,
+                          timestamp=self.strftime(submission.timestamp))
+
 class Test404Handler(RequestHandler):
     '404 handler'
     def get(self):
@@ -353,6 +469,13 @@ def main():
             (prefix + 'course/([^/]+)', AddCourse),
             (prefix + 'assignments/([^/]+)', ListAssignments),
             (prefix + 'assignment/([^/]+)/([^/]+)', DownloadReleaseAssignment),
+            (prefix + 'submissions/([^/]+)/([^/]+)', ListSubmissions),
+            (prefix + 'submissions/([^/]+)/([^/]+)/([^/]+)',
+             ListStudentSubmissions),
+            (prefix + 'submission/([^/]+)/([^/]+)', SubmitAssignment),
+            (prefix + 'submission/([^/]+)/([^/]+)/([^/]+)', DownloadAssignment),
+            (prefix + 'feedback/([^/]+)/([^/]+)/([^/]+)',
+             UploadDownloadFeedback),
             (prefix + 'initialize-Data6ase', InitDatabase),
             (r'.*', Test404Handler),
         ],

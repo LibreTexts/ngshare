@@ -79,7 +79,8 @@ def strptime(string) :
 		return datetime.datetime.strptime(string, '%Y-%m-%d %H:%M:%S.%f %Z')
 	except ValueError :
 		try :
-			return datetime.datetime.strptime(string, '%Y-%m-%d %H:%M:%S.%f ')
+			return datetime.datetime.strptime(string.strip(),
+												'%Y-%m-%d %H:%M:%S.%f')
 		except ValueError :
 			raise JsonError('Time format incorrect')
 
