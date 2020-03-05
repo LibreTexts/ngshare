@@ -202,7 +202,7 @@ def test_list_student_submission():
                 msg='Permission denied (not course instructor)')
 
 def test_submit_assignment():
-    'Test POST /api/submission/<course_id>/<assignment_id>/<student_id>'
+    'Test POST /api/submission/<course_id>/<assignment_id>'
     url = '/api/submission/'
     global user
     user = 'kevin'
