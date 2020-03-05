@@ -1,7 +1,22 @@
+'''
+    vngshare - Vserver-like Notebook Grader Share
+    Similar to vserver; allows easy testing.
+'''
+
+# pylint: disable=abstract-method
+# pylint: disable=function-redefined
+# pylint: disable=invalid-name
+# pylint: disable=no-member
+# pylint: disable=unused-wildcard-import
+# pylint: disable=wildcard-import
+
 import sys
 from ngshare import *
 
 class MockAuth(HubAuthenticated):
+    '''
+        Mock class substituting HubAuthenticated
+    '''
     def get_login_url(self):
         return 'http://example.com/'
 
@@ -18,7 +33,7 @@ class InitDatabase(MyRequestHandler):
     '/initialize-Data6ase'
     @authenticated
     def get(self):
-        'Initialize database'
+        'Initialize database similar to in vserver'
         # Dangerous: do not use in production
         db = self.db
         db.query(User).delete()

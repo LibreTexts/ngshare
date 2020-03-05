@@ -2,12 +2,12 @@
     ngshare Tornado server
 '''
 
-# pylint: disable=invalid-name
 # pylint: disable=abstract-method
-# pylint: disable=no-member
-# pylint: disable=no-self-use
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=invalid-name
+# pylint: disable=invalid-name
+# pylint: disable=no-member
+# pylint: disable=no-self-use
 
 import os
 import json
