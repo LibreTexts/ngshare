@@ -18,6 +18,9 @@ hub:
     name: hub-testing
     tag: 0.0.1
     imagePullPolicy: Always
+  extraConfig:
+    test.py: |
+      c.JupyterHub.service_check_interval = 0
 singleuser:
   image:
     name: singleuser-testing
