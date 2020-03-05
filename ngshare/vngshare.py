@@ -1,3 +1,4 @@
+import sys
 from ngshare import *
 
 class MockAuth(HubAuthenticated):
@@ -85,12 +86,15 @@ def main():
     Base.metadata.create_all(engine)
     app.db_session = sessionmaker(bind=engine)
 
+    host = sys.argv[1] if len(sys.argv) > 1 else '127.0.0.1'
+    port = int(sys.argv[2]) if len(sys.argv) > 2 else 12121
+
     http_server = HTTPServer(app)
-    http_server.listen('12121', '127.0.0.1')
+    http_server.listen(port, host)
 
     print('Starting vngshare (Vserver-like Notebook Grader Share)')
     print('Database file is /tmp/ngshare.db')
-    print('Please go to http://127.0.0.1:12121/api/')
+    print('Please go to http://%s:%d/api/' % (host, port))
     IOLoop.current().start()
 
 if __name__ == '__main__':

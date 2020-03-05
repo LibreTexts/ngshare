@@ -135,6 +135,7 @@ The API specifications for `ngshare` are available in
 ### ngshare
 
 #### Preperation
+0. Skip 1 - 10 if using vngshare
 1. `git clone https://github.com/lxylxy123456/ngshare`
 2. `git clone https://github.com/lxylxy123456/nbgrader`
 3. Skip 4 - 7 if using docker
@@ -157,6 +158,18 @@ The API specifications for `ngshare` are available in
 1. `cd minikube`
 2. See `./test.sh` for help, then you know everything
 
+#### vngshare
+0. vngshare stands for Vserver-like Notebook Grader Share.
+ It is similar to vserver and allows easy testing.
+1. `pip3 install tornado jupyterhub sqlalchemy`
+2. `cd ngshare`
+3. `python3 vngshare.py [bind_IP_address [port_number]]`
+4. Note that `/tmp/ngshare.db` will be the database created
+5. Though there is no file system APIs, so your system should be safe, but
+ unauthorized people can corrupt your data.
+7. To test, when `vngshare.py` is running with default IP and port,
+ `pytest test_ngshare.py`
+
 ### vserver
 1. `pip3 install flask sqlalchemy`
 2. `cd vulnerable`
@@ -164,3 +177,5 @@ The API specifications for `ngshare` are available in
 4. `python3 vserver.py [bind_IP_address [port_number]]`
 5. Note that `/tmp/vserver.db` will be the database created
 6. Keep in mind that ideally only people you trust can have access to this API
+7. To test, when `vserver.py` is running with default IP and port,
+ `pytest test_nbgrader.py`
