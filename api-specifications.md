@@ -1,5 +1,5 @@
 # Server API
-Last updated 2020-03-04
+Last updated 2020-03-05
 
 ---
 
@@ -8,11 +8,11 @@ Last updated 2020-03-04
 ### Assignment name
 Also referred to as `assignment_id`, this is a unique name for an assignment within a course. For example, "Assignment 1".
 
+### Checksum
+The md5 checksum of a file.
+
 ### Course name
 Also referred to as `course_id`, this is a unique name for a course. For example, "NBG 101".
-
-### Feedback checksum
-The md5 checksum of a feedback file. The feedback file is an HTML document containing a grader's feedback on a notebook file from a submission.
 
 ### Notebook name
 Also referred to as `notebook_id`, this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
