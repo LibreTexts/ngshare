@@ -5,6 +5,7 @@
 import sys
 import json
 import base64
+import datetime
 import hashlib
 import requests
 
@@ -239,42 +240,49 @@ def test_download_submission():
     assert_fail(url + 'jkl/challenge/st', msg='Course not found')
     assert_fail(url + 'course1/challenges/st', msg='Assignment not found')
     assert_fail(url + 'course1/challenge/st', msg='Student not found')
-    # Test mutual exclusion
-    assert_fail(url + 'course1/challenge/lawrence',
-                msg='Please supply exactly one of get_all, get_latest, and '
-                    'timestamp')
-    assert_fail(url + 'course1/challenge/lawrence',
-                params={'get_latest': 'true', 'get_all': 'true'},
-                msg='Please supply exactly one of get_all, get_latest, and '
-                    'timestamp')
-    assert_fail(url + 'course1/challenge/lawrence',
-                params={'get_latest': 'true', 'timestamp': '1234'},
-                msg='Please supply exactly one of get_all, get_latest, and '
-                    'timestamp')
-    # Test get_latest
-    result = assert_success(url + 'course1/challenge/lawrence',
-                            params={'get_latest': 'true'})
-    files = result['submissions'][0]['files']
+    # Test get latest
+    result = assert_success(url + 'course1/challenge/lawrence')
+    files = result['files']
     assert len(files) == 1
     file_obj = next(filter(lambda x: x['path'] == 'a', files))
     assert base64.b64decode(file_obj['content'].encode()) == b'jkl\n'
     assert file_obj['checksum'] == hashlib.md5(b'jkl\n').hexdigest()
     user = 'abigail'
-    assert_fail(url + 'course2/assignment2a/eric',
-                params={'get_latest': 'true'}, msg='Submission not found')
-    # Test get_latest with list_only
+    assert_fail(url + 'course2/assignment2a/eric', msg='Submission not found')
+    # Test get latest with list_only
     user = 'kevin'
     result = assert_success(url + 'course1/challenge/lawrence',
-                            params={'list_only': 'true', 'get_latest': 'true'})
-    files = result['submissions'][0]['files']
+                            params={'list_only': 'true'})
+    files = result['files']
     assert len(files) == 1
     assert set(files[0]) == {'path', 'checksum'}
     assert files[0]['path'] == 'a'
     assert files[0]['checksum'] == hashlib.md5(b'jkl\n').hexdigest()
-    # TODO: test timestamp
-    # TODO: test timestamp with list_only
-    # TODO: test get_all (fails)
-    # TODO: test get_all with list_only
+    # Test timestamp
+    result = assert_success('/api/submissions/course1/challenge/lawrence')
+    timestamp = sorted(map(lambda x: x['timestamp'], result['submissions']))[0]
+    result = assert_success(url + 'course1/challenge/lawrence',
+                            {'timestamp': timestamp})
+    files = result['files']
+    assert len(files) == 1
+    file_obj = next(filter(lambda x: x['path'] == 'file3', files))
+    assert base64.b64decode(file_obj['content'].encode()) == b'33333'
+    assert file_obj['checksum'] == hashlib.md5(b'33333').hexdigest()
+    # Test timestamp with list_only
+    result = assert_success('/api/submissions/course1/challenge/lawrence')
+    timestamp = sorted(map(lambda x: x['timestamp'], result['submissions']))[0]
+    result = assert_success(url + 'course1/challenge/lawrence',
+                            {'timestamp': timestamp, 'list_only': 'true'})
+    files = result['files']
+    assert len(files) == 1
+    file_obj = next(filter(lambda x: x['path'] == 'file3', files))
+    assert 'content' not in file_obj
+    assert file_obj['checksum'] == hashlib.md5(b'33333').hexdigest()
+    # Test timestamp not found
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f %Z')
+    assert_fail(url + 'course1/challenge/lawrence', {'timestamp': timestamp},
+                msg='Submission not found')
+    # Test permission
     user = 'eric'
     assert_fail(url + 'course2/assignment2a/eric',
                 msg='Permission denied (not course instructor)')
@@ -320,7 +328,7 @@ def test_download_feedback():
     assert_fail(url + 'course1/challenge/st', msg='Student not found')
     meta = assert_success('/api/submission/course1/challenge/lawrence',
                           params={'get_latest': 'true'})
-    timestamp = meta['submissions'][0]['timestamp']
+    timestamp = meta['timestamp']
     assert_fail(url + 'course1/challenge/lawrence', params={},
                 msg='Please supply timestamp')
     assert_fail(url + 'course1/challenge/lawrence', params={'timestamp': 'a'},

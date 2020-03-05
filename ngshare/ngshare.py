@@ -347,30 +347,16 @@ class DownloadAssignment(MyRequestHandler):
         assignment = self.find_assignment(course, assignment_id)
         student = self.find_course_user(course, student_id)
         list_only = self.get_argument('list_only', 'false') == 'true'
-        get_all = self.get_argument('get_all', 'false') == 'true'
-        get_latest = self.get_argument('get_latest', 'false') == 'true'
         timestamp = self.get_argument('timestamp', '')
-        if get_all + get_latest + bool(timestamp) != 1:
-            self.json_error('Please supply exactly one of get_all, get_latest, '
-                            'and timestamp')
-        if get_all:
-            if not list_only:
-                0/0 # TODO
-            submissions = self.find_student_submissions(assignment, student)
-        elif get_latest:
-            submissions = [self.find_student_latest_submission(assignment,
-                                                               student)]
+        if not timestamp:
+            submission = self.find_student_latest_submission(assignment,
+                                                             student)
         else:
-            submissions = [self.find_student_submission(assignment, student,
-                                                        timestamp)]
-        ans = []
-        for submission in submissions:
-            files = self.json_files_pack(submission.files, list_only)
-            ans.append({
-                'files': files,
-                'timestamp': self.strftime(submission.timestamp),
-            })
-        self.json_success(submissions=ans)
+            submission = self.find_student_submission(assignment, student,
+                                                      timestamp)
+        files=self.json_files_pack(submission.files, list_only)
+        self.json_success(files=files,
+                          timestamp=self.strftime(submission.timestamp))
 
 class UploadDownloadFeedback(MyRequestHandler):
     '/api/feedback/<course_id>/<assignment_id>/<student_id>'
