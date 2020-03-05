@@ -78,15 +78,13 @@ class MyHelpers:
         'Generate JSON directory tree from a list of File objects'
         ans = []
         for i in file_list:
-            if list_only:
-                ans.append({
-                    'path': i.filename,
-                })
-            else:
-                ans.append({
-                    'path': i.filename,
-                    'content': base64.encodebytes(i.contents).decode(),
-                })
+            entry = {
+                'path': i.filename,
+                'checksum': i.checksum,
+            }
+            if not list_only:
+                entry['content'] = base64.encodebytes(i.contents).decode()
+            ans.append(entry)
         return ans
 
     def json_files_unpack(self, json_str, target):

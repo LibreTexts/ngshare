@@ -5,6 +5,7 @@
 import sys
 import json
 import base64
+import hashlib
 import requests
 
 # pylint: disable=comparison-with-callable
@@ -111,12 +112,14 @@ def test_download_assignment():
     files = assert_success(url + 'course1/challenge')['files']
     assert files[0]['path'] == 'file2'
     assert base64.b64decode(files[0]['content'].encode()) == b'22222'
+    assert files[0]['checksum'] == hashlib.md5(b'22222').hexdigest()
     assert_fail(url + 'jkl/challenger', msg='Course not found')
     assert_fail(url + 'course1/challenger', msg='Assignment not found')
     # Check list_only
     files = assert_success(url + 'course1/challenge?list_only=true')['files']
-    assert list(files[0]) == ['path']
+    assert set(files[0]) == {'path', 'checksum'}
     assert files[0]['path'] == 'file2'
+    assert files[0]['checksum'] == hashlib.md5(b'22222').hexdigest()
     user = 'eric'
     assert_fail(url + 'course1/challenge',
                 msg='Permission denied (not related to course)')
@@ -238,8 +241,9 @@ def test_download_submission():
     assert_fail(url + 'course1/challenge/st', msg='Student not found')
     result = assert_success(url + 'course1/challenge/lawrence')
     assert len(result['files']) == 1
-    assert next(filter(lambda x: x['path'] == 'a', result['files'])) \
-            ['content'].replace('\n', '') == 'amtsCg=='
+    file_obj = next(filter(lambda x: x['path'] == 'a', result['files']))
+    assert base64.b64decode(file_obj['content'].encode()) == b'jkl\n'
+    assert file_obj['checksum'] == hashlib.md5(b'jkl\n').hexdigest()
     user = 'abigail'
     assert_fail(url + 'course2/assignment2a/eric', msg='Submission not found')
     # Check list_only
@@ -247,8 +251,9 @@ def test_download_submission():
     result = assert_success(
         url + 'course1/challenge/lawrence?list_only=true')
     assert len(result['files']) == 1
-    assert list(result['files'][0]) == ['path']
+    assert set(result['files'][0]) == {'path', 'checksum'}
     assert result['files'][0]['path'] == 'a'
+    assert result['files'][0]['checksum'] == hashlib.md5(b'jkl\n').hexdigest()
     user = 'eric'
     assert_fail(url + 'course2/assignment2a/eric',
                 msg='Permission denied (not course instructor)')
@@ -305,7 +310,7 @@ def test_download_feedback():
     feedback = assert_success(url + 'course1/challenge/lawrence',
                               params={'timestamp': timestamp})
     assert feedback['files'] == []
-    # Submit again
+    # Submit again ('amtsDg==' is 'jkl\x0e')
     data = {'files': json.dumps([{'path': 'a', 'content': 'amtsDg=='}]),
             'timestamp': timestamp}
     assert_success(url + 'course1/challenge/lawrence', method=POST, data=data)
@@ -314,8 +319,10 @@ def test_download_feedback():
                               params={'timestamp': timestamp})
     assert len(feedback['files']) == 1
     assert feedback['files'][0]['path'] == 'a'
-    assert feedback['files'][0]['content'].replace('\n', '') == 'amtsDg=='
-    # Again, submit again
+    file_obj = feedback['files'][0]
+    assert base64.b64decode(file_obj['content'].encode()) == b'jkl\x0e'
+    assert file_obj['checksum'] == hashlib.md5(b'jkl\x0e').hexdigest()
+    # Again, submit again ('nmtsDg==' is 'nkl\x0e')
     data = {'files': json.dumps([{'path': 'a', 'content': 'bmtsDg=='}]),
             'timestamp': timestamp}
     assert_success(url + 'course1/challenge/lawrence', method=POST, data=data)
@@ -323,14 +330,17 @@ def test_download_feedback():
     feedback = assert_success(url + 'course1/challenge/lawrence',
                               params={'timestamp': timestamp})
     assert len(feedback['files']) == 1
-    assert feedback['files'][0]['path'] == 'a'
-    assert feedback['files'][0]['content'].replace('\n', '') == 'bmtsDg=='
+    file_obj = feedback['files'][0]
+    assert file_obj['path'] == 'a'
+    assert base64.b64decode(file_obj['content'].encode()) == b'nkl\x0e'
+    assert file_obj['checksum'] == hashlib.md5(b'nkl\x0e').hexdigest()
     # Check list_only
     feedback = assert_success(url + 'course1/challenge/lawrence',
                               params={'timestamp': timestamp,
                                       'list_only': 'true'})
     assert len(feedback['files']) == 1
-    assert list(feedback['files'][0]) == ['path']
+    assert set(feedback['files'][0]) == {'path', 'checksum'}
+    assert file_obj['checksum'] == hashlib.md5(b'nkl\x0e').hexdigest()
     assert feedback['files'][0]['path'] == 'a'
     # Permission check
     user = 'kevin'
