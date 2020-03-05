@@ -39,14 +39,14 @@ class MyHelpers:
 
     def strptime(self, string):
         'Use API specified format to strptime'
-        try :
-            return datetime.datetime.strptime(string, 
+        try:
+            return datetime.datetime.strptime(string,
                                               '%Y-%m-%d %H:%M:%S.%f %Z')
-        except ValueError :
-            try :
-                return datetime.datetime.strptime(string.strip(), 
+        except ValueError:
+            try:
+                return datetime.datetime.strptime(string.strip(),
                                                   '%Y-%m-%d %H:%M:%S.%f')
-            except ValueError :
+            except ValueError:
                 self.json_error('Time format incorrect')
 
     def path_check(self, pathname):
@@ -75,7 +75,7 @@ class MyHelpers:
         return True
 
     def json_files_pack(self, file_list, list_only):
-        'Generate JSON file list (directory tree) from a list of File objects'
+        'Generate JSON directory tree from a list of File objects'
         ans = []
         for i in file_list:
             if list_only:
@@ -91,7 +91,7 @@ class MyHelpers:
 
     def json_files_unpack(self, json_str, target):
         '''
-            Generate a list of File objects from a JSON file list (directory tree)
+            Generate a list of File objects from a JSON directory tree
             json_str: json object as string; raise error when None
             target: a list to put file objects in
         '''
@@ -143,7 +143,7 @@ class MyHelpers:
             Submission.student == student)
 
     def find_student_latest_submission(self, assignment, student):
-        'Return the latest Submission object from assignment and studnet, or error'
+        'Return the latest Submission object from assignment and studnet'
         submission = self.find_student_submissions(assignment, student) \
                     .order_by(Submission.timestamp.desc()).first()
         if submission is None:
@@ -151,7 +151,7 @@ class MyHelpers:
         return submission
 
     def find_student_submission(self, assignment, student, timestamp):
-        'Return the Submission object from timestamp etc, or error'
+        'Return the Submission object from timestamp etc'
         submission = self.find_student_submissions(assignment, student).filter(
             Submission.timestamp == timestamp).one_or_none()
         if submission is None:
@@ -168,15 +168,15 @@ class MyHelpers:
         'Return whether user is an instructor in the course'
         return course in user.teaching
 
-    def check_course_instructor(self, course, user):    # TODO: remove user
+    def check_course_instructor(self, course):
         'Assert user is an instructor in the course'
-        if not self.is_course_instructor(course, user):
+        if not self.is_course_instructor(course, self.user):
             self.json_error('Permission denied (not course instructor)')
 
-    def check_course_user(self, course, user):    # TODO: remove user
+    def check_course_user(self, course):
         'Assert user is a student or an instructor in the course'
-        if not self.is_course_instructor(course, user) and \
-            not self.is_course_student(course, user):
+        if not self.is_course_instructor(course, self.user) and \
+            not self.is_course_student(course, self.user):
             self.json_error('Permission denied (not related to course)')
 
 class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
@@ -254,7 +254,7 @@ class ListAssignments(MyRequestHandler):
     def get(self, course_id):
         'List all assignments for a course (students+instructors)'
         course = self.find_course(course_id)
-        self.check_course_user(course, self.user)
+        self.check_course_user(course)
         assignments = course.assignments
         self.json_success(assignments=list(map(lambda x: x.id, assignments)))
 
@@ -263,7 +263,7 @@ class DownloadReleaseAssignment(MyRequestHandler):
     def get(self, course_id, assignment_id):
         'Download a copy of an assignment (students+instructors)'
         course = self.find_course(course_id)
-        self.check_course_user(course, self.user)
+        self.check_course_user(course)
         assignment = self.find_assignment(course, assignment_id)
         list_only = self.get_argument('list_only', 'false') == 'true'
         files = self.json_files_pack(assignment.files, list_only)
@@ -272,7 +272,7 @@ class DownloadReleaseAssignment(MyRequestHandler):
     def post(self, course_id, assignment_id):
         'Release an assignment (instructors only)'
         course = self.find_course(course_id)
-        self.check_course_instructor(course, self.user)
+        self.check_course_instructor(course)
         if self.db.query(Assignment).filter(
                 Assignment.id == assignment_id,
                 Assignment.course == course).one_or_none():
@@ -291,45 +291,45 @@ class ListSubmissions(MyRequestHandler):
              (instructors only)
         '''
         course = self.find_course(course_id)
-        self.check_course_instructor(course, self.user)
+        self.check_course_instructor(course)
         assignment = self.find_assignment(course, assignment_id)
         submissions = []
-        for submission in assignment.submissions :
+        for submission in assignment.submissions:
             submissions.append({
-                'student_id': submission.student.id, 
-                'timestamp': self.strftime(submission.timestamp), 
-                # TODO: "notebooks": [], 
+                'student_id': submission.student.id,
+                'timestamp': self.strftime(submission.timestamp),
+                # TODO: "notebooks": [],
             })
         self.json_success(submissions=submissions)
 
 class ListStudentSubmissions(MyRequestHandler):
     '/api/submissions/<course_id>/<assignment_id>/<student_id>'
-    def get(self, course_id, assignment_id, student_id) :
+    def get(self, course_id, assignment_id, student_id):
         '''
-            List all submissions for an assignment from a particular student 
+            List all submissions for an assignment from a particular student
              (instructors+students,
               students restricted to their own submissions)
         '''
         course = self.find_course(course_id)
-        if self.user.id != student_id :
-            self.check_course_instructor(course, self.user)
+        if self.user.id != student_id:
+            self.check_course_instructor(course)
         assignment = self.find_assignment(course, assignment_id)
         student = self.find_course_user(course, student_id)
         submissions = []
-        for submission in self.find_student_submissions(assignment, student) :
+        for submission in self.find_student_submissions(assignment, student):
             submissions.append({
-                'student_id': submission.student.id, 
-                'timestamp': self.strftime(submission.timestamp), 
-                # TODO: "notebooks": [], 
+                'student_id': submission.student.id,
+                'timestamp': self.strftime(submission.timestamp),
+                # TODO: "notebooks": [],
             })
         self.json_success(submissions=submissions)
 
 class SubmitAssignment(MyRequestHandler):
     '/api/submission/<course_id>/<assignment_id>'
-    def post(self, course_id, assignment_id) :
+    def post(self, course_id, assignment_id):
         'Submit a copy of an assignment (students+instructors)'
         course = self.find_course(course_id)
-        self.check_course_user(course, self.user)
+        self.check_course_user(course)
         assignment = self.find_assignment(course, assignment_id)
         submission = Submission(self.user, assignment)
         files = self.get_body_argument('files', None)
@@ -339,13 +339,13 @@ class SubmitAssignment(MyRequestHandler):
 
 class DownloadAssignment(MyRequestHandler):
     '/api/submission/<course_id>/<assignment_id>/<student_id>'
-    def get(self, course_id, assignment_id, student_id) :
+    def get(self, course_id, assignment_id, student_id):
         '''
             Download a student's submitted assignment (instructors only)
             TODO: maybe allow student to see their own submissions?
         '''
         course = self.find_course(course_id)
-        self.check_course_instructor(course, self.user)
+        self.check_course_instructor(course)
         assignment = self.find_assignment(course, assignment_id)
         student = self.find_course_user(course, student_id)
         submission = self.find_student_latest_submission(assignment, student)
@@ -356,20 +356,21 @@ class DownloadAssignment(MyRequestHandler):
 
 class UploadDownloadFeedback(MyRequestHandler):
     '/api/feedback/<course_id>/<assignment_id>/<student_id>'
-    def post(self, course_id, assignment_id, student_id) :
+    def post(self, course_id, assignment_id, student_id):
         '''
             POST /api/feedback/<course_id>/<assignment_id>/<student_id>
             Upload feedback on a student's assignment (instructors only)
         '''
         course = self.find_course(course_id)
-        self.check_course_instructor(course, self.user)
+        self.check_course_instructor(course)
         assignment = self.find_assignment(course, assignment_id)
         student = self.find_course_user(course, student_id)
         try:
             timestamp = self.strptime(self.get_body_argument('timestamp'))
         except MissingArgumentError:
             self.json_error('Please supply timestamp')
-        submission = self.find_student_submission(assignment, student, timestamp)
+        submission = self.find_student_submission(assignment, student,
+                                                  timestamp)
         submission.feedbacks.clear()
         # TODO: does this automatically remove the files?
         files = self.get_body_argument('files', None)
@@ -377,22 +378,23 @@ class UploadDownloadFeedback(MyRequestHandler):
         self.db.commit()
         self.json_success()
 
-    def get(self, course_id, assignment_id, student_id) :
+    def get(self, course_id, assignment_id, student_id):
         '''
             GET /api/feedback/<course_id>/<assignment_id>/<student_id>
             Download feedback on a student's assignment
-             (instructors+students, students restricted to their own submissions)
+             (instructors+students, students restricted to own submissions)
         '''
         course = self.find_course(course_id)
-        if self.user.id != student_id :
-            self.check_course_instructor(course, self.user)
+        if self.user.id != student_id:
+            self.check_course_instructor(course)
         assignment = self.find_assignment(course, assignment_id)
         student = self.find_course_user(course, student_id)
         try:
             timestamp = self.strptime(self.get_query_argument('timestamp'))
         except MissingArgumentError:
             self.json_error('Please supply timestamp')
-        submission = self.find_student_submission(assignment, student, timestamp)
+        submission = self.find_student_submission(assignment, student,
+                                                  timestamp)
         list_only = self.get_argument('list_only', 'false') == 'true'
         files = self.json_files_pack(submission.feedbacks, list_only)
         self.json_success(files=files,
