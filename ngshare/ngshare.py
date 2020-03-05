@@ -25,10 +25,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from database.database import Base, User, Course, Assignment, Submission, File
-engine = create_engine('sqlite:////srv/ngshare/ngshare.db')
-Base.metadata.bind = engine
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
 
 class MyHelpers:
     'Helper functions for database accesses'
@@ -199,7 +195,7 @@ class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
 
     def prepare(self):
         'Provide a db object'
-        self.db = Session()
+        self.db = self.application.db_session()
         current_user = self.get_current_user()
         if current_user is not None:
             self.user = User.from_jupyterhub_user(current_user, self.db)
@@ -362,6 +358,11 @@ def main():
         ],
         autoreload=True
     )
+
+    engine = create_engine('sqlite:////srv/ngshare/ngshare.db')
+    Base.metadata.bind = engine
+    Base.metadata.create_all(engine)
+    app.db_session = sessionmaker(bind=engine)
 
     http_server = HTTPServer(app)
     url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])
