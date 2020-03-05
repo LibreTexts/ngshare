@@ -167,7 +167,7 @@ The API specifications for `ngshare` are available in
 4. Note that `/tmp/ngshare.db` will be the database created
 5. Though there is no file system APIs, so your system should be safe, but
  unauthorized people can corrupt your data.
-7. To test, when `vngshare.py` is running with default IP and port,
+6. To test, when `vngshare.py` is running with default IP and port,
  `pytest test_ngshare.py`
 
 ### vserver
