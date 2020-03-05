@@ -358,11 +358,11 @@ class DownloadAssignment(MyRequestHandler):
                 0/0 # TODO
             submissions = self.find_student_submissions(assignment, student)
         elif get_latest:
-            submissions = self.find_student_latest_submission(assignment,
-                                                              student)
+            submissions = [self.find_student_latest_submission(assignment,
+                                                               student)]
         else:
-            submissions = self.find_student_submission(assignment, student,
-                                                       timestamp)
+            submissions = [self.find_student_submission(assignment, student,
+                                                        timestamp)]
         ans = []
         for submission in submissions:
             files = self.json_files_pack(submission.files, list_only)
