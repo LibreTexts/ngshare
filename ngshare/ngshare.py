@@ -422,7 +422,8 @@ class Test404Handler(RequestHandler):
     '404 handler'
     def get(self):
         'Disable 404 page'
-        self.write("This would have 404'd. Double check URL.\n")
+        self.write("<h1>404 Not Found</h1>\n")
+        # TODO: if not DEBUG: return
         self.write(json.dumps(dict(os.environ), indent=1, sort_keys=True))
         self.write("\n"+self.request.uri+"\n"+self.request.path+"\n")
 
