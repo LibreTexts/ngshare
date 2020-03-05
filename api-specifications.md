@@ -260,7 +260,7 @@ files=/* encoded directory tree in JSON */
 #### GET /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 *download a student's submitted assignment (instructors only)*
 
-If `list_only` is `true`, `files` only contains `path` and `checksum` (does not contain `content`).
+If `list_only` is `true`, `files` only contains `path` and `checksum` (does not contain `content`). `get_all`, `get_latest`, and `timestamp` are mutually exclusive and exactly one must be provided.
 
 Used for ExchangeCollect.
 
@@ -291,7 +291,7 @@ timestamp=/* submission timestamp */
 * Assignment not found
 * Student not found
 * Submission not found
-* get_all, get_latest, and timestamp are mutually exclusive
+* Please supply exactly one of get_all, get_latest, and timestamp
 
 ### /api/feedback: Fetching and releasing submission feedback
 
