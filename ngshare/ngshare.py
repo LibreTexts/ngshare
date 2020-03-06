@@ -354,7 +354,7 @@ class DownloadAssignment(MyRequestHandler):
         else:
             submission = self.find_student_submission(assignment, student,
                                                       timestamp)
-        files=self.json_files_pack(submission.files, list_only)
+        files = self.json_files_pack(submission.files, list_only)
         self.json_success(files=files,
                           timestamp=self.strftime(submission.timestamp))
 

@@ -326,8 +326,7 @@ def test_download_feedback():
     assert_fail(url + 'jkl/challenge/st', msg='Course not found')
     assert_fail(url + 'course1/challenges/st', msg='Assignment not found')
     assert_fail(url + 'course1/challenge/st', msg='Student not found')
-    meta = assert_success('/api/submission/course1/challenge/lawrence',
-                          params={'get_latest': 'true'})
+    meta = assert_success('/api/submission/course1/challenge/lawrence')
     timestamp = meta['timestamp']
     assert_fail(url + 'course1/challenge/lawrence', params={},
                 msg='Please supply timestamp')
