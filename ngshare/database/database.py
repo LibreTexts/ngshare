@@ -6,8 +6,8 @@
 # pylint: disable=too-few-public-methods
 # pylint: disable=fixme
 
-import uuid
 import datetime
+import hashlib
 
 from sqlalchemy import Table, Column, INTEGER, TEXT, BLOB, TIMESTAMP, BOOLEAN, ForeignKey
 from sqlalchemy.orm import relationship
@@ -140,10 +140,12 @@ class File(Base):
     _id = Column(INTEGER, primary_key=True)
     filename = Column(TEXT)
     contents = Column(BLOB)
+    checksum = Column(TEXT)
 
     def __init__(self, filename, contents):
         self.filename = filename
         self.contents = contents
+        self.checksum = hashlib.md5(contents).hexdigest()
 
     def __str__(self):
         return '<File %s>' % self.filename

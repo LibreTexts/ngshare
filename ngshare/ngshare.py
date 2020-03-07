@@ -78,15 +78,13 @@ class MyHelpers:
         'Generate JSON directory tree from a list of File objects'
         ans = []
         for i in file_list:
-            if list_only:
-                ans.append({
-                    'path': i.filename,
-                })
-            else:
-                ans.append({
-                    'path': i.filename,
-                    'content': base64.encodebytes(i.contents).decode(),
-                })
+            entry = {
+                'path': i.filename,
+                'checksum': i.checksum,
+            }
+            if not list_only:
+                entry['content'] = base64.encodebytes(i.contents).decode()
+            ans.append(entry)
         return ans
 
     def json_files_unpack(self, json_str, target):
@@ -348,8 +346,14 @@ class DownloadAssignment(MyRequestHandler):
         self.check_course_instructor(course)
         assignment = self.find_assignment(course, assignment_id)
         student = self.find_course_user(course, student_id)
-        submission = self.find_student_latest_submission(assignment, student)
         list_only = self.get_argument('list_only', 'false') == 'true'
+        timestamp = self.get_argument('timestamp', '')
+        if not timestamp:
+            submission = self.find_student_latest_submission(assignment,
+                                                             student)
+        else:
+            submission = self.find_student_submission(assignment, student,
+                                                      timestamp)
         files = self.json_files_pack(submission.files, list_only)
         self.json_success(files=files,
                           timestamp=self.strftime(submission.timestamp))
