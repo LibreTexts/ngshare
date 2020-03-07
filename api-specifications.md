@@ -1,5 +1,5 @@
 # Server API
-Last updated 2020-03-05
+Last updated 2020-03-07
 
 ---
 
@@ -243,7 +243,8 @@ files=/* encoded directory tree in JSON */
 ##### Response
 ```javascript
 {
-    "success": true
+    "success": true,
+    "timestamp": /* submission timestamp */
 }
 ```
 
