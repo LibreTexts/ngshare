@@ -333,7 +333,7 @@ class SubmitAssignment(MyRequestHandler):
         files = self.get_body_argument('files', None)
         self.json_files_unpack(files, submission.files)
         self.db.commit()
-        self.json_success()
+        self.json_success(timestamp=self.strftime(submission.timestamp))
 
 class DownloadAssignment(MyRequestHandler):
     '/api/submission/<course_id>/<assignment_id>/<student_id>'

@@ -9,6 +9,8 @@ import datetime
 import hashlib
 import requests
 
+from ngshare import MyHelpers
+
 # pylint: disable=comparison-with-callable
 # pylint: disable=global-statement
 # pylint: disable=invalid-name
@@ -219,9 +221,13 @@ def test_submit_assignment():
     user = 'lawrence'
     assert_fail(url + 'course1/challenge', method=POST,
                 msg='Please supply files')
-    assert_success(url + 'course1/challenge', method=POST, data=data)
+    resp1 = assert_success(url + 'course1/challenge', method=POST, data=data)
+    ts1 = MyHelpers().strptime(resp1['timestamp'])
     data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg=='}])
-    assert_success(url + 'course1/challenge', method=POST, data=data)
+    resp2 = assert_success(url + 'course1/challenge', method=POST, data=data)
+    ts2 = MyHelpers().strptime(resp2['timestamp'])
+    assert ts1 < ts2
+    assert ts2 < ts1 + datetime.timedelta(seconds=1)
     data['files'] = json.dumps([{'path': 'a', 'content': 'amtsCg'}])
     assert_fail(url + 'course1/challenge', method=POST,
                 data=data, msg='Content cannot be base64 decoded')
