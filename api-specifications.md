@@ -91,6 +91,8 @@ Used for ExchangeList.
 #### POST /api/course/&lt;course_id&gt;
 *Create a course (anyone logged in). Used for outside Exchange.*
 
+The new course will have no students. The only instructor is the creator.
+
 ##### Response
 ```javascript
 {
