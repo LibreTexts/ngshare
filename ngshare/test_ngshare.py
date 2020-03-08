@@ -80,7 +80,7 @@ def test_list_courses():
     user = 'eric'
     assert assert_success(url)['courses'] == ['course2']
 
-def test_add_courses():
+def test_add_course():
     'Test GET /api/course/<course_id>'
     url = '/api/course/'
     global user
@@ -88,6 +88,30 @@ def test_add_courses():
     assert_success(url + 'course3', method=POST)
     assert_fail(url + 'course3', method=POST, msg='Course already exists')
     assert assert_success('/api/courses')['courses'] == ['course2', 'course3']
+
+def test_add_instructor():
+    'Test POST /api/instructor/<course_id>/<instructor_id>'
+
+def test_get_instructor():
+    'Test GET /api/instructor/<course_id>/<instructor_id>'
+
+def test_delete_instructor():
+    'Test DELETE /api/instructor/<course_id>/<instructor_id>'
+
+def test_get_instructors():
+    'Test GET /api/instructors/<course_id>'
+
+def test_add_student():
+    'Test POST /api/student/<course_id>/<student_id>'
+
+def test_get_student():
+    'Test GET /api/student/<course_id>/<student_id>'
+
+def test_delete_student():
+    'Test DELETE /api/student/<course_id>/<student_id>'
+
+def test_get_students():
+    'Test GET /api/students/<course_id>'
 
 def test_list_assignments():
     'Test GET /api/assignments/<course_id>'

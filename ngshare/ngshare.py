@@ -246,6 +246,50 @@ class AddCourse(MyRequestHandler):
         self.db.commit()
         self.json_success()
 
+class ManageInstructor(MyRequestHandler):
+    '/api/instructor/<course_id>/<instructor_id>'
+    @authenticated
+    def post(self, course_id, instructor_id):
+        'Add an instructor to the course. (instructors only)'
+        0/0
+
+    @authenticated
+    def get(self, course_id, instructor_id):
+        'Gets information about a course instructor. (instructors+students)'
+
+    @authenticated
+    def delete(self, course_id, instructor_id):
+        'Remove a course instructor (instructors only)'
+
+class ListInstructors(MyRequestHandler):
+    '/api/instructors/<course_id>/'
+    @authenticated
+    def get(self, course_id):
+        'Gets information about all course instructors. (instructors+students)'
+
+class ManageStudent(MyRequestHandler):
+    '/api/student/<course_id>/<student_id>'
+    @authenticated
+    def post(self, course_id, student_id):
+        'Create or update a student. (instructors only)'
+
+    @authenticated
+    def get(self, course_id, student_id):
+        '''
+            Gets information about a student.
+            (instructors+student with same student_id)
+        '''
+
+    @authenticated
+    def delete(self, course_id, student_id):
+        'Removes a student (instructors only)'
+
+class ListStudents(MyRequestHandler):
+    '/api/students/<course_id>/'
+    @authenticated
+    def get(self, course_id):
+        'Gets information about all course instructors. (instructors+students)'
+
 class ListAssignments(MyRequestHandler):
     '/api/assignments/<course_id>'
     @authenticated
@@ -431,6 +475,10 @@ def main():
             (prefix + 'favicon.ico', Favicon),
             (prefix + 'courses', ListCourses),
             (prefix + 'course/([^/]+)', AddCourse),
+            (prefix + 'instructor/([^/]+)/([^/]+)', ManageInstructor),
+            (prefix + 'instructors/([^/]+)', ListInstructors),
+            (prefix + 'student/([^/]+)/([^/]+)', ManageStudent),
+            (prefix + 'students/([^/]+)', ListStudents),
             (prefix + 'assignments/([^/]+)', ListAssignments),
             (prefix + 'assignment/([^/]+)/([^/]+)', DownloadReleaseAssignment),
             (prefix + 'submissions/([^/]+)/([^/]+)', ListSubmissions),
