@@ -105,7 +105,7 @@ Used for ExchangeList.
 ### /api/instructor: Course instructor management
 
 #### POST /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Create or update a course instructor. (instructors only)*
+*Add an instructor to the course. (instructors only)*
 
 ##### Request (HTTP POST data)
 ```
