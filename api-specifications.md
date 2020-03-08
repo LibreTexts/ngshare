@@ -105,14 +105,14 @@ Used for ExchangeList.
 ### /api/instructor: Course instructor management
 
 #### GET /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Gets information about a course instructor. (instructors + students)*
+*Gets information about a course instructor. (instructors+students)*
 
 ##### Response
 ```javascript
 {
     "success": true,
-    "first_name": /*instructor name*/
-    "last_name": /*instructor last name*/
+    "first_name": /*instructor name*/,
+    "last_name": /*instructor last name*/,
     "email": /*instructor email*/
 }
 ```
@@ -157,7 +157,7 @@ email=/*instructor email*/
 ### /api/instructors: List course instructors
 
 #### GET /api/instructors/&lt;course_id&gt;
-*Gets information about all course instructors. (instructors + students)*
+*Gets information about all course instructors. (instructors+students)*
 
 ##### Response
 ```javascript
@@ -169,7 +169,7 @@ email=/*instructor email*/
             "first_name": /* instructor name*/,
             "last_name": /* instructor lastname */,
             "email": /* instructor email */,
-            "instructor_id": /* instructor ID */,
+            "instructor_id": /* instructor ID */
         },
         ...
     ]
@@ -184,7 +184,7 @@ email=/*instructor email*/
 ### /api/student: Student management
 
 #### GET /api/student/&lt;course_id&gt;/&lt;student_id&gt;
-*Gets information about a student. (instructors + student with same student_id)*
+*Gets information about a student. (instructors+student with same student_id)*
 
 ##### Response
 ```javascript
