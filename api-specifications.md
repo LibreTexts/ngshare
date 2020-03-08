@@ -104,25 +104,6 @@ Used for ExchangeList.
 
 ### /api/instructor: Course instructor management
 
-#### GET /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Gets information about a course instructor. (instructors+students)*
-
-##### Response
-```javascript
-{
-    "success": true,
-    "first_name": /*instructor name*/,
-    "last_name": /*instructor last name*/,
-    "email": /*instructor email*/
-}
-```
-
-##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Instructor not found
-
 #### POST /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Create or update a course instructor. (instructors only)*
 
@@ -144,6 +125,25 @@ email=/*instructor email*/
 * Login required
 * Permission denied
 * Course not found
+
+#### GET /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
+*Gets information about a course instructor. (instructors+students)*
+
+##### Response
+```javascript
+{
+    "success": true,
+    "first_name": /*instructor name*/,
+    "last_name": /*instructor last name*/,
+    "email": /*instructor email*/
+}
+```
+
+##### Error messages
+* Login required
+* Permission denied
+* Course not found
+* Instructor not found
 
 #### DELETE /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Remove a course instructor (instructors only)*
@@ -183,24 +183,6 @@ email=/*instructor email*/
 
 ### /api/student: Student management
 
-#### GET /api/student/&lt;course_id&gt;/&lt;student_id&gt;
-*Gets information about a student. (instructors+student with same student_id)*
-
-##### Response
-```javascript
-{
-    "success": true,
-    "first_name": /* student name*/,
-    "last_name": /* student lastname */,
-    "email": /* student email */
-}
-```
-##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Student not found
-
 #### POST /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Create or update a student. (instructors only)*
 
@@ -222,8 +204,27 @@ email=/*student email*/
 * Permission denied
 * Course not found
 
+#### GET /api/student/&lt;course_id&gt;/&lt;student_id&gt;
+*Gets information about a student. (instructors+student with same student_id)*
+
+##### Response
+```javascript
+{
+    "success": true,
+    "first_name": /* student name*/,
+    "last_name": /* student lastname */,
+    "email": /* student email */
+}
+```
+##### Error messages
+* Login required
+* Permission denied
+* Course not found
+* Student not found
+
 #### DELETE /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Removes a student (instructors only)*
+
 ##### Error messages
 * Login required
 * Permission denied
