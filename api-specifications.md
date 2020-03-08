@@ -1,3 +1,4 @@
+
 # Server API
 Last updated 2020-03-07
 
@@ -16,6 +17,9 @@ Also referred to as `course_id`, this is a unique name for a course. For example
 
 ### Notebook name
 Also referred to as `notebook_id`, this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
+
+### Instructor ID
+The ID given to an instructor. For example, "course1_instructor" or "doe_jane"
 
 ### Student ID
 The ID given to a student. For example, "doe_jane".
@@ -63,7 +67,9 @@ Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyt
 ### /api/courses: Courses
 
 #### GET /api/courses
-List all available courses taking or teaching (students+instructors). Used for ExchangeList.
+*List all available courses taking or teaching (students+instructors).*
+
+Used for ExchangeList.
 
 ##### Response
 ```javascript
@@ -83,7 +89,7 @@ List all available courses taking or teaching (students+instructors). Used for E
 ### /api/course: Course
 
 #### POST /api/course/&lt;course_id&gt;
-Create a course (anyone logged in). Used for outside Exchange.
+*Create a course (anyone logged in). Used for outside Exchange.*
 
 ##### Response
 ```javascript
@@ -95,6 +101,160 @@ Create a course (anyone logged in). Used for outside Exchange.
 ##### Error messages
 * Login required
 * Course already exists
+
+### /api/instructor: Course instructor management
+
+#### GET /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
+*Gets information about a course instructor. (instructors + students)*
+
+##### Response
+```javascript
+{
+    "success": true,
+    "first_name": /*instructor name*/
+    "last_name": /*instructor last name*/
+    "email": /*instructor email*/
+}
+```
+
+##### Error messages
+* Login required
+* Permission denied
+* Course not found
+* Instructor not found
+
+#### POST /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
+*Create or update a course instructor. (instructors only)*
+
+##### Request (HTTP POST data)
+```
+first_name=/*instructor name*/&
+last_name=/*instructor last name*/&
+email=/*instructor email*/
+```
+
+##### Response
+```javascript
+{
+    "success": true
+}
+```
+
+##### Error messages
+* Login required
+* Permission denied
+* Course not found
+
+#### DELETE /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
+*Remove a course instructor (instructors only)*
+
+##### Error messages
+* Login required
+* Permission denied
+* Course not found
+* Instructor not found
+
+### /api/instructors: List course instructors
+
+#### GET /api/instructors/&lt;course_id&gt;
+*Gets information about all course instructors. (instructors + students)*
+
+##### Response
+```javascript
+{
+    "success": true,
+    "instructors":
+    [
+        {
+            "first_name": /* instructor name*/,
+            "last_name": /* instructor lastname */,
+            "email": /* instructor email */,
+            "instructor_id": /* instructor ID */,
+        },
+        ...
+    ]
+}
+```
+
+#### Error messages
+* Login required
+* Permission denied
+* Course not found
+
+### /api/student: Student management
+
+#### GET /api/student/&lt;course_id&gt;/&lt;student_id&gt;
+*Gets information about a student. (instructors + student with same student_id)*
+
+##### Response
+```javascript
+{
+    "success": true,
+    "first_name": /* student name*/,
+    "last_name": /* student lastname */,
+    "email": /* student email */
+}
+```
+##### Error messages
+* Login required
+* Permission denied
+* Course not found
+* Student not found
+
+#### POST /api/student/&lt;course_id&gt;/&lt;student_id&gt;
+*Create or update a student. (instructors only)*
+
+##### Request (HTTP POST data)
+```
+first_name=/*student name*/&
+last_name=/*student last name*/&
+email=/*student email*/
+```
+
+##### Response
+```javascript
+{
+    "success": true
+}
+```
+##### Error messages
+* Login required
+* Permission denied
+* Course not found
+
+#### DELETE /api/student/&lt;course_id&gt;/&lt;student_id&gt;
+*Removes a student (instructors only)*
+##### Error messages
+* Login required
+* Permission denied
+* Course not found
+* Student not found
+
+### /api/students: List course students
+
+#### GET /api/students/&lt;course_id&gt;
+*Gets information about all course students. (instructors only)*
+
+##### Response
+```javascript
+{
+    "success": true,
+    "students":
+    [
+        {
+            "first_name": /* student name*/,
+            "last_name": /* student lastname */,
+            "email": /* student email */,
+            "student_id": /* student ID */,
+        },
+        ...
+    ]
+}
+```
+##### Error messages
+* Login required
+* Permission denied
+* Course not found
 
 ### /api/assignments: Course assignments
 
@@ -338,7 +498,6 @@ Used for ExchangeFetchFeedback.
 timestamp=/* submission timestamp */&
 list_only=/* true or false */
 ```
-
 ##### Response
 ```javascript
 {
@@ -347,7 +506,6 @@ list_only=/* true or false */
     "files": /* encoded directory tree */
 }
 ```
-
 ##### Error messages
 * Login required
 * Permission denied
