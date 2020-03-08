@@ -144,6 +144,7 @@ email=/*instructor email*/
 * Permission denied
 * Course not found
 * Instructor not found
+* Removing self
 
 #### DELETE /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Remove a course instructor (instructors only)*
