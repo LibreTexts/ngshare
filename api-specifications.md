@@ -136,7 +136,7 @@ email=/*instructor email*/
 {
     "success": true,
     "username": /* instructor ID */,
-    "first_name": /* instructor name*/,
+    "first_name": /* instructor first name*/,
     "last_name": /* instructor last name*/,
     "email": /* instructor email*/
 }
