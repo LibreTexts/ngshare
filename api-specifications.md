@@ -135,9 +135,10 @@ email=/*instructor email*/
 ```javascript
 {
     "success": true,
-    "first_name": /*instructor name*/,
-    "last_name": /*instructor last name*/,
-    "email": /*instructor email*/
+    "username": /* instructor ID */,
+    "first_name": /* instructor name*/,
+    "last_name": /* instructor last name*/,
+    "email": /* instructor email*/
 }
 ```
 
@@ -169,10 +170,10 @@ email=/*instructor email*/
     "instructors":
     [
         {
+            "username": /* instructor ID */,
             "first_name": /* instructor name*/,
             "last_name": /* instructor lastname */,
-            "email": /* instructor email */,
-            "instructor_id": /* instructor ID */
+            "email": /* instructor email */
         },
         ...
     ]
@@ -214,6 +215,7 @@ email=/*student email*/
 ```javascript
 {
     "success": true,
+    "username": /* student ID */,
     "first_name": /* student name*/,
     "last_name": /* student lastname */,
     "email": /* student email */
@@ -246,10 +248,10 @@ email=/*student email*/
     "students":
     [
         {
+            "username": /* student ID */,
             "first_name": /* student name*/,
             "last_name": /* student lastname */,
-            "email": /* student email */,
-            "student_id": /* student ID */,
+            "email": /* student email */
         },
         ...
     ]
