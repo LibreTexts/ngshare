@@ -107,7 +107,7 @@ The new course will have no students. Its only instructor is the creator.
 ### /api/instructor: Course instructor management
 
 #### POST /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Add an instructor to the course. (instructors only)*
+*Add or update a course instructor. (instructors only)*
 
 ##### Request (HTTP POST data)
 ```
