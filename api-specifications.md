@@ -209,7 +209,7 @@ email=/*student email*/
 * Course not found
 
 #### GET /api/student/&lt;course_id&gt;/&lt;student_id&gt;
-*Gets information about a student. (instructors+student with same student_id)*
+*Get information about a student. (instructors+student with same student_id)*
 
 ##### Response
 ```javascript
