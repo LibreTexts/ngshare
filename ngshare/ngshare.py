@@ -287,7 +287,7 @@ class ManageInstructor(MyRequestHandler):
     '/api/instructor/<course_id>/<instructor_id>'
     @authenticated
     def post(self, course_id, instructor_id):
-        'Add an instructor to the course. (instructors only)'
+        'Add or update a course instructor. (instructors only)'
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         instructor = self.find_user(instructor_id)
@@ -300,7 +300,7 @@ class ManageInstructor(MyRequestHandler):
 
     @authenticated
     def get(self, course_id, instructor_id):
-        'Gets information about a course instructor. (instructors+students)'
+        'Get information about a course instructor. (instructors+students)'
         course = self.find_course(course_id)
         self.check_course_user(course)
         instructor = self.find_course_instructor(course, instructor_id)
@@ -324,7 +324,7 @@ class ListInstructors(MyRequestHandler):
     '/api/instructors/<course_id>/'
     @authenticated
     def get(self, course_id):
-        'Gets information about all course instructors. (instructors+students)'
+        'Get information about all course instructors. (instructors+students)'
         course = self.find_course(course_id)
         self.check_course_user(course)
         ans = []
@@ -336,34 +336,46 @@ class ManageStudent(MyRequestHandler):
     '/api/student/<course_id>/<student_id>'
     @authenticated
     def post(self, course_id, student_id):
-        'Create or update a student. (instructors only)'
+        'Add or update a student. (instructors only)'
         course = self.find_course(course_id)
         self.check_course_instructor(course)
-        # TODO
+        student = self.find_user(student_id)
+        # TODO: if student in course.instructors: #42
+        if student not in course.students:
+            course.students.append(student)
+        # TODO: update first name etc.
+        self.db.commit()
+        self.json_success()
 
     @authenticated
     def get(self, course_id, student_id):
         '''
-            Gets information about a student.
+            Get information about a student.
             (instructors+student with same student_id)
         '''
         course = self.find_course(course_id)
-        if user.id != student_id:
+        if self.user.id != student_id:
             self.check_course_instructor(course)
-        # TODO
+        student = self.find_course_student(course, student_id)
+        ans = self.wrap_user_info(student, course)
+        self.json_success(**ans)
 
     @authenticated
     def delete(self, course_id, student_id):
-        'Removes a student (instructors only)'
+        'Remove a student (instructors only)'
         course = self.find_course(course_id)
         self.check_course_instructor(course)
-        # TODO
+        student = self.find_course_student(course, student_id)
+        course.students.remove(student)
+        # TODO: update first name etc.
+        self.db.commit()
+        self.json_success()
 
 class ListStudents(MyRequestHandler):
     '/api/students/<course_id>/'
     @authenticated
     def get(self, course_id):
-        'Gets information about all course students. (instructors only)'
+        'Get information about all course students. (instructors only)'
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         ans = []

@@ -157,15 +157,46 @@ def test_list_instructors():
 
 def test_add_student():
     'Test POST /api/student/<course_id>/<student_id>'
-    # TODO
+    url = '/api/student/'
+    global user
+    user = 'eric'
+    assert_fail(url + 'course9/lawrence', method=POST, msg='Course not found')
+    assert_fail(url + 'course2/lawrence', method=POST,
+                msg='Permission denied (not course instructor)')
+    user = 'abigail'
+    assert_success(url + 'course2/lawrence', method=POST)
+    assert len(assert_success('/api/students/course2')['students']) == 2
 
 def test_get_student():
     'Test GET /api/student/<course_id>/<student_id>'
-    # TODO
+    url = '/api/student/'
+    global user
+    user = 'kevin'
+    assert_fail(url + 'course9/lawrence', msg='Course not found')
+    assert_fail(url + 'course2/lawrence',
+                msg='Permission denied (not course instructor)')
+    user = 'eric'
+    assert_fail(url + 'course2/lawrence',
+                msg='Permission denied (not course instructor)')
+    user = 'abigail'
+    assert_fail(url + 'course2/abigail', msg='Student not found')
+    resp = assert_success(url + 'course2/lawrence')
+    assert resp['username'] == 'lawrence'
+    assert resp['first_name'] == 'first_name_of_lawrence@course2'
+    assert resp['last_name'] == 'last_name_of_lawrence@course2'
+    assert resp['email'] == 'email_of_lawrence@course2'
 
 def test_delete_student():
     'Test DELETE /api/student/<course_id>/<student_id>'
-    # TODO
+    url = '/api/student/'
+    global user
+    user = 'eric'
+    assert_fail(url + 'course9/lawrence', method=DELETE, msg='Course not found')
+    assert_fail(url + 'course2/lawrence', method=DELETE,
+                msg='Permission denied (not course instructor)')
+    user = 'abigail'
+    assert_fail(url + 'course2/kevin', method=DELETE, msg='Student not found')
+    assert_success(url + 'course2/lawrence', method=DELETE)
 
 def test_list_students():
     'Test GET /api/students/<course_id>'
