@@ -19,6 +19,7 @@ from ngshare import MyHelpers
 URL_PREFIX = 'http://127.0.0.1:12121'
 GET = requests.get
 POST = requests.post
+DELETE = requests.delete
 user = None
 
 def request_page(url, data=None, params=None, method=GET):
@@ -91,12 +92,30 @@ def test_add_course():
 
 def test_add_instructor():
     'Test POST /api/instructor/<course_id>/<instructor_id>'
+    url = '/api/instructor/'
+    global user
+    user = 'eric'
+    assert_fail(url + 'course9/lawrence', method=POST, msg='Course not found')
+    assert_fail(url + 'course2/lawrence', method=POST,
+                msg='Permission denied (not course instructor)')
+    user = 'abigail'
+    assert_success(url + 'course2/lawrence', method=POST)
 
 def test_get_instructor():
     'Test GET /api/instructor/<course_id>/<instructor_id>'
+    # TODO
 
 def test_delete_instructor():
     'Test DELETE /api/instructor/<course_id>/<instructor_id>'
+    url = '/api/instructor/'
+    global user
+    user = 'eric'
+    assert_fail(url + 'course9/lawrence', method=DELETE, msg='Course not found')
+    assert_fail(url + 'course2/lawrence', method=DELETE,
+                msg='Permission denied (not course instructor)')
+    user = 'abigail'
+    assert_fail(url + 'course2/eric', method=DELETE, msg='Instructor not found')
+    assert_success(url + 'course2/lawrence', method=DELETE)
 
 def test_list_instructors():
     'Test GET /api/instructors/<course_id>'
@@ -104,7 +123,6 @@ def test_list_instructors():
     global user
     user = 'kevin'
     assert_fail(url + 'course9', msg='Course not found')
-    user = 'kevin'
     assert_fail(url + 'course2',
                 msg='Permission denied (not related to course)')
     user = 'eric'
@@ -120,12 +138,15 @@ def test_list_instructors():
 
 def test_add_student():
     'Test POST /api/student/<course_id>/<student_id>'
+    # TODO
 
 def test_get_student():
     'Test GET /api/student/<course_id>/<student_id>'
+    # TODO
 
 def test_delete_student():
     'Test DELETE /api/student/<course_id>/<student_id>'
+    # TODO
 
 def test_list_students():
     'Test GET /api/students/<course_id>'
@@ -133,7 +154,6 @@ def test_list_students():
     global user
     user = 'kevin'
     assert_fail(url + 'course9', msg='Course not found')
-    user = 'kevin'
     assert_fail(url + 'course2',
                 msg='Permission denied (not course instructor)')
     user = 'eric'

@@ -22,7 +22,7 @@ from tornado.ioloop import IOLoop
 from tornado.web import (Application, authenticated, RequestHandler, Finish,
                          MissingArgumentError)
 from jupyterhub.services.auth import HubAuthenticated
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 
 from database.database import Base, User, Course, Assignment, Submission, File
@@ -108,6 +108,13 @@ class MyHelpers:
                 self.json_error('Content cannot be base64 decoded')
             target.append(File(i['path'], content))
 
+    def find_user(self, user_id):
+        'Return a User object from id'
+        user = self.db.query(User).filter(User.id==user_id).one_or_none()
+        if user is None:
+            self.json_error("User not found")
+        return user
+
     def find_course(self, course_id):
         'Return a Course object from id, or raise error'
         qry = self.db.query(Course)
@@ -125,14 +132,33 @@ class MyHelpers:
             self.json_error('Assignment not found')
         return assignment
 
-    def find_course_user(self, course, student_id):
-        'Return a student or instructor as User object from course and id'
+    def find_course_instructor(self, course, instructor_id):
+        'Return a instructor as User object from course and id'
+        instructor = self.db.query(User).filter(
+            User.id == instructor_id,
+            User.teaching.contains(course)).one_or_none()
+        if instructor is None:
+            self.json_error('Instructor not found')
+        return instructor
+
+    def find_course_student(self, course, student_id):
+        'Return a student as User object from course and id'
         student = self.db.query(User).filter(
             User.id == student_id,
             User.taking.contains(course)).one_or_none()
         if student is None:
             self.json_error('Student not found')
         return student
+
+    def find_course_user(self, course, user_id):
+        'Return a student or instructor as User object from course and id'
+        user = self.db.query(User).filter(
+            User.id == user_id,
+            or_(User.taking.contains(course),
+                User.teaching.contains(course))).one_or_none()
+        if user is None:
+            self.json_error('Student not found')
+        return user
 
     def find_student_submissions(self, assignment, student):
         'Return a list of Submission objects from assignment and student'
@@ -262,14 +288,35 @@ class ManageInstructor(MyRequestHandler):
     @authenticated
     def post(self, course_id, instructor_id):
         'Add an instructor to the course. (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        instructor = self.find_user(instructor_id)
+        # TODO: if instructor in course.students: #42
+        if instructor not in course.instructors:
+            course.instructors.append(instructor)
+        # TODO: update first name etc.
+        self.db.commit()
+        self.json_success()
 
     @authenticated
     def get(self, course_id, instructor_id):
         'Gets information about a course instructor. (instructors+students)'
+        course = self.find_course(course_id)
+        self.check_course_user(course)
+        # TODO
 
     @authenticated
     def delete(self, course_id, instructor_id):
         'Remove a course instructor (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        instructor = self.find_course_instructor(course, instructor_id)
+        if len(course.instructors) <= 1:
+            self.json_error('Removing last instructor from course')
+        course.instructors.remove(instructor)
+        # TODO: update first name etc.
+        self.db.commit()
+        self.json_success()
 
 class ListInstructors(MyRequestHandler):
     '/api/instructors/<course_id>/'
@@ -288,6 +335,9 @@ class ManageStudent(MyRequestHandler):
     @authenticated
     def post(self, course_id, student_id):
         'Create or update a student. (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        # TODO
 
     @authenticated
     def get(self, course_id, student_id):
@@ -295,10 +345,17 @@ class ManageStudent(MyRequestHandler):
             Gets information about a student.
             (instructors+student with same student_id)
         '''
+        course = self.find_course(course_id)
+        if user.id != student_id:
+            self.check_course_instructor(course)
+        # TODO
 
     @authenticated
     def delete(self, course_id, student_id):
         'Removes a student (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        # TODO
 
 class ListStudents(MyRequestHandler):
     '/api/students/<course_id>/'
