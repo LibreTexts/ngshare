@@ -127,6 +127,10 @@ email=/*instructor email*/
 * Login required
 * Permission denied
 * Course not found
+* User not found
+* Please supply last name
+* Please supply first name
+* Please supply email name
 
 #### GET /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Get information about a course instructor. (instructors+students)*
