@@ -188,7 +188,7 @@ email=/*instructor email*/
 ### /api/student: Student management
 
 #### POST /api/student/&lt;course_id&gt;/&lt;student_id&gt;
-*Create or update a student. (instructors only)*
+*Add or update a student. (instructors only)*
 
 ##### Request (HTTP POST data)
 ```
