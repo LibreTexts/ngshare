@@ -128,8 +128,8 @@ email=/*instructor email*/
 * Permission denied
 * Course not found
 * User not found
-* Please supply last name
 * Please supply first name
+* Please supply last name
 * Please supply email name
 
 #### GET /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
