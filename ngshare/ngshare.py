@@ -156,6 +156,17 @@ class MyHelpers:
             self.json_error('Submission not found')
         return submission
 
+    # User management
+
+    def wrap_user_info(self, user, course):
+        'Return dict of user info (full name, email, etc)'
+        return {
+            'username': user.id,
+            'first_name': 'first_name_of_%s@%s' % (user.id, course.id),
+            'last_name': 'last_name_of_%s@%s' % (user.id, course.id),
+            'email': 'email_of_%s@%s' % (user.id, course.id),
+        }
+
     # Auth APIs
 
     def is_course_student(self, course, user):
@@ -251,7 +262,6 @@ class ManageInstructor(MyRequestHandler):
     @authenticated
     def post(self, course_id, instructor_id):
         'Add an instructor to the course. (instructors only)'
-        0/0
 
     @authenticated
     def get(self, course_id, instructor_id):
@@ -266,6 +276,12 @@ class ListInstructors(MyRequestHandler):
     @authenticated
     def get(self, course_id):
         'Gets information about all course instructors. (instructors+students)'
+        course = self.find_course(course_id)
+        self.check_course_user(course)
+        ans = []
+        for instructor in course.instructors:
+            ans.append(self.wrap_user_info(instructor, course))
+        self.json_success(instructors=ans)
 
 class ManageStudent(MyRequestHandler):
     '/api/student/<course_id>/<student_id>'
@@ -288,7 +304,13 @@ class ListStudents(MyRequestHandler):
     '/api/students/<course_id>/'
     @authenticated
     def get(self, course_id):
-        'Gets information about all course instructors. (instructors+students)'
+        'Gets information about all course students. (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        ans = []
+        for student in course.students:
+            ans.append(self.wrap_user_info(student, course))
+        self.json_success(students=ans)
 
 class ListAssignments(MyRequestHandler):
     '/api/assignments/<course_id>'

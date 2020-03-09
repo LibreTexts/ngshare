@@ -98,8 +98,25 @@ def test_get_instructor():
 def test_delete_instructor():
     'Test DELETE /api/instructor/<course_id>/<instructor_id>'
 
-def test_get_instructors():
+def test_list_instructors():
     'Test GET /api/instructors/<course_id>'
+    url = '/api/instructors/'
+    global user
+    user = 'kevin'
+    assert_fail(url + 'course9', msg='Course not found')
+    user = 'kevin'
+    assert_fail(url + 'course2',
+                msg='Permission denied (not related to course)')
+    user = 'eric'
+    resp1 = assert_success(url + 'course2')['instructors']
+    user = 'abigail'
+    resp2 = assert_success(url + 'course2')['instructors']
+    assert resp1 == resp2
+    assert len(resp1) == 1
+    assert resp1[0]['username'] == 'abigail'
+    assert resp1[0]['first_name'] == 'first_name_of_abigail@course2'
+    assert resp1[0]['last_name'] == 'last_name_of_abigail@course2'
+    assert resp1[0]['email'] == 'email_of_abigail@course2'
 
 def test_add_student():
     'Test POST /api/student/<course_id>/<student_id>'
@@ -110,8 +127,25 @@ def test_get_student():
 def test_delete_student():
     'Test DELETE /api/student/<course_id>/<student_id>'
 
-def test_get_students():
+def test_list_students():
     'Test GET /api/students/<course_id>'
+    url = '/api/students/'
+    global user
+    user = 'kevin'
+    assert_fail(url + 'course9', msg='Course not found')
+    user = 'kevin'
+    assert_fail(url + 'course2',
+                msg='Permission denied (not course instructor)')
+    user = 'eric'
+    assert_fail(url + 'course2',
+                msg='Permission denied (not course instructor)')
+    user = 'abigail'
+    resp = assert_success(url + 'course2')['students']
+    assert len(resp) == 1
+    assert resp[0]['username'] == 'eric'
+    assert resp[0]['first_name'] == 'first_name_of_eric@course2'
+    assert resp[0]['last_name'] == 'last_name_of_eric@course2'
+    assert resp[0]['email'] == 'email_of_eric@course2'
 
 def test_list_assignments():
     'Test GET /api/assignments/<course_id>'
