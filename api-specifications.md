@@ -228,7 +228,7 @@ email=/*student email*/
 * Student not found
 
 #### DELETE /api/student/&lt;course_id&gt;/&lt;student_id&gt;
-*Removes a student (instructors only)*
+*Remove a student (instructors only)*
 
 ##### Error messages
 * Login required
