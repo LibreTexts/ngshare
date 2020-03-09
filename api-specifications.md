@@ -239,7 +239,7 @@ email=/*student email*/
 ### /api/students: List course students
 
 #### GET /api/students/&lt;course_id&gt;
-*Gets information about all course students. (instructors only)*
+*Get information about all course students. (instructors only)*
 
 ##### Response
 ```javascript
