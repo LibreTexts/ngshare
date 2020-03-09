@@ -303,7 +303,9 @@ class ManageInstructor(MyRequestHandler):
         'Gets information about a course instructor. (instructors+students)'
         course = self.find_course(course_id)
         self.check_course_user(course)
-        # TODO
+        instructor = self.find_course_instructor(course, instructor_id)
+        ans = self.wrap_user_info(instructor, course)
+        self.json_success(**ans)
 
     @authenticated
     def delete(self, course_id, instructor_id):
@@ -312,7 +314,7 @@ class ManageInstructor(MyRequestHandler):
         self.check_course_instructor(course)
         instructor = self.find_course_instructor(course, instructor_id)
         if len(course.instructors) <= 1:
-            self.json_error('Removing last instructor from course')
+            self.json_error('Cannot remove last instructor')
         course.instructors.remove(instructor)
         # TODO: update first name etc.
         self.db.commit()
