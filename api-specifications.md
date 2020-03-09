@@ -111,7 +111,7 @@ The new course will have no students. Its only instructor is the creator.
 
 ##### Request (HTTP POST data)
 ```
-first_name=/*instructor name*/&
+first_name=/*instructor first name*/&
 last_name=/*instructor last name*/&
 email=/*instructor email*/
 ```
