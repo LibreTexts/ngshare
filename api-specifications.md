@@ -156,6 +156,7 @@ email=/*instructor email*/
 * Permission denied
 * Course not found
 * Instructor not found
+* Cannot remove last instructor
 
 ### /api/instructors: List course instructors
 
