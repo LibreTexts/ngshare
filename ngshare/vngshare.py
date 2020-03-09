@@ -42,6 +42,7 @@ class InitDatabase(MyRequestHandler):
         db.query(Submission).delete()
         db.query(File).delete()
         db.commit()
+        # TODO: does this clear many-to-many relations?
         uk = User('kevin')
         ua = User('abigail')
         ul = User('lawrence')
