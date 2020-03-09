@@ -171,7 +171,7 @@ email=/*instructor email*/
     [
         {
             "username": /* instructor ID */,
-            "first_name": /* instructor name*/,
+            "first_name": /* instructor first name*/,
             "last_name": /* instructor lastname */,
             "email": /* instructor email */
         },
