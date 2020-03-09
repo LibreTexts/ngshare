@@ -216,8 +216,8 @@ email=/*student email*/
 {
     "success": true,
     "username": /* student ID */,
-    "first_name": /* student name*/,
-    "last_name": /* student lastname */,
+    "first_name": /* student first name*/,
+    "last_name": /* student last name */,
     "email": /* student email */
 }
 ```
