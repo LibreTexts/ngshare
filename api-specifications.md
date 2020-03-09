@@ -129,7 +129,7 @@ email=/*instructor email*/
 * Course not found
 
 #### GET /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Gets information about a course instructor. (instructors+students)*
+*Get information about a course instructor. (instructors+students)*
 
 ##### Response
 ```javascript
