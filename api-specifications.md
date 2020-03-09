@@ -161,7 +161,7 @@ email=/*instructor email*/
 ### /api/instructors: List course instructors
 
 #### GET /api/instructors/&lt;course_id&gt;
-*Gets information about all course instructors. (instructors+students)*
+*Get information about all course instructors. (instructors+students)*
 
 ##### Response
 ```javascript
