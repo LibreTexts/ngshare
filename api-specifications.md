@@ -207,6 +207,10 @@ email=/*student email*/
 * Login required
 * Permission denied
 * Course not found
+* User not found
+* Please supply first name
+* Please supply last name
+* Please supply email
 
 #### GET /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Get information about a student. (instructors+student with same student_id)*
