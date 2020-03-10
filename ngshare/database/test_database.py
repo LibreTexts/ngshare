@@ -147,3 +147,7 @@ def test_upload_feedback():
     s1.feedbacks.clear()
     db.commit()
     assert len(db.query(File).all()) == 5
+
+def test_remove_assignment():
+    'Test when removing assignment, submissions and files need to be removed'
+    # TODO
