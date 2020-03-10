@@ -155,6 +155,8 @@ email=/*instructor email*/
 #### DELETE /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Remove a course instructor (instructors only)*
 
+Submissions of the instructor are not removed (visible to other instructors).
+
 ##### Response
 ```javascript
 {
@@ -246,6 +248,8 @@ email=/*student email*/
 
 #### DELETE /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Remove a student (instructors only)*
+
+Submissions of the student are not removed (visible to instructors).
 
 ##### Response
 ```javascript
