@@ -33,7 +33,6 @@ def clear_db(db):
         ]:
         db.execute('DELETE FROM %s' % table_name)
     db.commit()
-    # TODO: does this clear many-to-many relations?
 
 def init_db(db):
     '''
@@ -135,3 +134,16 @@ def test_init():
     assert len(db.query(Assignment).all()) == 3
     assert len(db.query(Submission).all()) == 2
     assert len(db.query(File).all()) == 6
+
+def test_upload_feedback():
+    'When uploading feedback, old feedbacks need to be removed'
+    db = Session()
+    ts = datetime.datetime(2020, 1, 1, 0, 0, 0, 0)
+    s1 = db.query(Submission).filter(Submission.timestamp == ts).one_or_none()
+    assert s1
+    assert len(s1.feedbacks) == 1
+    for file in s1.feedbacks:
+        db.delete(file)
+    s1.feedbacks.clear()
+    db.commit()
+    assert len(db.query(File).all()) == 5

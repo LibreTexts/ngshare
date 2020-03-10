@@ -374,8 +374,9 @@ class UploadDownloadFeedback(MyRequestHandler):
             self.json_error('Please supply timestamp')
         submission = self.find_student_submission(assignment, student,
                                                   timestamp)
+        for file_obj in submission.feedbacks:
+            self.db.delete(file_obj)
         submission.feedbacks.clear()
-        # TODO: does this automatically remove the files?
         files = self.get_body_argument('files', None)
         self.json_files_unpack(files, submission.feedbacks)
         self.db.commit()
