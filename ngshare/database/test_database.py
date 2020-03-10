@@ -1,0 +1,108 @@
+'''
+    Test database structure and some properties of SQLAlchemy
+'''
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+# pylint: disable=global-statement
+# pylint: disable=invalid-name
+# pylint: disable=unused-wildcard-import
+# pylint: disable=wildcard-import
+
+Session = None
+
+try:
+    from .database import *
+except ImportError:
+    from database import *
+
+def clear_db(db):
+    'Remove all data from database'
+    db.query(User).delete()
+    db.query(Course).delete()
+    db.query(Assignment).delete()
+    db.query(Submission).delete()
+    db.query(File).delete()
+    db.commit()
+    # TODO: does this clear many-to-many relations?
+
+def init_db(db):
+    '''
+        Create testing data
+        course1
+            instructor = [kevin]
+            student = [lawrence]
+            assignments = [challenge] (two submissions, one feedback)
+        course2
+            instructor = [abigail]
+            student = [eric]
+            assignments = [assignment2a, assignment2b] (no submissions)
+    '''
+    uk = User('kevin')
+    ua = User('abigail')
+    ul = User('lawrence')
+    ue = User('eric')
+    course1 = Course('course1', uk)
+    course2 = Course('course2', ua)
+    db.add(course1)
+    db.add(course2)
+    course1.students.append(ul)
+    course2.students.append(ue)
+    aa = Assignment('assignment2a', course2)
+    ab = Assignment('assignment2b', course2)
+    ac = Assignment('challenge', course1)
+    db.add(aa)
+    db.add(ab)
+    db.add(ac)
+    s1 = Submission(ul, ac)
+    s2 = Submission(ul, ac)
+    s1.timestamp = datetime.datetime(2020, 1, 1, 0, 0, 0, 0)
+    db.add(s1)
+    db.add(s2)
+    aa.files.append(File('file0', b'00000'))
+    ab.files.append(File('file1', b'11111'))
+    ac.files.append(File('file2', b'22222'))
+    s1.files.append(File('file3', b'33333'))
+    s2.files.append(File('file4', b'44444'))
+    s1.feedbacks.append(File('file5', b'55555'))
+    db.commit()
+
+def test_legacy():
+    'Some test cases created when building database structure'
+    global Session
+    engine = create_engine('sqlite://') # temp database in memory
+    Base.metadata.bind = engine
+    Base.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine)
+    db = Session()
+
+    # populate with random data
+    instructor = User("rkevin")
+    student = User("rk-test")
+    db.add(instructor)
+    db.add(student)
+    course = Course("ecs189m", instructor)
+    assignment = Assignment("ps1", course)
+    submission = Submission(student, assignment)
+    db.add(course)
+    db.commit()
+
+    # check if values are sane
+    print("List of users:")
+    for i in db.query(User):
+        print(i.id)
+    print()
+
+    print("User rkevin is teaching the courses:")
+    user = db.query(User).filter(User.id == "rkevin").one_or_none()
+    for i in user.teaching:
+        print(i.id)
+
+    print("In the 'ecs189m' class, there are these assignments:")
+    course = db.query(Course).filter(Course.id == "ecs189m").one_or_none()
+    for i in course.assignments:
+        print("Assignment name:", i.id)
+        print("There are", len(i.submissions), "submissions")
+        for j in i.submissions:
+            print("One submission from", j.student, "at", j.timestamp)
