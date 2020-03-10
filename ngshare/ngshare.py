@@ -411,7 +411,7 @@ class Test404Handler(RequestHandler):
         self.write("<h1>404 Not Found</h1>\n")
         # TODO: if not DEBUG: return
         self.write(json.dumps(dict(os.environ), indent=1, sort_keys=True))
-        self.write("\n"+self.request.uri+"\n"+self.request.path+"\n")
+        self.write('\n' + self.request.uri + '\n' + self.request.path + '\n')
 
 def main():
     'Main function'
