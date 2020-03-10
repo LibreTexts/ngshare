@@ -140,7 +140,7 @@ def test_upload_feedback():
     db = Session()
     ts = datetime.datetime(2020, 1, 1, 0, 0, 0, 0)
     s1 = db.query(Submission).filter(Submission.timestamp == ts).one_or_none()
-    assert s1
+    assert s1 is not None
     assert len(s1.feedbacks) == 1
     for file in s1.feedbacks:
         db.delete(file)
@@ -150,4 +150,11 @@ def test_upload_feedback():
 
 def test_remove_assignment():
     'Test when removing assignment, submissions and files need to be removed'
-    # TODO
+    db = Session()
+    ac = db.query(Assignment).filter(Assignment.id == 'challenge').one_or_none()
+    assert ac is not None
+    db.delete(ac)
+    db.commit()
+    assert len(db.query(Assignment).all()) == 2
+    assert len(db.query(Submission).all()) == 2
+    assert len(db.query(File).all()) == 5
