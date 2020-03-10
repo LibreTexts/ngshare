@@ -22,7 +22,7 @@ from tornado.ioloop import IOLoop
 from tornado.web import (Application, authenticated, RequestHandler, Finish,
                          MissingArgumentError)
 from jupyterhub.services.auth import HubAuthenticated
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 
 from database.database import Base, User, Course, Assignment, Submission, File
@@ -125,14 +125,15 @@ class MyHelpers:
             self.json_error('Assignment not found')
         return assignment
 
-    def find_course_user(self, course, student_id):
+    def find_course_user(self, course, user_id):
         'Return a student or instructor as User object from course and id'
-        student = self.db.query(User).filter(
-            User.id == student_id,
-            User.taking.contains(course)).one_or_none()
-        if student is None:
+        user = self.db.query(User).filter(
+            User.id == user_id,
+            or_(User.taking.contains(course),
+                User.teaching.contains(course))).one_or_none()
+        if user is None:
             self.json_error('Student not found')
-        return student
+        return user
 
     def find_student_submissions(self, assignment, student):
         'Return a list of Submission objects from assignment and student'
