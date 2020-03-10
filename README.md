@@ -163,7 +163,13 @@ The API specifications for `ngshare` are available in
 
 #### Kubenetes
 1. `cd minikube`
-2. See `./test.sh` for help, then you know everything
+2. See `./test.sh` for help
+3. `./test.sh init`
+4. `./test.sh install`
+5. Access the address printed using a browser
+	* e.g. `http://123.456.78.910:1112`
+	* If Kubenetes is running on a remote server, you may want SSH local forward
+	 like `-L 127.0.0.1:66666:123.456.78.910:1112`
 
 #### vngshare
 0. vngshare stands for Vserver-like Notebook Grader Share.

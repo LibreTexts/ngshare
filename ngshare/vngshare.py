@@ -12,6 +12,7 @@
 
 import sys
 from ngshare import *
+from database.test_database import clear_db, init_db
 
 class MockAuth(HubAuthenticated):
     '''
@@ -35,42 +36,8 @@ class InitDatabase(MyRequestHandler):
     def get(self):
         'Initialize database similar to in vserver'
         # Dangerous: do not use in production
-        db = self.db
-        db.query(User).delete()
-        db.query(Course).delete()
-        db.query(Assignment).delete()
-        db.query(Submission).delete()
-        db.query(File).delete()
-        db.commit()
-        # TODO: does this clear many-to-many relations?
-        uk = User('kevin')
-        ua = User('abigail')
-        ul = User('lawrence')
-        ue = User('eric')
-        course1 = Course('course1', uk)
-        course2 = Course('course2', ua)
-        db.add(course1)
-        db.add(course2)
-        course1.students.append(ul)
-        course2.students.append(ue)
-        aa = Assignment('assignment2a', course2)
-        ab = Assignment('assignment2b', course2)
-        ac = Assignment('challenge', course1)
-        db.add(aa)
-        db.add(ab)
-        db.add(ac)
-        s1 = Submission(ul, ac)
-        s2 = Submission(ul, ac)
-        s1.timestamp = datetime.datetime(2020, 1, 1, 0, 0, 0, 0)
-        db.add(s1)
-        db.add(s2)
-        aa.files.append(File('file0', b'00000'))
-        ab.files.append(File('file1', b'11111'))
-        ac.files.append(File('file2', b'22222'))
-        s1.files.append(File('file3', b'33333'))
-        s2.files.append(File('file4', b'44444'))
-        s1.feedbacks.append(File('file5', b'55555'))
-        db.commit()
+        clear_db(self.db)
+        init_db(self.db)
         self.json_success('done')
 
 def main():
