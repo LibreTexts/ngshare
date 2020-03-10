@@ -433,7 +433,6 @@ class ListSubmissions(MyRequestHandler):
             submissions.append({
                 'student_id': submission.student.id,
                 'timestamp': self.strftime(submission.timestamp),
-                # TODO: "notebooks": [],
             })
         self.json_success(submissions=submissions)
 
@@ -455,7 +454,6 @@ class ListStudentSubmissions(MyRequestHandler):
             submissions.append({
                 'student_id': submission.student.id,
                 'timestamp': self.strftime(submission.timestamp),
-                # TODO: "notebooks": [],
             })
         self.json_success(submissions=submissions)
 
