@@ -60,10 +60,15 @@ class User(Base):
                           back_populates="students")
 
     def __init__(self, name):
+        'Initialize with JupyterHub user name'
         self.id = name
 
     def __str__(self):
         return '<User %s>' % self.id
+
+    def delete(self, db):
+        'Remove user and dependent data'
+        raise NotImplementedError('Currently users cannot be deleted')
 
     @staticmethod
     def from_jupyterhub_user(user_model, db):
@@ -89,11 +94,16 @@ class Course(Base):
     assignments = relationship("Assignment", backref="course")
 
     def __init__(self, name, instructor):
+        'Initialize with course name and teacher'
         self.id = name
         self.instructors.append(instructor)
 
     def __str__(self):
         return '<Course %s>' % self.id
+
+    def delete(self, db):
+        'Remove course and dependent data'
+        raise NotImplementedError('Currently courses cannot be deleted')
 
 class Assignment(Base):
     'An nbgrader assignment'
@@ -109,11 +119,20 @@ class Assignment(Base):
     # TODO: timezoon
 
     def __init__(self, name, course):
+        'Initialize with assignment name and course'
         self.id = name
         self.course = course
 
     def __str__(self):
         return '<Assignment %s>' % self.id
+
+    def delete(self, db):
+        'Remove assignment and dependent data (files, submissions)'
+        for file_obj in self.files:
+            file_obj.delete(db)
+        for submission in self.submissions:
+            submission.delete(db)
+        db.delete(self)
 
 class Submission(Base):
     'A submission for an assignment'
@@ -127,12 +146,21 @@ class Submission(Base):
     student = relationship("User")
 
     def __init__(self, student, assignment):
+        'Initialize with student and assignment'
         self.timestamp = datetime.datetime.now()
         self.student = student
         self.assignment = assignment
 
     def __str__(self):
         return '<Submission %d>' % self._id
+
+    def delete(self, db):
+        'Remove submission and dependent data (files, feedbacks)'
+        for file_obj in self.files:
+            file_obj.delete(db)
+        for file_obj in self.feedbacks:
+            file_obj.delete(db)
+        db.delete(self)
 
 class File(Base):
     'A File (for assignment, submission file, or submission feedback)'
@@ -143,9 +171,14 @@ class File(Base):
     checksum = Column(TEXT)
 
     def __init__(self, filename, contents):
+        'Initialize with file name and content; auto-compute md5'
         self.filename = filename
         self.contents = contents
         self.checksum = hashlib.md5(contents).hexdigest()
 
     def __str__(self):
         return '<File %s>' % self.filename
+
+    def delete(self, db):
+        'Remove file'
+        db.delete(self)

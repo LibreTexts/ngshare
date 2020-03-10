@@ -153,8 +153,8 @@ def test_remove_assignment():
     db = Session()
     ac = db.query(Assignment).filter(Assignment.id == 'challenge').one_or_none()
     assert ac is not None
-    db.delete(ac)
+    ac.delete(db)
     db.commit()
     assert len(db.query(Assignment).all()) == 2
-    assert len(db.query(Submission).all()) == 2
-    assert len(db.query(File).all()) == 5
+    assert len(db.query(Submission).all()) == 0
+    assert len(db.query(File).all()) == 2
