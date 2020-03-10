@@ -282,6 +282,15 @@ class DownloadReleaseAssignment(MyRequestHandler):
         self.db.commit()
         self.json_success()
 
+    def delete(self, course_id, assignment_id):
+        'Remove an assignment (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        assignment = self.find_assignment(course, assignment_id)
+        self.db.delete(assignment)
+        self.db.commit()
+        self.json_success()
+
 class ListSubmissions(MyRequestHandler):
     '/api/submissions/<course_id>/<assignment_id>'
     def get(self, course_id, assignment_id):
