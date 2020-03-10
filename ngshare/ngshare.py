@@ -375,7 +375,7 @@ class UploadDownloadFeedback(MyRequestHandler):
         submission = self.find_student_submission(assignment, student,
                                                   timestamp)
         for file_obj in submission.feedbacks:
-            self.db.delete(file_obj)
+            file_obj.delete(self.db)
         submission.feedbacks.clear()
         files = self.get_body_argument('files', None)
         self.json_files_unpack(files, submission.feedbacks)
