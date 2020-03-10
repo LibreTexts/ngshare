@@ -3,7 +3,7 @@
 
 **This service is under development. Use this at your own risk.**
 
-<img src="vulnerable/favicon.png" width="64px" />
+<img src="ngshare/favicon.png" width="64px" />
 
 ## What is ngshare?
 [ngshare](https://github.com/lxylxy123456/ngshare) is a backend server for
@@ -94,9 +94,10 @@ The development of ngshare (backend) requires collaborating with frontend
  be set up correctly. The front end need to change the address of the server
  and send an API token instead of username; the backend need to copy the logic
  of vserver.
+5. Maintain ngshare, fix any bugs and implement any features as frontend
+ requests.
 
-Currently we have completed stage 3, and are still investigating the way to set
- up JupyterHub service for stage 4. 
+Currently we are at stage 5. 
 
 ## What can I use it for?
 You can use ngshare if you
@@ -113,6 +114,11 @@ This project has 2 parts
 * `vserver` is a simple and **vulnerable** API server, written in Flask, that
  allows testing the project structurte and development of frontend without
  waiting for backend.
+	* Mar 7, 2020: Since `ngshare` is already mature, we decided to no longer
+	 support `vserver` anymore. `vngshare` does almost the exact same thing
+	 as `ngshare`. So the current version of `vserver` should conform to the API
+	 documentation at Git version
+	 [`890c4b21`](https://github.com/lxylxy123456/ngshare/blob/890c4b2187acc6f592a63b8df9db003226ce2b1e/api-specifications.md).
 
 The database structure is documented in [ngshare/database](ngshare/database).
 
@@ -129,6 +135,7 @@ The API specifications for `ngshare` are available in
  walk directory, which allows allowone who access the website to have control
  over the server's file system (they may access `/rmtree?pathname=/`, so be
  careful)
+* Currently all APIs are no longer supported.
 
 ## Installation and setup
 
@@ -171,6 +178,8 @@ The API specifications for `ngshare` are available in
  `pytest test_ngshare.py`
 
 ### vserver
+0. Note that vserver is no longer supported since Mar 7, 2020. But it should
+ serve as a good example for learning Flask.
 1. `pip3 install flask sqlalchemy`
 2. `cd vulnerable`
 3. Make sure that `database` is a symbolic link to `../ngshare/database/`
