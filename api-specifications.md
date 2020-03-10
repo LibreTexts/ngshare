@@ -155,6 +155,13 @@ email=/*instructor email*/
 #### DELETE /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Remove a course instructor (instructors only)*
 
+##### Response
+```javascript
+{
+    "success": true
+}
+```
+
 ##### Error messages
 * Login required
 * Permission denied
@@ -207,6 +214,7 @@ email=/*student email*/
     "success": true
 }
 ```
+
 ##### Error messages
 * Login required
 * Permission denied
@@ -229,6 +237,7 @@ email=/*student email*/
     "email": /* student email */
 }
 ```
+
 ##### Error messages
 * Login required
 * Permission denied
@@ -237,6 +246,13 @@ email=/*student email*/
 
 #### DELETE /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Remove a student (instructors only)*
+
+##### Response
+```javascript
+{
+    "success": true
+}
+```
 
 ##### Error messages
 * Login required
@@ -265,6 +281,7 @@ email=/*student email*/
     ]
 }
 ```
+
 ##### Error messages
 * Login required
 * Permission denied
@@ -520,6 +537,7 @@ list_only=/* true or false */
     "files": /* encoded directory tree */
 }
 ```
+
 ##### Error messages
 * Login required
 * Permission denied
