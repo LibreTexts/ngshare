@@ -291,7 +291,8 @@ class ManageInstructor(MyRequestHandler):
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         instructor = self.find_user(instructor_id)
-        # TODO: if instructor in course.students: #42
+        if instructor in course.students:
+            course.students.remove(instructor)
         if instructor not in course.instructors:
             course.instructors.append(instructor)
         # TODO: update first name etc.
@@ -340,7 +341,10 @@ class ManageStudent(MyRequestHandler):
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         student = self.find_user(student_id)
-        # TODO: if student in course.instructors: #42
+        if student in course.instructors:
+            if len(course.instructors) <= 1:
+                self.json_error('Cannot remove last instructor')
+            course.instructors.remove(student)
         if student not in course.students:
             course.students.append(student)
         # TODO: update first name etc.

@@ -101,6 +101,11 @@ def test_add_instructor():
     user = 'abigail'
     assert_success(url + 'course2/lawrence', method=POST)
     assert len(assert_success('/api/instructors/course2')['instructors']) == 2
+    # Test updating student to instructor
+    user = 'kevin'
+    assert_success(url + 'course1/lawrence', method=POST)
+    assert len(assert_success('/api/instructors/course1')['instructors']) == 2
+    assert len(assert_success('/api/students/course1')['students']) == 0
 
 def test_get_instructor():
     'Test GET /api/instructor/<course_id>/<instructor_id>'
@@ -166,6 +171,13 @@ def test_add_student():
     user = 'abigail'
     assert_success(url + 'course2/lawrence', method=POST)
     assert len(assert_success('/api/students/course2')['students']) == 2
+    # Test updating student to instructor
+    assert_fail(url + 'course2/abigail', method=POST,
+                msg='Cannot remove last instructor')
+    user = 'kevin'
+    assert_success(url + 'course1/lawrence', method=POST)
+    assert len(assert_success('/api/instructors/course1')['instructors']) == 1
+    assert len(assert_success('/api/students/course1')['students']) == 1
 
 def test_get_student():
     'Test GET /api/student/<course_id>/<student_id>'
