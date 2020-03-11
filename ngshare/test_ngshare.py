@@ -19,6 +19,7 @@ from ngshare import MyHelpers
 URL_PREFIX = 'http://127.0.0.1:12121'
 GET = requests.get
 POST = requests.post
+DELETE = requests.delete
 user = None
 
 def request_page(url, data=None, params=None, method=GET):
@@ -158,6 +159,21 @@ def test_release_assignment():
     user = 'eric'
     assert_fail(url + 'course1/challenger', method=POST,
                 data=data, msg='Permission denied (not course instructor)')
+
+def test_delete_assignment():
+    'Test DELETE /api/assignment/<course_id>/<assignment_id>'
+    url = '/api/assignment/'
+    global user
+    user = 'lawrence'
+    assert_fail(url + 'course1/challenger', method=DELETE,
+                msg='Permission denied (not course instructor)')
+    user = 'kevin'
+    assert_fail(url + 'jkl/challenger', method=DELETE, msg='Course not found')
+    assert_fail(url + 'course1/challengers', method=DELETE,
+                msg='Assignment not found')
+    assert_success(url + 'course1/challenger')
+    assert_success(url + 'course1/challenger', method=DELETE)
+    assert_fail(url + 'course1/challenger', msg='Assignment not found')
 
 def test_list_submissions():
     'Test GET /api/submissions/<course_id>/<assignment_id>'
