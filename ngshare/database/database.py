@@ -9,7 +9,8 @@
 import datetime
 import hashlib
 
-from sqlalchemy import Table, Column, INTEGER, TEXT, BLOB, TIMESTAMP, BOOLEAN, ForeignKey
+from sqlalchemy import (Table, Column, INTEGER, TEXT, BLOB, TIMESTAMP, BOOLEAN,
+                        ForeignKey)
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
