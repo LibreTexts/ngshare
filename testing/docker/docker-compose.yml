@@ -5,7 +5,6 @@ services:
     ports:
       - 127.0.0.1:8000:8000
     build:
-      # context is actually one directory above ngshare root
       context: .
     volumes:
       # for some reason pip needs rw access. oh well

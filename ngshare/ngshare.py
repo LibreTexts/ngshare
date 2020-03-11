@@ -422,6 +422,15 @@ class DownloadReleaseAssignment(MyRequestHandler):
         self.db.commit()
         self.json_success()
 
+    def delete(self, course_id, assignment_id):
+        'Remove an assignment (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        assignment = self.find_assignment(course, assignment_id)
+        assignment.delete(self.db)
+        self.db.commit()
+        self.json_success()
+
 class ListSubmissions(MyRequestHandler):
     '/api/submissions/<course_id>/<assignment_id>'
     def get(self, course_id, assignment_id):
@@ -514,8 +523,9 @@ class UploadDownloadFeedback(MyRequestHandler):
             self.json_error('Please supply timestamp')
         submission = self.find_student_submission(assignment, student,
                                                   timestamp)
+        for file_obj in submission.feedbacks:
+            file_obj.delete(self.db)
         submission.feedbacks.clear()
-        # TODO: does this automatically remove the files?
         files = self.get_body_argument('files', None)
         self.json_files_unpack(files, submission.feedbacks)
         self.db.commit()
@@ -550,7 +560,7 @@ class Test404Handler(RequestHandler):
         self.write("<h1>404 Not Found</h1>\n")
         # TODO: if not DEBUG: return
         self.write(json.dumps(dict(os.environ), indent=1, sort_keys=True))
-        self.write("\n"+self.request.uri+"\n"+self.request.path+"\n")
+        self.write('\n' + self.request.uri + '\n' + self.request.path + '\n')
 
 def main():
     'Main function'

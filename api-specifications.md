@@ -377,6 +377,26 @@ files=/* encoded directory tree in JSON */
 * Files cannot be JSON decoded
 * Content cannot be base64 decoded
 
+#### DELETE /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;
+*Remove an assignment (instructors only).*
+
+All submissions and files related to the assignment will disappear.
+
+Note: this may be replaced by assignment states in the future.
+
+##### Response
+```javascript
+{
+    "success": true
+}
+```
+
+##### Error messages
+* Login required
+* Permission denied
+* Course not found
+* Assignment not found
+
 ### /api/submissions: Listing submissions
 
 #### GET /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;
