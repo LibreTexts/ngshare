@@ -19,36 +19,36 @@ Base = declarative_base()
 # Instructor -> Course (Many to Many)
 instructor_assoc_table = Table(
     'instructor_assoc_table', Base.metadata,
-    Column('left_id', TEXT, ForeignKey('users.id')),
-    Column('right_id', INTEGER, ForeignKey('courses._id'))
+    Column('left_id', TEXT, ForeignKey('users.id'), primary_key=True),
+    Column('right_id', INTEGER, ForeignKey('courses._id'), primary_key=True),
 )
 
 # Student -> Course (Many to Many)
 student_assoc_table = Table(
     'student_assoc_table', Base.metadata,
-    Column('left_id', TEXT, ForeignKey('users.id')),
-    Column('right_id', INTEGER, ForeignKey('courses._id'))
+    Column('left_id', TEXT, ForeignKey('users.id'), primary_key=True),
+    Column('right_id', INTEGER, ForeignKey('courses._id'), primary_key=True),
 )
 
 # Assignment -> Course (One to Many)
 assignment_files_assoc_table = Table(
     'assignment_files_assoc_table', Base.metadata,
-    Column('left_id', TEXT, ForeignKey('assignments._id')),
-    Column('right_id', INTEGER, ForeignKey('files._id'))
+    Column('left_id', TEXT, ForeignKey('assignments._id'), primary_key=True),
+    Column('right_id', INTEGER, ForeignKey('files._id'), primary_key=True),
 )
 
 # Submission -> Course (One to Many)
 submission_files_assoc_table = Table(
     'submission_files_assoc_table', Base.metadata,
-    Column('left_id', TEXT, ForeignKey('submissions._id')),
-    Column('right_id', INTEGER, ForeignKey('files._id'))
+    Column('left_id', TEXT, ForeignKey('submissions._id'), primary_key=True),
+    Column('right_id', INTEGER, ForeignKey('files._id'), primary_key=True),
 )
 
 # Submission (feedback) -> Course (One to Many)
 feedback_files_assoc_table = Table(
     'feedback_files_assoc_table', Base.metadata,
-    Column('left_id', TEXT, ForeignKey('submissions._id')),
-    Column('right_id', INTEGER, ForeignKey('files._id'))
+    Column('left_id', TEXT, ForeignKey('submissions._id'), primary_key=True),
+    Column('right_id', INTEGER, ForeignKey('files._id'), primary_key=True),
 )
 
 class User(Base):
