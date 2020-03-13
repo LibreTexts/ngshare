@@ -184,6 +184,14 @@ def test_instructor_association():
     assert association.first_name == '0/0'
     assert association.last_name == '0/0'
     assert association.email == '0/0'
+    association.first_name = 'Kevin.first_name'
+    association.last_name = 'Kevin.last_name'
+    association.email = 'Kevin.email'
+    db.commit()
+    association = InstructorAssociation.find_association(db, kevin, course1)
+    assert association.first_name == 'Kevin.first_name'
+    assert association.last_name == 'Kevin.last_name'
+    assert association.email == 'Kevin.email'
 
 def test_student_association():
     'Test student association table'
@@ -208,3 +216,12 @@ def test_student_association():
     assert association.first_name == '0/0'
     assert association.last_name == '0/0'
     assert association.email == '0/0'
+    association.first_name = 'Lawrence.first_name'
+    association.last_name = 'Lawrence.last_name'
+    association.email = 'Lawrence.email'
+    db.commit()
+    association = StudentAssociation.find_association(db, lawrence, course1)
+    assert association.first_name == 'Lawrence.first_name'
+    assert association.last_name == 'Lawrence.last_name'
+    assert association.email == 'Lawrence.email'
+
