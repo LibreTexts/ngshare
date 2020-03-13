@@ -233,13 +233,19 @@ class MyHelpers:
     def check_course_instructor(self, course):
         'Assert user is an instructor in the course'
         if not self.is_course_instructor(course, self.user):
-            self.json_error('Permission denied (not course instructor)')
+            msg = 'Permission denied'
+            if self.application.debug:
+                msg += ' (not course instructor)'
+            self.json_error(msg)
 
     def check_course_user(self, course):
         'Assert user is a student or an instructor in the course'
         if not self.is_course_instructor(course, self.user) and \
             not self.is_course_student(course, self.user):
-            self.json_error('Permission denied (not related to course)')
+            msg = 'Permission denied'
+            if self.application.debug:
+                msg += ' (not related to course)'
+            self.json_error(msg)
 
 class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
     'Custom request handler for ngshare'
@@ -607,7 +613,8 @@ class Test404Handler(RequestHandler):
     def get(self):
         'Disable 404 page'
         self.write("<h1>404 Not Found</h1>\n")
-        # TODO: if not DEBUG: return
+        if not self.application.debug:
+            return
         self.write(json.dumps(dict(os.environ), indent=1, sort_keys=True))
         self.write('\n' + self.request.uri + '\n' + self.request.path + '\n')
 
@@ -644,15 +651,16 @@ class MyApplication(Application):
         Base.metadata.bind = engine
         Base.metadata.create_all(engine)
         self.db_session = sessionmaker(bind=engine)
+        self.debug = debug
 
 def main():
     'Main function'
     parser = argparse.ArgumentParser(
         description='ngshare, a REST API nbgrader exchange')
     parser.add_argument('--jupyterhub_api_url',
-                        help='Override $JUPYTERHUB_API_URL')
-    parser.add_argument('--debug', type=bool, help='Output debug information')
-    parser.add_argument('--database', help='Database url',
+                        help='override $JUPYTERHUB_API_URL')
+    parser.add_argument('--debug', type=bool, help='output debug information')
+    parser.add_argument('--database', help='database url',
                         default='sqlite:////srv/ngshare/ngshare.db')
     args = parser.parse_args()
     if args.jupyterhub_api_url is not None:

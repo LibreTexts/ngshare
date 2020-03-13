@@ -45,16 +45,17 @@ def main():
     parser = argparse.ArgumentParser(
         description='vngshare, Vserver-like ngshare (Notebook Grader Share)')
     parser.add_argument('--prefix', help='URL prefix', default='/api/')
-    parser.add_argument('--debug', help='Output debug information')
-    parser.add_argument('--database', help='Database url',
+    parser.add_argument('--no-debug', help='disable debug', action='store_true')
+    parser.add_argument('--database', help='database url',
                         default='sqlite:////tmp/ngshare.db')
-    parser.add_argument('--host', help='Bind hostname', default='127.0.0.1')
-    parser.add_argument('--port', help='Bind hostname', type=int, default=12121)
+    parser.add_argument('--host', help='bind hostname', default='127.0.0.1')
+    parser.add_argument('--port', help='bind port', type=int, default=12121)
     args = parser.parse_args()
 
     prefix = args.prefix
     extra_handlers = [(prefix + 'initialize-Data6ase', InitDatabase)]
-    app = MyApplication(prefix, args.database, extra_handlers, debug=True)
+    debug = not args.no_debug
+    app = MyApplication(prefix, args.database, extra_handlers, debug=debug)
 
     http_server = HTTPServer(app)
     http_server.listen(args.port, args.host)
