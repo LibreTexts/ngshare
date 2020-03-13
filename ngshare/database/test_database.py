@@ -25,9 +25,9 @@ def clear_db(db):
     db.query(Assignment).delete()
     db.query(Submission).delete()
     db.query(File).delete()
+    db.query(InstructorAssociation).delete()
+    db.query(StudentAssociation).delete()
     for table_name in [
-            'instructor_assoc_table',
-            'student_assoc_table',
             'assignment_files_assoc_table',
             'submission_files_assoc_table',
             'feedback_files_assoc_table',
@@ -124,8 +124,6 @@ def test_init():
     'Test clearing database and fill in default test data'
     db = Session()
     clear_db(db)
-    assert not db.query(InstructorAssociation).all()
-    assert not db.query(StudentAssociation).all()
     assert not db.query(assignment_files_assoc_table).all()
     assert not db.query(submission_files_assoc_table).all()
     assert not db.query(feedback_files_assoc_table).all()
@@ -134,6 +132,8 @@ def test_init():
     assert not db.query(Assignment).all()
     assert not db.query(Submission).all()
     assert not db.query(File).all()
+    assert not db.query(InstructorAssociation).all()
+    assert not db.query(StudentAssociation).all()
     init_db(db)
     assert len(db.query(User).all()) == 4
     assert len(db.query(Course).all()) == 2
