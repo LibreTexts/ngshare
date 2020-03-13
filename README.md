@@ -187,7 +187,7 @@ The API specifications for `ngshare` are available in
 0. Note that vserver is no longer supported since Mar 7, 2020. But it should
  serve as a good example for learning Flask.
 1. `pip3 install flask sqlalchemy`
-2. `cd vulnerable`
+2. `cd vserver`
 3. Make sure that `database` is a symbolic link to `../ngshare/database/`
 4. `python3 vserver.py [bind_IP_address [port_number]]`
 5. Note that `/tmp/vserver.db` will be the database created
