@@ -181,9 +181,9 @@ def test_instructor_association():
     assert len(kevin.teaching) == 1
     # Check data
     association = InstructorAssociation.find(db, kevin, course1)
-    assert association.first_name == None
-    assert association.last_name == None
-    assert association.email == None
+    assert association.first_name is None
+    assert association.last_name is None
+    assert association.email is None
     association.first_name = 'Kevin.first_name'
     association.last_name = 'Kevin.last_name'
     association.email = 'Kevin.email'
@@ -213,9 +213,9 @@ def test_student_association():
     assert len(lawrence.taking) == 1
     # Check data
     association = StudentAssociation.find(db, lawrence, course1)
-    assert association.first_name == None
-    assert association.last_name == None
-    assert association.email == None
+    assert association.first_name is None
+    assert association.last_name is None
+    assert association.email is None
     association.first_name = 'Lawrence.first_name'
     association.last_name = 'Lawrence.last_name'
     association.email = 'Lawrence.email'
@@ -224,4 +224,3 @@ def test_student_association():
     assert association.first_name == 'Lawrence.first_name'
     assert association.last_name == 'Lawrence.last_name'
     assert association.email == 'Lawrence.email'
-

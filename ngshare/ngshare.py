@@ -8,6 +8,7 @@
 # pylint: disable=invalid-name
 # pylint: disable=no-member
 # pylint: disable=no-self-use
+# pylint: disable=too-many-public-methods
 
 import os
 import json

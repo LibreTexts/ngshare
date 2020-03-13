@@ -177,9 +177,9 @@ def test_list_instructors():
     assert resp1 == resp2
     assert len(resp1) == 1
     assert resp1[0]['username'] == 'abigail'
-    assert resp1[0]['first_name'] == None
-    assert resp1[0]['last_name'] == None
-    assert resp1[0]['email'] == None
+    assert resp1[0]['first_name'] is None
+    assert resp1[0]['last_name'] is None
+    assert resp1[0]['email'] is None
 
 def test_add_student():
     'Test POST /api/student/<course_id>/<student_id>'
@@ -261,9 +261,9 @@ def test_list_students():
     resp = assert_success(url + 'course2')['students']
     assert len(resp) == 1
     assert resp[0]['username'] == 'eric'
-    assert resp[0]['first_name'] == None
-    assert resp[0]['last_name'] == None
-    assert resp[0]['email'] == None
+    assert resp[0]['first_name'] is None
+    assert resp[0]['last_name'] is None
+    assert resp[0]['email'] is None
 
 def test_list_assignments():
     'Test GET /api/assignments/<course_id>'
