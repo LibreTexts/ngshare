@@ -66,7 +66,10 @@ def test_init():
     'Clear database'
     global user
     user = 'none'
-    assert assert_success('/api/initialize-Data6ase')['message'] == 'done'
+    assert assert_success('/api/initialize-Data6ase',
+                          params={'action': 'clear'})['message'] == 'done'
+    assert assert_success('/api/initialize-Data6ase',
+                          params={'action': 'init'})['message'] == 'done'
 
 def test_list_courses():
     'Test GET /api/courses'

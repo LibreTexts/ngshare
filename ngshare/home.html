@@ -16,6 +16,14 @@
     <img src="favicon.ico" style="height: 1em" />
   </a>
 </h1>
+{% if debug %}
+<h2>Debug actions</h2>
+<p>
+  <a href="initialize-Data6ase?action=dump">dump database</a> /
+  <a href="initialize-Data6ase?action=clear">clear database</a> /
+  <a href="initialize-Data6ase?action=init">init with test data</a>
+</p>
+{% end %}
 <h2>Here are some sample uses of our APIs</h2>
 <p>
   GET

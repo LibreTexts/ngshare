@@ -28,6 +28,7 @@ from sqlalchemy.orm import sessionmaker
 
 from database.database import (Base, User, Course, Assignment, Submission, File,
                                InstructorAssociation, StudentAssociation)
+from database.test_database import clear_db, init_db, dump_db
 
 class MyHelpers:
     'Helper functions for database accesses'
@@ -279,9 +280,7 @@ class HomePage(MyRequestHandler):
     @authenticated
     def get(self):
         'Display an HTML page for debugging'
-        pwd = os.path.dirname(os.path.realpath(__file__))
-        file_name = os.path.join(pwd, 'home.html')
-        self.write(open(file_name).read())
+        self.render('home.html', debug=self.application.debug)
 
 class Favicon(MyRequestHandler):
     '/api/favicon.ico'
@@ -608,7 +607,27 @@ class UploadDownloadFeedback(MyRequestHandler):
         self.json_success(files=files,
                           timestamp=self.strftime(submission.timestamp))
 
-class Test404Handler(RequestHandler):
+class InitDatabase(MyRequestHandler):
+    '/initialize-Data6ase'
+    @authenticated
+    def get(self):
+        'Initialize database similar to in vserver'
+        # Dangerous: do not use in production
+        if not self.application.debug:
+            self.json_error('Debug mode is off')
+        action = self.get_argument('action', None)
+        if action == 'clear':
+            clear_db(self.db)
+            self.json_success('done')
+        elif action == 'init':
+            init_db(self.db)
+            self.json_success('done')
+        elif action == 'dump':
+            self.json_success(**dump_db(self.db))
+        else:
+            self.json_error('action should be clear, init, or dump')
+
+class NotFoundHandler(RequestHandler):
     '404 handler'
     def get(self):
         'Disable 404 page'
@@ -620,8 +639,7 @@ class Test404Handler(RequestHandler):
 
 class MyApplication(Application):
     'Custom application for ngshare'
-    def __init__(self, prefix, db_url, extra_handlers=None, debug=False,
-                 autoreload=True):
+    def __init__(self, prefix, db_url, debug=False, autoreload=True):
         handlers = [
             (prefix, HomePage),
             (prefix + 'favicon.ico', Favicon),
@@ -641,9 +659,9 @@ class MyApplication(Application):
             (prefix + 'feedback/([^/]+)/([^/]+)/([^/]+)',
              UploadDownloadFeedback),
         ]
-        if extra_handlers is not None:
-            handlers += extra_handlers
-        handlers.append((r'.*', Test404Handler))
+        if debug:
+            handlers.append((prefix + 'initialize-Data6ase', InitDatabase))
+        handlers.append((r'.*', NotFoundHandler))
         super(MyApplication, self).__init__(handlers, debug=debug,
                                             autoreload=autoreload)
         # Connect Database
@@ -667,10 +685,7 @@ def main():
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
 
     prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
-    extra_handlers = []
-    if args.debug:
-        extra_handlers.append((prefix + 'initialize-Data6ase', InitDatabase))
-    app = MyApplication(prefix, args.database, extra_handlers)
+    app = MyApplication(prefix, args.database, debug=args.debug)
 
     http_server = HTTPServer(app)
     url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])

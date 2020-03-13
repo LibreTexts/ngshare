@@ -12,7 +12,6 @@
 
 import sys
 from ngshare import *
-from database.test_database import clear_db, init_db
 
 class MockAuth(HubAuthenticated):
     '''
@@ -30,16 +29,6 @@ class MockAuth(HubAuthenticated):
 
 MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)
 
-class InitDatabase(MyRequestHandler):
-    '/initialize-Data6ase'
-    @authenticated
-    def get(self):
-        'Initialize database similar to in vserver'
-        # Dangerous: do not use in production
-        clear_db(self.db)
-        init_db(self.db)
-        self.json_success('done')
-
 def main():
     'Main function'
     parser = argparse.ArgumentParser(
@@ -52,10 +41,7 @@ def main():
     parser.add_argument('--port', help='bind port', type=int, default=12121)
     args = parser.parse_args()
 
-    prefix = args.prefix
-    extra_handlers = [(prefix + 'initialize-Data6ase', InitDatabase)]
-    debug = not args.no_debug
-    app = MyApplication(prefix, args.database, extra_handlers, debug=debug)
+    app = MyApplication(args.prefix, args.database, debug=not args.no_debug)
 
     http_server = HTTPServer(app)
     http_server.listen(args.port, args.host)

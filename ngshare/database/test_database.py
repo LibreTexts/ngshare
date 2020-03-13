@@ -76,6 +76,10 @@ def init_db(db):
     s1.feedbacks.append(File('file5', b'55555'))
     db.commit()
 
+def dump_db(db):
+    'Dump database out'
+    0/0
+
 def test_legacy():
     'Some test cases created when building database structure'
     global Session
