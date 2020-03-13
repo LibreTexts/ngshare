@@ -110,7 +110,7 @@ class MyHelpers:
 
     def find_user(self, user_id):
         'Return a User object from id'
-        user = self.db.query(User).filter(User.id==user_id).one_or_none()
+        user = self.db.query(User).filter(User.id == user_id).one_or_none()
         if user is None:
             self.json_error("User not found")
         return user

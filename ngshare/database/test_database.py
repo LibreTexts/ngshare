@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 # pylint: disable=global-statement
 # pylint: disable=invalid-name
+# pylint: disable=len-as-condition
 # pylint: disable=unused-wildcard-import
 # pylint: disable=wildcard-import
 
@@ -94,6 +95,7 @@ def test_legacy():
     submission = Submission(student, assignment)
     db.add(course)
     db.commit()
+    print(submission)
 
     # check if values are sane
     print("List of users:")

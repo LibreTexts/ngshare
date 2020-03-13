@@ -50,13 +50,12 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(TEXT, primary_key=True)
     teaching = association_proxy('inst_assoc', 'course',
-                                    creator=lambda course: InstructorAssociation(
-                                        course=a,
-                                        first_name='0/0',
-                                        last_name='0/0',
-                                        email='0/0',
-                                    ),
-                                    cascade_scalar_deletes=True)
+                                 creator=lambda course: InstructorAssociation(
+                                     course=course,
+                                     first_name='0/0',
+                                     last_name='0/0',
+                                     email='0/0',
+                                 ), cascade_scalar_deletes=True)
     taking = relationship('Course', secondary=student_assoc_table,
                           back_populates='students')
 
@@ -207,6 +206,7 @@ class InstructorAssociation(Base):
         'inst_assoc', cascade='save-update, merge, delete, delete-orphan'))
 
     @staticmethod
-    def find_association(db, user, course):
+    def find_association(db, instructor, course):
+        'Find association object from user and course'
         return db.query(InstructorAssociation) \
-            .filter_by(user=user, course=course).one_or_none()
+            .filter_by(user=instructor, course=course).one_or_none()
