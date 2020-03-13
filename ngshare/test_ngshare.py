@@ -202,7 +202,7 @@ def test_add_student():
     data['email'] = 'lawrence_course2_email'
     assert_success(url + 'course2/lawrence', data=data, method=POST)
     assert len(assert_success('/api/students/course2')['students']) == 2
-    # Test updating student to instructor
+    # Test updating instructor to student
     assert_fail(url + 'course2/abigail', data=data, method=POST,
                 msg='Cannot remove last instructor')
     user = 'kevin'
