@@ -1,0 +1,35 @@
+<!doctype html>
+<head>
+  <title>ngshare Data Dase Dump</title>
+</head>
+<body>
+<h1>
+  Data Dase Dump for 
+  <a style="color: black; text-decoration: none"
+     href="https://github.com/lxylxy123456/ngshare">
+    ngshare
+    <img src="favicon.ico" style="height: 1em" />
+  </a>
+</h1>
+{% for table in tables %}
+  <h2>{{ table['header'] }}</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        {% for cell in table['thead'] %}
+          <td>{{ cell }}</td>
+        {% end %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for line in table['tbody'] %}
+        <tr>
+          {% for cell in line %}
+            <td>{{ cell }}</td>
+          {% end %}
+        </tr>
+      {% end %}
+    </tbody>
+  </table>
+{% end %}
+</body>

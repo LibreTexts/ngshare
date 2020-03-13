@@ -623,7 +623,24 @@ class InitDatabase(MyRequestHandler):
             init_db(self.db)
             self.json_success('done')
         elif action == 'dump':
-            self.json_success(**dump_db(self.db))
+            result = dump_db(self.db)
+            if self.get_argument('human-readable', 'false') != 'true':
+                self.json_success(**result)
+            ans = []
+            for key, value in result.items():
+                if value:
+                    thead = list(value[0])
+                else:
+                    thead = ['']
+                tbody = []
+                for line in value:
+                    tbody.append(list(map(line.__getitem__, thead)))
+                ans.append({
+                    'header': key,
+                    'thead': thead,
+                    'tbody': tbody,
+                })
+            self.render('dump.html', tables=ans)
         else:
             self.json_error('action should be clear, init, or dump')
 

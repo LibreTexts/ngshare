@@ -2,6 +2,8 @@
     Test database structure and some properties of SQLAlchemy
 '''
 
+from collections import defaultdict
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -78,7 +80,22 @@ def init_db(db):
 
 def dump_db(db):
     'Dump database out'
-    0/0
+    ans = defaultdict(list)
+    for table in (User, Course, Assignment, Submission, File,
+                  InstructorAssociation, StudentAssociation):
+        for i in db.query(table).all():
+            ans[table.__tablename__].append(i.dump())
+    for table in (
+        assignment_files_assoc_table,
+        submission_files_assoc_table,
+        feedback_files_assoc_table,
+        ):
+        for i in db.query(table).all():
+            ans[table.name].append({
+                'left_id': i.left_id,
+                'right_id': i.right_id,
+            })
+    return ans
 
 def test_legacy():
     'Some test cases created when building database structure'
