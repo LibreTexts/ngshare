@@ -11,17 +11,11 @@ import hashlib
 
 from sqlalchemy import (Table, Column, INTEGER, TEXT, BLOB, TIMESTAMP, BOOLEAN,
                         ForeignKey)
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
-
-# Instructor -> Course (Many to Many)
-instructor_assoc_table = Table(
-    'instructor_assoc_table', Base.metadata,
-    Column('left_id', TEXT, ForeignKey('users.id'), primary_key=True),
-    Column('right_id', INTEGER, ForeignKey('courses._id'), primary_key=True),
-)
 
 # Student -> Course (Many to Many)
 student_assoc_table = Table(
@@ -55,10 +49,16 @@ class User(Base):
     'A JupyterHub user; can be either instructor or student, or both'
     __tablename__ = 'users'
     id = Column(TEXT, primary_key=True)
-    teaching = relationship("Course", secondary=instructor_assoc_table,
-                            back_populates="instructors")
-    taking = relationship("Course", secondary=student_assoc_table,
-                          back_populates="students")
+    teaching = association_proxy('inst_assoc', 'course',
+                                    creator=lambda course: InstructorAssociation(
+                                        course=a,
+                                        first_name='0/0',
+                                        last_name='0/0',
+                                        email='0/0',
+                                    ),
+                                    cascade_scalar_deletes=True)
+    taking = relationship('Course', secondary=student_assoc_table,
+                          back_populates='students')
 
     def __init__(self, name):
         'Initialize with JupyterHub user name'
@@ -88,11 +88,17 @@ class Course(Base):
     # in case course name needs to be changed
     _id = Column(INTEGER, primary_key=True)
     id = Column(TEXT, unique=True)
-    instructors = relationship("User", secondary=instructor_assoc_table,
-                               back_populates="teaching")
-    students = relationship("User", secondary=student_assoc_table,
-                            back_populates="taking")
-    assignments = relationship("Assignment", backref="course")
+    instructors = association_proxy('inst_assoc', 'user',
+                                    creator=lambda user: InstructorAssociation(
+                                        user=user,
+                                        first_name='0/0',
+                                        last_name='0/0',
+                                        email='0/0',
+                                    ),
+                                    cascade_scalar_deletes=True)
+    students = relationship('User', secondary=student_assoc_table,
+                            back_populates='taking')
+    assignments = relationship('Assignment', backref='course')
 
     def __init__(self, name, instructor):
         'Initialize with course name and teacher'
@@ -112,9 +118,9 @@ class Assignment(Base):
     # in case assignment name needs to be changed
     _id = Column(INTEGER, primary_key=True)
     id = Column(TEXT)
-    course_id = Column(INTEGER, ForeignKey("courses._id"))
-    submissions = relationship("Submission", backref="assignment")
-    files = relationship("File", secondary=assignment_files_assoc_table)
+    course_id = Column(INTEGER, ForeignKey('courses._id'))
+    submissions = relationship('Submission', backref='assignment')
+    files = relationship('File', secondary=assignment_files_assoc_table)
     released = BOOLEAN()
     due = Column(TIMESTAMP)
     # TODO: timezoon
@@ -139,12 +145,12 @@ class Submission(Base):
     'A submission for an assignment'
     __tablename__ = 'submissions'
     _id = Column(INTEGER, primary_key=True)
-    assignment_id = Column(INTEGER, ForeignKey("assignments._id"))
+    assignment_id = Column(INTEGER, ForeignKey('assignments._id'))
     timestamp = Column(TIMESTAMP)
-    student_id = Column(TEXT, ForeignKey("users.id"))
-    files = relationship("File", secondary=submission_files_assoc_table)
-    feedbacks = relationship("File", secondary=feedback_files_assoc_table)
-    student = relationship("User")
+    student_id = Column(TEXT, ForeignKey('users.id'))
+    files = relationship('File', secondary=submission_files_assoc_table)
+    feedbacks = relationship('File', secondary=feedback_files_assoc_table)
+    student = relationship('User')
 
     def __init__(self, student, assignment):
         'Initialize with student and assignment'
@@ -183,3 +189,24 @@ class File(Base):
     def delete(self, db):
         'Remove file'
         db.delete(self)
+
+# Ref: https://stackoverflow.com/a/7524753
+# Ref: https://stackoverflow.com/a/23734727
+# Instructor -> Course (Many to Many)
+class InstructorAssociation(Base):
+    'Relationship between instructor and course, with extra data'
+    __tablename__ = 'instructor_assoc_table'
+    left_id = Column(TEXT, ForeignKey('users.id'), primary_key=True)
+    right_id = Column(TEXT, ForeignKey('courses.id'), primary_key=True)
+    first_name = Column(TEXT)
+    last_name = Column(TEXT)
+    email = Column(TEXT)
+    user = relationship(User, backref=backref(
+        'inst_assoc', cascade='save-update, merge, delete, delete-orphan'))
+    course = relationship(Course, backref=backref(
+        'inst_assoc', cascade='save-update, merge, delete, delete-orphan'))
+
+    @staticmethod
+    def find_association(db, user, course):
+        return db.query(InstructorAssociation) \
+            .filter_by(user=user, course=course).one_or_none()

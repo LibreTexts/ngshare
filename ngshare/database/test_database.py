@@ -118,7 +118,7 @@ def test_init():
     'Test clearing database and fill in default test data'
     db = Session()
     clear_db(db)
-    assert not db.query(instructor_assoc_table).all()
+    assert not db.query(InstructorAssociation).all()
     assert not db.query(student_assoc_table).all()
     assert not db.query(assignment_files_assoc_table).all()
     assert not db.query(submission_files_assoc_table).all()
@@ -158,3 +158,27 @@ def test_remove_assignment():
     assert len(db.query(Assignment).all()) == 2
     assert len(db.query(Submission).all()) == 0
     assert len(db.query(File).all()) == 2
+
+def test_assoc_table_extra_data():
+    'Test accessing extra data (full name, email) from association table'
+    db = Session()
+    kevin = db.query(User).first()
+    assert kevin.id == 'kevin'
+    assert len(kevin.teaching) == 1
+    course1 = kevin.teaching[0]
+    assert course1.id == 'course1'
+    relation_count = len(db.query(InstructorAssociation).all())
+    # Check relation
+    kevin.teaching.remove(kevin.teaching[0])
+    db.commit()
+    assert len(course1.instructors) == 0
+    assert len(db.query(InstructorAssociation).all()) == relation_count - 1
+    course1.instructors.append(kevin)
+    db.commit()
+    assert len(db.query(InstructorAssociation).all()) == relation_count
+    assert len(kevin.teaching) == 1
+    # Check data
+    association = InstructorAssociation.find_association(db, kevin, course1)
+    assert association.first_name == '0/0'
+    assert association.last_name == '0/0'
+    assert association.email == '0/0'
