@@ -611,20 +611,11 @@ class Test404Handler(RequestHandler):
         self.write(json.dumps(dict(os.environ), indent=1, sort_keys=True))
         self.write('\n' + self.request.uri + '\n' + self.request.path + '\n')
 
-def main():
-    'Main function'
-    parser = argparse.ArgumentParser(
-        description='ngshare, a REST API nbgrader exchange')
-    parser.add_argument(
-        '--jupyterhub_api_url',
-        help='Override the JUPYTERHUB_API_URL environment variable')
-    args = parser.parse_args()
-    if args.jupyterhub_api_url is not None:
-        os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
-
-    prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
-    app = Application(
-        [
+class MyApplication(Application):
+    'Custom application for ngshare'
+    def __init__(self, prefix, db_url, extra_handlers=None, debug=False,
+                 autoreload=True):
+        handlers = [
             (prefix, HomePage),
             (prefix + 'favicon.ico', Favicon),
             (prefix + 'courses', ListCourses),
@@ -642,15 +633,36 @@ def main():
             (prefix + 'submission/([^/]+)/([^/]+)/([^/]+)', DownloadAssignment),
             (prefix + 'feedback/([^/]+)/([^/]+)/([^/]+)',
              UploadDownloadFeedback),
-            (r'.*', Test404Handler),
-        ],
-        autoreload=True
-    )
+        ]
+        if extra_handlers is not None:
+            handlers += extra_handlers
+        handlers.append((r'.*', Test404Handler))
+        super(MyApplication, self).__init__(handlers, debug=debug,
+                                            autoreload=autoreload)
+        # Connect Database
+        engine = create_engine(db_url)
+        Base.metadata.bind = engine
+        Base.metadata.create_all(engine)
+        self.db_session = sessionmaker(bind=engine)
 
-    engine = create_engine('sqlite:////srv/ngshare/ngshare.db')
-    Base.metadata.bind = engine
-    Base.metadata.create_all(engine)
-    app.db_session = sessionmaker(bind=engine)
+def main():
+    'Main function'
+    parser = argparse.ArgumentParser(
+        description='ngshare, a REST API nbgrader exchange')
+    parser.add_argument('--jupyterhub_api_url',
+                        help='Override $JUPYTERHUB_API_URL')
+    parser.add_argument('--debug', type=bool, help='Output debug information')
+    parser.add_argument('--database', help='Database url',
+                        default='sqlite:////srv/ngshare/ngshare.db')
+    args = parser.parse_args()
+    if args.jupyterhub_api_url is not None:
+        os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
+
+    prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
+    extra_handlers = []
+    if args.debug:
+        extra_handlers.append((prefix + 'initialize-Data6ase', InitDatabase))
+    app = MyApplication(prefix, args.database, extra_handlers)
 
     http_server = HTTPServer(app)
     url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])

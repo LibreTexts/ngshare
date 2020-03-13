@@ -42,46 +42,26 @@ class InitDatabase(MyRequestHandler):
 
 def main():
     'Main function'
-    prefix = '/api/'
-    app = Application(
-        [
-            (prefix, HomePage),
-            (prefix + 'favicon.ico', Favicon),
-            (prefix + 'courses', ListCourses),
-            (prefix + 'course/([^/]+)', AddCourse),
-            (prefix + 'instructor/([^/]+)/([^/]+)', ManageInstructor),
-            (prefix + 'instructors/([^/]+)', ListInstructors),
-            (prefix + 'student/([^/]+)/([^/]+)', ManageStudent),
-            (prefix + 'students/([^/]+)', ListStudents),
-            (prefix + 'assignments/([^/]+)', ListAssignments),
-            (prefix + 'assignment/([^/]+)/([^/]+)', DownloadReleaseAssignment),
-            (prefix + 'submissions/([^/]+)/([^/]+)', ListSubmissions),
-            (prefix + 'submissions/([^/]+)/([^/]+)/([^/]+)',
-             ListStudentSubmissions),
-            (prefix + 'submission/([^/]+)/([^/]+)', SubmitAssignment),
-            (prefix + 'submission/([^/]+)/([^/]+)/([^/]+)', DownloadAssignment),
-            (prefix + 'feedback/([^/]+)/([^/]+)/([^/]+)',
-             UploadDownloadFeedback),
-            (prefix + 'initialize-Data6ase', InitDatabase),
-            (r'.*', Test404Handler),
-        ],
-        autoreload=True
-    )
+    parser = argparse.ArgumentParser(
+        description='vngshare, Vserver-like ngshare (Notebook Grader Share)')
+    parser.add_argument('--prefix', help='URL prefix', default='/api/')
+    parser.add_argument('--debug', help='Output debug information')
+    parser.add_argument('--database', help='Database url',
+                        default='sqlite:////tmp/ngshare.db')
+    parser.add_argument('--host', help='Bind hostname', default='127.0.0.1')
+    parser.add_argument('--port', help='Bind hostname', type=int, default=12121)
+    args = parser.parse_args()
 
-    engine = create_engine('sqlite:////tmp/ngshare.db')
-    Base.metadata.bind = engine
-    Base.metadata.create_all(engine)
-    app.db_session = sessionmaker(bind=engine)
-
-    host = sys.argv[1] if len(sys.argv) > 1 else '127.0.0.1'
-    port = int(sys.argv[2]) if len(sys.argv) > 2 else 12121
+    prefix = args.prefix
+    extra_handlers = [(prefix + 'initialize-Data6ase', InitDatabase)]
+    app = MyApplication(prefix, args.database, extra_handlers, debug=True)
 
     http_server = HTTPServer(app)
-    http_server.listen(port, host)
+    http_server.listen(args.port, args.host)
 
     print('Starting vngshare (Vserver-like Notebook Grader Share)')
-    print('Database file is /tmp/ngshare.db')
-    print('Please go to http://%s:%d/api/' % (host, port))
+    print('Database file is %s' % repr(args.database))
+    print('Please go to http://%s:%d/api/' % (args.host, args.port))
     IOLoop.current().start()
 
 if __name__ == '__main__':
