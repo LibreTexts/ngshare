@@ -86,9 +86,9 @@ def dump_db(db):
         for i in db.query(table).all():
             ans[table.__tablename__].append(i.dump())
     for table in (
-        assignment_files_assoc_table,
-        submission_files_assoc_table,
-        feedback_files_assoc_table,
+            assignment_files_assoc_table,
+            submission_files_assoc_table,
+            feedback_files_assoc_table,
         ):
         for i in db.query(table).all():
             ans[table.name].append({
