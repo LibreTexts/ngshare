@@ -121,7 +121,7 @@ def test_init():
     db = Session()
     clear_db(db)
     assert not db.query(InstructorAssociation).all()
-    assert not db.query(student_assoc_table).all()
+    assert not db.query(StudentAssociation).all()
     assert not db.query(assignment_files_assoc_table).all()
     assert not db.query(submission_files_assoc_table).all()
     assert not db.query(feedback_files_assoc_table).all()
@@ -161,10 +161,10 @@ def test_remove_assignment():
     assert len(db.query(Submission).all()) == 0
     assert len(db.query(File).all()) == 2
 
-def test_assoc_table_extra_data():
-    'Test accessing extra data (full name, email) from association table'
+def test_instructor_association():
+    'Test instructor association table'
     db = Session()
-    kevin = db.query(User).first()
+    kevin = db.query(User).filter_by(id='kevin').one_or_none()
     assert kevin.id == 'kevin'
     assert len(kevin.teaching) == 1
     course1 = kevin.teaching[0]
@@ -181,6 +181,30 @@ def test_assoc_table_extra_data():
     assert len(kevin.teaching) == 1
     # Check data
     association = InstructorAssociation.find_association(db, kevin, course1)
+    assert association.first_name == '0/0'
+    assert association.last_name == '0/0'
+    assert association.email == '0/0'
+
+def test_student_association():
+    'Test student association table'
+    db = Session()
+    lawrence = db.query(User).filter_by(id='lawrence').one_or_none()
+    assert lawrence.id == 'lawrence'
+    assert len(lawrence.taking) == 1
+    course1 = lawrence.taking[0]
+    assert course1.id == 'course1'
+    relation_count = len(db.query(StudentAssociation).all())
+    # Check relation
+    lawrence.taking.remove(lawrence.taking[0])
+    db.commit()
+    assert len(course1.students) == 0
+    assert len(db.query(StudentAssociation).all()) == relation_count - 1
+    course1.students.append(lawrence)
+    db.commit()
+    assert len(db.query(StudentAssociation).all()) == relation_count
+    assert len(lawrence.taking) == 1
+    # Check data
+    association = StudentAssociation.find_association(db, lawrence, course1)
     assert association.first_name == '0/0'
     assert association.last_name == '0/0'
     assert association.email == '0/0'

@@ -17,13 +17,6 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-# Student -> Course (Many to Many)
-student_assoc_table = Table(
-    'student_assoc_table', Base.metadata,
-    Column('left_id', TEXT, ForeignKey('users.id'), primary_key=True),
-    Column('right_id', INTEGER, ForeignKey('courses._id'), primary_key=True),
-)
-
 # Assignment -> Course (One to Many)
 assignment_files_assoc_table = Table(
     'assignment_files_assoc_table', Base.metadata,
@@ -56,9 +49,13 @@ class User(Base):
                                      last_name='0/0',
                                      email='0/0',
                                  ), cascade_scalar_deletes=True)
-    taking = relationship('Course', secondary=student_assoc_table,
-                          back_populates='students')
-
+    taking = association_proxy('student_assoc', 'course',
+                               creator=lambda course: StudentAssociation(
+                                   course=course,
+                                   first_name='0/0',
+                                   last_name='0/0',
+                                   email='0/0',
+                               ), cascade_scalar_deletes=True)
     def __init__(self, name):
         'Initialize with JupyterHub user name'
         self.id = name
@@ -95,8 +92,14 @@ class Course(Base):
                                         email='0/0',
                                     ),
                                     cascade_scalar_deletes=True)
-    students = relationship('User', secondary=student_assoc_table,
-                            back_populates='taking')
+    students = association_proxy('student_assoc', 'user',
+                                 creator=lambda user: StudentAssociation(
+                                     user=user,
+                                     first_name='0/0',
+                                     last_name='0/0',
+                                     email='0/0',
+                                 ),
+                                 cascade_scalar_deletes=True)
     assignments = relationship('Assignment', backref='course')
 
     def __init__(self, name, instructor):
@@ -191,9 +194,8 @@ class File(Base):
 
 # Ref: https://stackoverflow.com/a/7524753
 # Ref: https://stackoverflow.com/a/23734727
-# Instructor -> Course (Many to Many)
 class InstructorAssociation(Base):
-    'Relationship between instructor and course, with extra data'
+    'Relationship between instructor and course, many to many, with extra data'
     __tablename__ = 'instructor_assoc_table'
     left_id = Column(TEXT, ForeignKey('users.id'), primary_key=True)
     right_id = Column(TEXT, ForeignKey('courses.id'), primary_key=True)
@@ -210,3 +212,23 @@ class InstructorAssociation(Base):
         'Find association object from user and course'
         return db.query(InstructorAssociation) \
             .filter_by(user=instructor, course=course).one_or_none()
+
+# Student -> Course (Many to Many)
+class StudentAssociation(Base):
+    'Relationship between student and course, many to many, with extra data'
+    __tablename__ = 'student_assoc_table'
+    left_id = Column(TEXT, ForeignKey('users.id'), primary_key=True)
+    right_id = Column(TEXT, ForeignKey('courses.id'), primary_key=True)
+    first_name = Column(TEXT)
+    last_name = Column(TEXT)
+    email = Column(TEXT)
+    user = relationship(User, backref=backref(
+        'student_assoc', cascade='save-update, merge, delete, delete-orphan'))
+    course = relationship(Course, backref=backref(
+        'student_assoc', cascade='save-update, merge, delete, delete-orphan'))
+
+    @staticmethod
+    def find_association(db, student, course):
+        'Find association object from user and course'
+        return db.query(StudentAssociation) \
+            .filter_by(user=student, course=course).one_or_none()
