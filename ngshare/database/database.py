@@ -44,17 +44,11 @@ class User(Base):
     id = Column(TEXT, primary_key=True)
     teaching = association_proxy('inst_assoc', 'course',
                                  creator=lambda course: InstructorAssociation(
-                                     course=course,
-                                     first_name='0/0',
-                                     last_name='0/0',
-                                     email='0/0',
+                                     course=course
                                  ), cascade_scalar_deletes=True)
     taking = association_proxy('student_assoc', 'course',
                                creator=lambda course: StudentAssociation(
-                                   course=course,
-                                   first_name='0/0',
-                                   last_name='0/0',
-                                   email='0/0',
+                                   course=course
                                ), cascade_scalar_deletes=True)
     def __init__(self, name):
         'Initialize with JupyterHub user name'
@@ -87,17 +81,11 @@ class Course(Base):
     instructors = association_proxy('inst_assoc', 'user',
                                     creator=lambda user: InstructorAssociation(
                                         user=user,
-                                        first_name='0/0',
-                                        last_name='0/0',
-                                        email='0/0',
                                     ),
                                     cascade_scalar_deletes=True)
     students = association_proxy('student_assoc', 'user',
                                  creator=lambda user: StudentAssociation(
                                      user=user,
-                                     first_name='0/0',
-                                     last_name='0/0',
-                                     email='0/0',
                                  ),
                                  cascade_scalar_deletes=True)
     assignments = relationship('Assignment', backref='course')
@@ -208,7 +196,7 @@ class InstructorAssociation(Base):
         'inst_assoc', cascade='save-update, merge, delete, delete-orphan'))
 
     @staticmethod
-    def find_association(db, instructor, course):
+    def find(db, instructor, course):
         'Find association object from user and course'
         return db.query(InstructorAssociation) \
             .filter_by(user=instructor, course=course).one_or_none()
@@ -228,7 +216,7 @@ class StudentAssociation(Base):
         'student_assoc', cascade='save-update, merge, delete, delete-orphan'))
 
     @staticmethod
-    def find_association(db, student, course):
+    def find(db, student, course):
         'Find association object from user and course'
         return db.query(StudentAssociation) \
             .filter_by(user=student, course=course).one_or_none()

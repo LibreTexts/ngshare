@@ -25,7 +25,8 @@ from jupyterhub.services.auth import HubAuthenticated
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 
-from database.database import Base, User, Course, Assignment, Submission, File
+from database.database import (Base, User, Course, Assignment, Submission, File,
+                               InstructorAssociation, StudentAssociation)
 
 class MyHelpers:
     'Helper functions for database accesses'
@@ -184,13 +185,38 @@ class MyHelpers:
 
     # User management
 
-    def wrap_user_info(self, user, course):
-        'Return dict of user info (full name, email, etc)'
+    def wrap_instructor_info(self, user, course):
+        'Return dict of instructor info (full name, email, etc)'
+        association = InstructorAssociation.find(self.db, user, course)
+        if association is None: # Error in data integrity
+            return {
+                'username': user.id,
+                'first_name': None,
+                'last_name': None,
+                'email': None,
+            }
         return {
             'username': user.id,
-            'first_name': 'first_name_of_%s@%s' % (user.id, course.id),
-            'last_name': 'last_name_of_%s@%s' % (user.id, course.id),
-            'email': 'email_of_%s@%s' % (user.id, course.id),
+            'first_name': association.first_name,
+            'last_name': association.last_name,
+            'email': association.email,
+        }
+
+    def wrap_student_info(self, user, course):
+        'Return dict of student info (full name, email, etc)'
+        association = StudentAssociation.find(self.db, user, course)
+        if association is None: # Error in data integrity
+            return {
+                'username': user.id,
+                'first_name': None,
+                'last_name': None,
+                'email': None,
+            }
+        return {
+            'username': user.id,
+            'first_name': association.first_name,
+            'last_name': association.last_name,
+            'email': association.email,
         }
 
     # Auth APIs
@@ -291,11 +317,23 @@ class ManageInstructor(MyRequestHandler):
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         instructor = self.find_user(instructor_id)
+        first_name = self.get_argument('first_name', None)
+        if not first_name:
+            self.json_error('Please supply first name')
+        last_name = self.get_argument('last_name', None)
+        if not last_name:
+            self.json_error('Please supply last name')
+        email = self.get_argument('email', None)
+        if not email:
+            self.json_error('Please supply email')
         if instructor in course.students:
             course.students.remove(instructor)
         if instructor not in course.instructors:
             course.instructors.append(instructor)
-        # TODO: update first name etc.
+        association = InstructorAssociation.find(self.db, instructor, course)
+        association.first_name = first_name
+        association.last_name = last_name
+        association.email = email
         self.db.commit()
         self.json_success()
 
@@ -305,7 +343,7 @@ class ManageInstructor(MyRequestHandler):
         course = self.find_course(course_id)
         self.check_course_user(course)
         instructor = self.find_course_instructor(course, instructor_id)
-        ans = self.wrap_user_info(instructor, course)
+        ans = self.wrap_instructor_info(instructor, course)
         self.json_success(**ans)
 
     @authenticated
@@ -317,7 +355,6 @@ class ManageInstructor(MyRequestHandler):
         if len(course.instructors) <= 1:
             self.json_error('Cannot remove last instructor')
         course.instructors.remove(instructor)
-        # TODO: update first name etc.
         self.db.commit()
         self.json_success()
 
@@ -330,7 +367,7 @@ class ListInstructors(MyRequestHandler):
         self.check_course_user(course)
         ans = []
         for instructor in course.instructors:
-            ans.append(self.wrap_user_info(instructor, course))
+            ans.append(self.wrap_instructor_info(instructor, course))
         self.json_success(instructors=ans)
 
 class ManageStudent(MyRequestHandler):
@@ -341,13 +378,25 @@ class ManageStudent(MyRequestHandler):
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         student = self.find_user(student_id)
+        first_name = self.get_argument('first_name', None)
+        if not first_name:
+            self.json_error('Please supply first name')
+        last_name = self.get_argument('last_name', None)
+        if not last_name:
+            self.json_error('Please supply last name')
+        email = self.get_argument('email', None)
+        if not email:
+            self.json_error('Please supply email')
         if student in course.instructors:
             if len(course.instructors) <= 1:
                 self.json_error('Cannot remove last instructor')
             course.instructors.remove(student)
         if student not in course.students:
             course.students.append(student)
-        # TODO: update first name etc.
+        association = StudentAssociation.find(self.db, student, course)
+        association.first_name = first_name
+        association.last_name = last_name
+        association.email = email
         self.db.commit()
         self.json_success()
 
@@ -361,7 +410,7 @@ class ManageStudent(MyRequestHandler):
         if self.user.id != student_id:
             self.check_course_instructor(course)
         student = self.find_course_student(course, student_id)
-        ans = self.wrap_user_info(student, course)
+        ans = self.wrap_student_info(student, course)
         self.json_success(**ans)
 
     @authenticated
@@ -371,7 +420,6 @@ class ManageStudent(MyRequestHandler):
         self.check_course_instructor(course)
         student = self.find_course_student(course, student_id)
         course.students.remove(student)
-        # TODO: update first name etc.
         self.db.commit()
         self.json_success()
 
@@ -384,7 +432,7 @@ class ListStudents(MyRequestHandler):
         self.check_course_instructor(course)
         ans = []
         for student in course.students:
-            ans.append(self.wrap_user_info(student, course))
+            ans.append(self.wrap_student_info(student, course))
         self.json_success(students=ans)
 
 class ListAssignments(MyRequestHandler):

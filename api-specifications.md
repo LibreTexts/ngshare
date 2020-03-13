@@ -138,6 +138,8 @@ email=/*instructor email*/
 #### GET /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Get information about a course instructor. (instructors+students)*
 
+When first name, last name, or email not set, the field is null
+
 ##### Response
 ```javascript
 {
@@ -178,6 +180,8 @@ Submissions of the instructor are not removed (visible to other instructors).
 
 #### GET /api/instructors/&lt;course_id&gt;
 *Get information about all course instructors. (instructors+students)*
+
+When first name, last name, or email not set, the field is null
 
 ##### Response
 ```javascript
@@ -236,6 +240,8 @@ email=/*student email*/
 #### GET /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Get information about a student. (instructors+student with same student_id)*
 
+When first name, last name, or email not set, the field is null
+
 ##### Response
 ```javascript
 {
@@ -275,6 +281,8 @@ Submissions of the student are not removed (visible to instructors).
 
 #### GET /api/students/&lt;course_id&gt;
 *Get information about all course students. (instructors only)*
+
+When first name, last name, or email not set, the field is null
 
 ##### Response
 ```javascript
