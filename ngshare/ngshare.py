@@ -280,7 +280,8 @@ class HomePage(MyRequestHandler):
     @authenticated
     def get(self):
         'Display an HTML page for debugging'
-        self.render('home.html', debug=self.application.debug)
+        self.render('home.html', debug=self.application.debug,
+                    vngshare=self.application.vngshare)
 
 class Static(MyRequestHandler):
     '/api/favicon.ico, /api/masonry.min.js'
@@ -688,6 +689,7 @@ class MyApplication(Application):
         Base.metadata.create_all(engine)
         self.db_session = sessionmaker(bind=engine)
         self.debug = debug
+        self.vngshare = False
 
 def main():
     'Main function'

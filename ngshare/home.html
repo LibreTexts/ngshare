@@ -28,11 +28,12 @@
 <h2>Here are some sample uses of our APIs</h2>
 <p>
   GET
-  <a href="courses">
+  <a href="courses{% if vngshare %}?user=eric{% end %}">
     /api/courses</a>:
   List courses
 </p>
 <form id="form0" action="course/course3" method="POST">
+  {% if vngshare %}<input type="hidden" name="user" value="eric" />{% end %}
   <p>
     POST
       <a href="#" onclick="document.getElementById('form0').submit()">/api/course/&lt;course_id&gt;</a>:
@@ -40,6 +41,10 @@
   </p>
 </form>
 <form id="form4" action="instructor/course2/kevin" method="POST">
+  <input type="hidden" name="first_name" value="kevin_first_name" />
+  <input type="hidden" name="last_name" value="kevin_last_name" />
+  <input type="hidden" name="email" value="kevin_email" />
+  {% if vngshare %}<input type="hidden" name="user" value="abigail" />{% end %}
   <p>
     POST
       <a href="#" onclick="document.getElementById('form4').submit()">/api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;</a>:
@@ -48,7 +53,7 @@
 </form>
 <p>
   GET
-  <a href="instructor/course2/abigail">
+  <a href="instructor/course2/abigail{% if vngshare %}?user=eric{% end %}">
     /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;</a>:
   Get course instructor
 </p>
@@ -60,11 +65,15 @@
 </p>
 <p>
   GET
-  <a href="instructors/course2">
+  <a href="instructors/course2{% if vngshare %}?user=eric{% end %}">
     /api/instructors/&lt;course_id&gt;</a>:
   Get course instructors
 </p>
 <form id="form5" action="student/course2/kevin" method="POST">
+  <input type="hidden" name="first_name" value="kevin_first_name" />
+  <input type="hidden" name="last_name" value="kevin_last_name" />
+  <input type="hidden" name="email" value="kevin_email" />
+  {% if vngshare %}<input type="hidden" name="user" value="abigail" />{% end %}
   <p>
     POST
       <a href="#" onclick="document.getElementById('form5').submit()">/api/student/&lt;course_id&gt;/&lt;student_id&gt;</a>:
@@ -73,7 +82,7 @@
 </form>
 <p>
   GET
-  <a href="student/course2/abigail">
+  <a href="student/course2/eric{% if vngshare %}?user=abigail{% end %}">
     /api/student/&lt;course_id&gt;/&lt;student_id&gt;</a>:
   Get course student
 </p>
@@ -85,25 +94,26 @@
 </p>
 <p>
   GET
-  <a href="students/course2">
+  <a href="students/course2{% if vngshare %}?user=abigail{% end %}">
     /api/students/&lt;course_id&gt;</a>:
   Get course students
 </p>
 <p>
   GET
-  <a href="assignments/course2">
+  <a href="assignments/course2{% if vngshare %}?user=abigail{% end %}">
     /api/assignments/&lt;course_id&gt;</a>:
   List assignments
 </p>
 <p>
   GET
-  <a href="assignment/course1/challenge">
+  <a href="assignment/course1/challenge{% if vngshare %}?user=lawrence{% end %}">
     /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
   Download assignment
 </p>
 <form id="form1" action="assignment/course1/challenger" method="POST">
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
+  {% if vngshare %}<input type="hidden" name="user" value="kevin" />{% end %}
   <p>
     POST
       <a href="#" onclick="document.getElementById('form1').submit()">/api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
@@ -118,19 +128,20 @@
 </p>
 <p>
   GET
-    <a href="submissions/course1/challenge">
+    <a href="submissions/course1/challenge{% if vngshare %}?user=kevin{% end %}">
       /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
   List submissions
 </p>
 <p>
   GET
-    <a href="submissions/course1/challenge/Lawrence">
+    <a href="submissions/course1/challenge/lawrence{% if vngshare %}?user=kevin{% end %}">
       /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   List student's submissions
 </p>
 <form id="form2" action="submission/course2/assignment2a" method="POST">
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
+  {% if vngshare %}<input type="hidden" name="user" value="eric" />{% end %}
   <p>
     POST
       <a href="#" onclick="document.getElementById('form2').submit()">/api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
@@ -139,14 +150,15 @@
 </form>
 <p>
   GET
-    <a href="submission/course1/challenge/Lawrence">
+    <a href="submission/course1/challenge/lawrence{% if vngshare %}?user=kevin{% end %}">
       /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   Download submission
 </p>
-<form id="form3" action="feedback/course1/challenge/Lawrence" method="POST">
+<form id="form3" action="feedback/course1/challenge/lawrence" method="POST">
   <input type="hidden" name="timestamp" value="2020-01-01 00:00:00.000000 " />
   <input type="hidden" name="files" value="[{&quot;path&quot;: &quot;a&quot;, &quot;content&quot;: &quot;amtsCg==&quot;}]" />
   <!-- [{"path": "a", "content": "amtsCg=="}] -->
+  {% if vngshare %}<input type="hidden" name="user" value="kevin" />{% end %}
   <p>
     POST
       <a href="#" onclick="document.getElementById('form3').submit()">/api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
@@ -155,7 +167,7 @@
 </form>
 <p>
   GET
-    <a href="feedback/course1/challenge/Lawrence?timestamp=2020-01-01 00:00:00.000000 ">
+    <a href="feedback/course1/challenge/lawrence?timestamp=2020-01-01 00:00:00.000000 {% if vngshare %}&user=lawrence{% end %}">
       /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
   Download feedback
 </p>

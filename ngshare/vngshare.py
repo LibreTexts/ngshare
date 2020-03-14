@@ -41,6 +41,7 @@ def main():
     args = parser.parse_args()
 
     app = MyApplication(args.prefix, args.database, debug=not args.no_debug)
+    app.vngshare = True
 
     http_server = HTTPServer(app)
     http_server.listen(args.port, args.host)
