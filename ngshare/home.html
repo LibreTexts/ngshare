@@ -36,7 +36,7 @@
   {% if vngshare %}<input type="hidden" name="user" value="eric" />{% end %}
   <p>
     POST
-      <a href="#" onclick="document.getElementById('form0').submit()">/api/course/&lt;course_id&gt;</a>:
+      <a href="" onclick="document.getElementById('form0').submit(); event.preventDefault();">/api/course/&lt;course_id&gt;</a>:
     Create course
   </p>
 </form>
@@ -47,7 +47,7 @@
   {% if vngshare %}<input type="hidden" name="user" value="abigail" />{% end %}
   <p>
     POST
-      <a href="#" onclick="document.getElementById('form4').submit()">/api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;</a>:
+      <a href="" onclick="document.getElementById('form4').submit(); event.preventDefault();">/api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;</a>:
     Add course instructor
   </p>
 </form>
@@ -76,7 +76,7 @@
   {% if vngshare %}<input type="hidden" name="user" value="abigail" />{% end %}
   <p>
     POST
-      <a href="#" onclick="document.getElementById('form5').submit()">/api/student/&lt;course_id&gt;/&lt;student_id&gt;</a>:
+      <a href="" onclick="document.getElementById('form5').submit(); event.preventDefault();">/api/student/&lt;course_id&gt;/&lt;student_id&gt;</a>:
     Add course student
   </p>
 </form>
@@ -116,7 +116,7 @@
   {% if vngshare %}<input type="hidden" name="user" value="kevin" />{% end %}
   <p>
     POST
-      <a href="#" onclick="document.getElementById('form1').submit()">/api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
+      <a href="" onclick="document.getElementById('form1').submit(); event.preventDefault();">/api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
     Release assignment (see HTML form)
   </p>
 </form>
@@ -144,7 +144,7 @@
   {% if vngshare %}<input type="hidden" name="user" value="eric" />{% end %}
   <p>
     POST
-      <a href="#" onclick="document.getElementById('form2').submit()">/api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
+      <a href="" onclick="document.getElementById('form2').submit(); event.preventDefault();">/api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;</a>:
     Submit assignment (see HTML form)
   </p>
 </form>
@@ -161,7 +161,7 @@
   {% if vngshare %}<input type="hidden" name="user" value="kevin" />{% end %}
   <p>
     POST
-      <a href="#" onclick="document.getElementById('form3').submit()">/api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
+      <a href="" onclick="document.getElementById('form3').submit(); event.preventDefault();">/api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;</a>:
     Upload feedback (see HTML form)
   </p>
 </form>
