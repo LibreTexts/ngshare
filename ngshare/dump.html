@@ -1,6 +1,15 @@
 <!doctype html>
 <head>
   <title>ngshare Data Dase Dump</title>
+  <script src="masonry.min.js"></script>
+  <style type="text/css">
+	.grid-item {
+		margin: 1em;
+	}
+	h2 {
+		margin: 0em;
+	}
+  </style>
 </head>
 <body>
 <h1>
@@ -11,25 +20,29 @@
     <img src="favicon.ico" style="height: 1em" />
   </a>
 </h1>
-{% for table in tables %}
-  <h2>{{ table['header'] }}</h2>
-  <table border="1">
-    <thead>
-      <tr>
-        {% for cell in table['thead'] %}
-          <td>{{ cell }}</td>
-        {% end %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for line in table['tbody'] %}
-        <tr>
-          {% for cell in line %}
-            <td>{{ cell }}</td>
+<div data-masonry='{ "itemSelector": ".grid-item" }'>
+  {% for table in tables %}
+    <div class="grid-item">
+      <h2>{{ table['header'] }}</h2>
+      <table border="1">
+        <thead>
+          <tr>
+            {% for cell in table['thead'] %}
+              <td>{{ cell }}</td>
+            {% end %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for line in table['tbody'] %}
+            <tr>
+              {% for cell in line %}
+                <td>{{ cell }}</td>
+              {% end %}
+            </tr>
           {% end %}
-        </tr>
-      {% end %}
-    </tbody>
-  </table>
-{% end %}
+        </tbody>
+      </table>
+    </div>
+  {% end %}
+</div>
 </body>

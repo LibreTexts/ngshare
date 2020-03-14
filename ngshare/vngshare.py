@@ -20,7 +20,7 @@ class MockAuth(HubAuthenticated):
         return 'http://example.com/'
 
     def get_current_user(self):
-        if type(self).__name__ in ('HomePage', 'Favicon', 'InitDatabase'):
+        if type(self).__name__ in ('HomePage', 'Static', 'InitDatabase'):
             user = self.get_argument('user', 'user')
         else:
             user = self.get_argument('user')

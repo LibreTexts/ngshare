@@ -282,13 +282,13 @@ class HomePage(MyRequestHandler):
         'Display an HTML page for debugging'
         self.render('home.html', debug=self.application.debug)
 
-class Favicon(MyRequestHandler):
-    '/api/favicon.ico'
+class Static(MyRequestHandler):
+    '/api/favicon.ico, /api/masonry.min.js'
     @authenticated
-    def get(self):
-        'Serve favicon'
+    def get(self, name):
+        'Static files'
         pwd = os.path.dirname(os.path.realpath(__file__))
-        file_name = os.path.join(pwd, 'favicon.ico')
+        file_name = os.path.join(pwd, name)
         self.write(open(file_name, 'rb').read())
 
 class ListCourses(MyRequestHandler):
@@ -659,7 +659,8 @@ class MyApplication(Application):
     def __init__(self, prefix, db_url, debug=False, autoreload=True):
         handlers = [
             (prefix, HomePage),
-            (prefix + 'favicon.ico', Favicon),
+            (prefix + r'(favicon\.ico)', Static),
+            (prefix + r'(masonry\.min\.js)', Static),
             (prefix + 'courses', ListCourses),
             (prefix + 'course/([^/]+)', AddCourse),
             (prefix + 'instructor/([^/]+)/([^/]+)', ManageInstructor),
