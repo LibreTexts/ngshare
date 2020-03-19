@@ -7,6 +7,7 @@ You should clone the following repos in the same folder:
 1. [ngshare](https://github.com/lxylxy123456/ngshare) (this repo!)
 2. [nbgrader](https://github.com/lxylxy123456/nbgrader), which is built on the [pluggable exchange](https://github.com/jupyter/nbgrader/pull/1238) pull request, with an exchange that works with ngshare.
 3. [zero-to-jupyterhub-k8s](https://github.com/rkevin-arch/zero-to-jupyterhub-k8s) (not necessary if only using Docker), which is built on the official Z2JH repo but with ngshare support, and in the near future, the ability to customize k8s-aware hub managed services (WIP).
+4. [kubespawner_service_jupyterhub](https://github.com/rkevin-arch/kubespawner_service_jupyterhub) (not necessary if only using Docker), which allows spawning of JupyterHub managed services in Kubernetes.
 
 ## Docker
 To use the Docker dev environment, you should have [Docker](https://docs.docker.com/install/) and [Docker-compose](https://docs.docker.com/compose/install/) installed.
@@ -37,8 +38,12 @@ This will take a while, but at the end you should see something like this:
 | kube-system | kube-dns     | No node port                |
 |-------------|--------------|-----------------------------|-----|
 ```
-This means you may access and test JupyterHub on `http://192.168.99.123:31110`. Note: for some reason `ngshare` will 404 for around a minute before becoming fully online. We're still trying to identify the issue.
+This means you may access and test JupyterHub on `http://192.168.99.123:31110`.
 
 After everything, you may run `./test.sh delete` to delete the minikube environment. You can run `./test.sh` for a list of supported commands.
 
+Also, you may run `complete -W 'init install uninstall upgrade reinstall delete reboot' ./test.sh` if you have the bash-completion package installed to speed up typing the commands.
+
 Note: If you're using a laptop, do not hibernate while `minikube` is running. For some reason, this screws up VirtualBox's port forwarding and you'll have to do `./test.sh delete && ./test.sh init` again.
+
+Note: Sometimes minikube will crash (port 8443 closed, kubectl say `The connection was refused - did you specify the right host or port?`, and when you go in the VM it shows a lot of systemd services being randomly killed via SIGKILL, including kubelet, dunno why). In that case you don't need to delete the cluster, just rebooting it should work (you might have to manually clean up after an incomplete `helm install` if that's the case, but you can just `kubectl delete pod [podnames]` and start fresh.
