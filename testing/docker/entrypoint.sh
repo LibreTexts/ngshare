@@ -4,12 +4,16 @@
 
 cd /srv/src/nbgrader
 
-pip install -r dev-requirements.txt -e .
+pip install .
 
 jupyter nbextension install --symlink --sys-prefix --py nbgrader
 jupyter nbextension enable --sys-prefix --py nbgrader
 jupyter serverextension enable --sys-prefix --py nbgrader
 
+cd -
+
+cd /kubespawner_service_jupyterhub
+pip install .
 
 # Then start jupyterhub
 
