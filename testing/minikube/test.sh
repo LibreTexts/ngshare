@@ -5,9 +5,9 @@ HELM_CHART_LOC=../../../zero-to-jupyterhub-k8s/jupyterhub
 
 function build_hub_img {
     eval $(minikube docker-env)
-    cd ../..
-    docker build -f testing/minikube/Dockerfile-hub -t hub-testing:0.0.1 .
-    cd testing/minikube
+    cd ../../..
+    docker build -f ngshare/testing/minikube/Dockerfile-hub -t hub-testing:0.0.1 .
+    cd -
     eval $(minikube docker-env -u)
 }
 
@@ -17,30 +17,45 @@ function build_singleuser_img {
     eval $(minikube docker-env -u)
 }
 
+function build_ngshare_img {
+    eval $(minikube docker-env)
+    cd ../..
+    docker build -f testing/minikube/Dockerfile-ngshare -t ngshare-testing:0.0.1 .
+    cd -
+    eval $(minikube docker-env -u)
+}
+
 case $1 in
     init )
-        minikube start --memory 5g ;;
+        minikube start --memory 10g ;;
     install )
         build_hub_img
         build_singleuser_img
+        build_ngshare_img
         helm install jhub $HELM_CHART_LOC -f config.yaml --debug
         minikube service list ;;
     uninstall )
-        helm uninstall jhub ;;
+        helm uninstall jhub
+        kubectl delete pod jupyter-service-ngshare ;;
     reinstall )
         helm uninstall jhub
         build_hub_img
         build_singleuser_img
+        build_ngshare_img
         sleep 10 # sometimes PVCs arent unmounted properly, giving an error when doing helm install
         helm install jhub $HELM_CHART_LOC -f config.yaml --debug
         minikube service list ;;
     upgrade )
         build_hub_img
         build_singleuser_img
+        build_ngshare_img
         helm upgrade jhub $HELM_CHART_LOC -f config.yaml --debug
         minikube service list ;;
     delete )
         minikube delete ;;
+    reboot )
+        minikube stop
+        minikube start ;;
     *)
         echo "Minikube testing script for ngshare project"
         echo "Usage: $0 COMMAND"
@@ -50,5 +65,6 @@ case $1 in
         echo "    uninstall: Uninstalls testing setup on minikube"
         echo "    upgrade: Updates the testing environment with latest changes. This can be used for fast testing when Z2JH is already installed"
         echo "    reinstall: Does an uninstall and install, for the cases where 'upgrade' doesn't cut it due to messed up pods"
-        echo "    delete: Deletes minikube VM, so you can start fresh with init" ;;
+        echo "    delete: Deletes minikube VM, so you can start fresh with init"
+        echo "    reboot: Restarts minikube VM, which for some reason occasionally crashes" ;;
 esac

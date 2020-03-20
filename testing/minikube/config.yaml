@@ -21,6 +21,11 @@ hub:
   extraConfig:
     test.py: |
       c.JupyterHub.service_check_interval = 0
+      c.JupyterHub.services.append({'name':'ngshare', 'image': 'ngshare-testing:0.0.1', 'port': 10101})
+  services:
+    ngshare_notworking:
+      image: 'ngshare-testing:0.0.1'
+      port: 10101
 singleuser:
   image:
     name: singleuser-testing
