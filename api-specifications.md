@@ -1,6 +1,6 @@
 
 # Server API
-Last updated 2020-03-10
+Last updated 2020-03-11
 
 ---
 
@@ -109,6 +109,9 @@ The new course will have no students. Its only instructor is the creator.
 #### POST /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Add or update a course instructor. (instructors only)*
 
+If the user is already a student of the course, the student-relationship
+ will be removed.
+
 ##### Request (HTTP POST data)
 ```
 first_name=/*instructor first name*/&
@@ -203,6 +206,9 @@ Submissions of the instructor are not removed (visible to other instructors).
 #### POST /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Add or update a student. (instructors only)*
 
+If the user is an instructor of the course, the instructor-relation will be
+ removed.
+
 ##### Request (HTTP POST data)
 ```
 first_name=/*student name*/&
@@ -222,6 +228,7 @@ email=/*student email*/
 * Permission denied
 * Course not found
 * User not found
+* Cannot remove last instructor
 * Please supply first name
 * Please supply last name
 * Please supply email

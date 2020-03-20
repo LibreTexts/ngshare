@@ -108,6 +108,13 @@ class MyHelpers:
                 self.json_error('Content cannot be base64 decoded')
             target.append(File(i['path'], content))
 
+    def find_user(self, user_id):
+        'Return a User object from id'
+        user = self.db.query(User).filter(User.id==user_id).one_or_none()
+        if user is None:
+            self.json_error("User not found")
+        return user
+
     def find_course(self, course_id):
         'Return a Course object from id, or raise error'
         qry = self.db.query(Course)
@@ -124,6 +131,24 @@ class MyHelpers:
         if assignment is None:
             self.json_error('Assignment not found')
         return assignment
+
+    def find_course_instructor(self, course, instructor_id):
+        'Return a instructor as User object from course and id'
+        instructor = self.db.query(User).filter(
+            User.id == instructor_id,
+            User.teaching.contains(course)).one_or_none()
+        if instructor is None:
+            self.json_error('Instructor not found')
+        return instructor
+
+    def find_course_student(self, course, student_id):
+        'Return a student as User object from course and id'
+        student = self.db.query(User).filter(
+            User.id == student_id,
+            User.taking.contains(course)).one_or_none()
+        if student is None:
+            self.json_error('Student not found')
+        return student
 
     def find_course_user(self, course, user_id):
         'Return a student or instructor as User object from course and id'
@@ -156,6 +181,17 @@ class MyHelpers:
         if submission is None:
             self.json_error('Submission not found')
         return submission
+
+    # User management
+
+    def wrap_user_info(self, user, course):
+        'Return dict of user info (full name, email, etc)'
+        return {
+            'username': user.id,
+            'first_name': 'first_name_of_%s@%s' % (user.id, course.id),
+            'last_name': 'last_name_of_%s@%s' % (user.id, course.id),
+            'email': 'email_of_%s@%s' % (user.id, course.id),
+        }
 
     # Auth APIs
 
@@ -246,6 +282,110 @@ class AddCourse(MyRequestHandler):
         self.db.add(course)
         self.db.commit()
         self.json_success()
+
+class ManageInstructor(MyRequestHandler):
+    '/api/instructor/<course_id>/<instructor_id>'
+    @authenticated
+    def post(self, course_id, instructor_id):
+        'Add or update a course instructor. (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        instructor = self.find_user(instructor_id)
+        if instructor in course.students:
+            course.students.remove(instructor)
+        if instructor not in course.instructors:
+            course.instructors.append(instructor)
+        # TODO: update first name etc.
+        self.db.commit()
+        self.json_success()
+
+    @authenticated
+    def get(self, course_id, instructor_id):
+        'Get information about a course instructor. (instructors+students)'
+        course = self.find_course(course_id)
+        self.check_course_user(course)
+        instructor = self.find_course_instructor(course, instructor_id)
+        ans = self.wrap_user_info(instructor, course)
+        self.json_success(**ans)
+
+    @authenticated
+    def delete(self, course_id, instructor_id):
+        'Remove a course instructor (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        instructor = self.find_course_instructor(course, instructor_id)
+        if len(course.instructors) <= 1:
+            self.json_error('Cannot remove last instructor')
+        course.instructors.remove(instructor)
+        # TODO: update first name etc.
+        self.db.commit()
+        self.json_success()
+
+class ListInstructors(MyRequestHandler):
+    '/api/instructors/<course_id>/'
+    @authenticated
+    def get(self, course_id):
+        'Get information about all course instructors. (instructors+students)'
+        course = self.find_course(course_id)
+        self.check_course_user(course)
+        ans = []
+        for instructor in course.instructors:
+            ans.append(self.wrap_user_info(instructor, course))
+        self.json_success(instructors=ans)
+
+class ManageStudent(MyRequestHandler):
+    '/api/student/<course_id>/<student_id>'
+    @authenticated
+    def post(self, course_id, student_id):
+        'Add or update a student. (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        student = self.find_user(student_id)
+        if student in course.instructors:
+            if len(course.instructors) <= 1:
+                self.json_error('Cannot remove last instructor')
+            course.instructors.remove(student)
+        if student not in course.students:
+            course.students.append(student)
+        # TODO: update first name etc.
+        self.db.commit()
+        self.json_success()
+
+    @authenticated
+    def get(self, course_id, student_id):
+        '''
+            Get information about a student.
+            (instructors+student with same student_id)
+        '''
+        course = self.find_course(course_id)
+        if self.user.id != student_id:
+            self.check_course_instructor(course)
+        student = self.find_course_student(course, student_id)
+        ans = self.wrap_user_info(student, course)
+        self.json_success(**ans)
+
+    @authenticated
+    def delete(self, course_id, student_id):
+        'Remove a student (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        student = self.find_course_student(course, student_id)
+        course.students.remove(student)
+        # TODO: update first name etc.
+        self.db.commit()
+        self.json_success()
+
+class ListStudents(MyRequestHandler):
+    '/api/students/<course_id>/'
+    @authenticated
+    def get(self, course_id):
+        'Get information about all course students. (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+        ans = []
+        for student in course.students:
+            ans.append(self.wrap_user_info(student, course))
+        self.json_success(students=ans)
 
 class ListAssignments(MyRequestHandler):
     '/api/assignments/<course_id>'
@@ -440,6 +580,10 @@ def main():
             (prefix + 'favicon.ico', Favicon),
             (prefix + 'courses', ListCourses),
             (prefix + 'course/([^/]+)', AddCourse),
+            (prefix + 'instructor/([^/]+)/([^/]+)', ManageInstructor),
+            (prefix + 'instructors/([^/]+)', ListInstructors),
+            (prefix + 'student/([^/]+)/([^/]+)', ManageStudent),
+            (prefix + 'students/([^/]+)', ListStudents),
             (prefix + 'assignments/([^/]+)', ListAssignments),
             (prefix + 'assignment/([^/]+)/([^/]+)', DownloadReleaseAssignment),
             (prefix + 'submissions/([^/]+)/([^/]+)', ListSubmissions),
