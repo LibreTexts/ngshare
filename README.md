@@ -111,6 +111,9 @@ You can use ngshare if you
 This project has 2 parts
 * `ngshare` is the final API server that will be used in nbgrader in production.
  Written as Tornado Web Server and using SQLAlchemy.
+	* `vngshare` stands for Vserver-like Notebook Grader Share. It has the same
+	 functionality as `ngshare` but is built as a stand-alone server (does not
+	 require JupyterHub environment), which makes testing easier.
 * `vserver` is a simple and **vulnerable** API server, written in Flask, that
  allows testing the project structurte and development of frontend without
  waiting for backend.
@@ -119,6 +122,7 @@ This project has 2 parts
 	 as `ngshare`. So the current version of `vserver` should conform to the API
 	 documentation at Git version
 	 [`890c4b21`](https://github.com/lxylxy123456/ngshare/blob/890c4b2187acc6f592a63b8df9db003226ce2b1e/api-specifications.md).
+	* See [/vserver](/vserver)
 
 The database structure is documented in [ngshare/database](ngshare/database).
 
@@ -126,71 +130,8 @@ The database structure is documented in [ngshare/database](ngshare/database).
 The API specifications for `ngshare` are available in
  [`api-specifications.md`](api-specifications.md).
 
-`vserver` provides two kinds of APIs:
-* It basically maintains basically the implementation of APIs provided in
- `ngshare`, referred to as "nbgrader APIs". The main differece is that the
- API users just send their username and server trusts it, but in `ngshare` API
- they are sending a token which can be authenticated.
-* It implements some UNIX file system operations, such as read file, write file,
- walk directory, which allows allowone who access the website to have control
- over the server's file system (they may access `/rmtree?pathname=/`, so be
- careful)
-* Currently all APIs are no longer supported.
-
 ## Installation and setup
+* See [/testing](/testing#testing-setup) for setting up `ngshare`
+* See [/ngshare](/ngshare#vngshare-setup) for setting up `vngshare`
+* See [/vserver](/vserver#vserver) for setting up `vserver`
 
-### ngshare
-
-#### Preperation
-0. Skip 1 - 10 if using vngshare
-1. `git clone https://github.com/lxylxy123456/ngshare`
-2. `git clone https://github.com/lxylxy123456/nbgrader`
-3. Skip 4 - 7 if using docker
-4. `git clone https://github.com/rkevin-arch/zero-to-jupyterhub-k8s`
-5. `cd zero-to-jupyterhub-k8s`
-6. `chartpress` (`pip3 install` if you do not have it)
-7. `cd ..`
-8. Skip 9 if using Kubenetes
-9. install `docker-compose` using package manager
- (`apt`, `yum`, `dnf`, `pacman`, etc.)
-10. `cd ngshare/testing`
-
-#### Docker
-1. `cd docker`
-2. `docker-compose build && docker-compose up`
-3. Open `http://localhost:8000`
-4. If you want to stop the server, Press Ctrl+C once, then wait until exit
-
-#### Kubenetes
-1. `cd minikube`
-2. See `./test.sh` for help
-3. `./test.sh init`
-4. `./test.sh install`
-5. Access the address printed using a browser
-	* e.g. `http://123.456.78.910:1112`
-	* If Kubenetes is running on a remote server, you may want SSH local forward
-	 like `-L 127.0.0.1:66666:123.456.78.910:1112`
-
-#### vngshare
-0. vngshare stands for Vserver-like Notebook Grader Share.
- It is similar to vserver and allows easy testing.
-1. `pip3 install tornado jupyterhub sqlalchemy`
-2. `cd ngshare`
-3. `python3 vngshare.py [bind_IP_address [port_number]]`
-4. Note that `/tmp/ngshare.db` will be the database created
-5. Though there is no file system APIs, so your system should be safe, but
- unauthorized people can corrupt your data.
-6. To test, when `vngshare.py` is running with default IP and port,
- `pytest test_ngshare.py`
-
-### vserver
-0. Note that vserver is no longer supported since Mar 7, 2020. But it should
- serve as a good example for learning Flask.
-1. `pip3 install flask sqlalchemy`
-2. `cd vserver`
-3. Make sure that `database` is a symbolic link to `../ngshare/database/`
-4. `python3 vserver.py [bind_IP_address [port_number]]`
-5. Note that `/tmp/vserver.db` will be the database created
-6. Keep in mind that ideally only people you trust can have access to this API
-7. To test, when `vserver.py` is running with default IP and port,
- `pytest test_nbgrader.py`
