@@ -10,9 +10,7 @@
 # pylint: disable=unused-wildcard-import
 # pylint: disable=wildcard-import
 
-import sys
 from ngshare import *
-from database.test_database import clear_db, init_db
 
 class MockAuth(HubAuthenticated):
     '''
@@ -22,7 +20,7 @@ class MockAuth(HubAuthenticated):
         return 'http://example.com/'
 
     def get_current_user(self):
-        if type(self).__name__ in ('HomePage', 'Favicon', 'InitDatabase'):
+        if type(self).__name__ in ('HomePage', 'Static', 'InitDatabase'):
             user = self.get_argument('user', 'user')
         else:
             user = self.get_argument('user')
@@ -30,58 +28,27 @@ class MockAuth(HubAuthenticated):
 
 MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)
 
-class InitDatabase(MyRequestHandler):
-    '/initialize-Data6ase'
-    @authenticated
-    def get(self):
-        'Initialize database similar to in vserver'
-        # Dangerous: do not use in production
-        clear_db(self.db)
-        init_db(self.db)
-        self.json_success('done')
-
 def main():
     'Main function'
-    prefix = '/api/'
-    app = Application(
-        [
-            (prefix, HomePage),
-            (prefix + 'favicon.ico', Favicon),
-            (prefix + 'courses', ListCourses),
-            (prefix + 'course/([^/]+)', AddCourse),
-            (prefix + 'instructor/([^/]+)/([^/]+)', ManageInstructor),
-            (prefix + 'instructors/([^/]+)', ListInstructors),
-            (prefix + 'student/([^/]+)/([^/]+)', ManageStudent),
-            (prefix + 'students/([^/]+)', ListStudents),
-            (prefix + 'assignments/([^/]+)', ListAssignments),
-            (prefix + 'assignment/([^/]+)/([^/]+)', DownloadReleaseAssignment),
-            (prefix + 'submissions/([^/]+)/([^/]+)', ListSubmissions),
-            (prefix + 'submissions/([^/]+)/([^/]+)/([^/]+)',
-             ListStudentSubmissions),
-            (prefix + 'submission/([^/]+)/([^/]+)', SubmitAssignment),
-            (prefix + 'submission/([^/]+)/([^/]+)/([^/]+)', DownloadAssignment),
-            (prefix + 'feedback/([^/]+)/([^/]+)/([^/]+)',
-             UploadDownloadFeedback),
-            (prefix + 'initialize-Data6ase', InitDatabase),
-            (r'.*', Test404Handler),
-        ],
-        autoreload=True
-    )
+    parser = argparse.ArgumentParser(
+        description='vngshare, Vserver-like ngshare (Notebook Grader Share)')
+    parser.add_argument('--prefix', help='URL prefix', default='/api/')
+    parser.add_argument('--no-debug', help='disable debug', action='store_true')
+    parser.add_argument('--database', help='database url',
+                        default='sqlite:////tmp/ngshare.db')
+    parser.add_argument('--host', help='bind hostname', default='127.0.0.1')
+    parser.add_argument('--port', help='bind port', type=int, default=12121)
+    args = parser.parse_args()
 
-    engine = create_engine('sqlite:////tmp/ngshare.db')
-    Base.metadata.bind = engine
-    Base.metadata.create_all(engine)
-    app.db_session = sessionmaker(bind=engine)
-
-    host = sys.argv[1] if len(sys.argv) > 1 else '127.0.0.1'
-    port = int(sys.argv[2]) if len(sys.argv) > 2 else 12121
+    app = MyApplication(args.prefix, args.database, debug=not args.no_debug)
+    app.vngshare = True
 
     http_server = HTTPServer(app)
-    http_server.listen(port, host)
+    http_server.listen(args.port, args.host)
 
     print('Starting vngshare (Vserver-like Notebook Grader Share)')
-    print('Database file is /tmp/ngshare.db')
-    print('Please go to http://%s:%d/api/' % (host, port))
+    print('Database file is %s' % repr(args.database))
+    print('Please go to http://%s:%d/api/' % (args.host, args.port))
     IOLoop.current().start()
 
 if __name__ == '__main__':

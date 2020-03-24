@@ -66,7 +66,10 @@ def test_init():
     'Clear database'
     global user
     user = 'none'
-    assert assert_success('/api/initialize-Data6ase')['message'] == 'done'
+    assert assert_success('/api/initialize-Data6ase',
+                          params={'action': 'clear'})['message'] == 'done'
+    assert assert_success('/api/initialize-Data6ase',
+                          params={'action': 'init'})['message'] == 'done'
 
 def test_list_courses():
     'Test GET /api/courses'
@@ -99,11 +102,26 @@ def test_add_instructor():
     assert_fail(url + 'course2/lawrence', method=POST,
                 msg='Permission denied (not course instructor)')
     user = 'abigail'
-    assert_success(url + 'course2/lawrence', method=POST)
+    data = {}
+    assert_fail(url + 'course2/lawrence', data=data, method=POST,
+                msg='Please supply first name')
+    data['first_name'] = 'lawrence_course2_first_name'
+    assert_fail(url + 'course2/lawrence', data=data, method=POST,
+                msg='Please supply last name')
+    data['last_name'] = 'lawrence_course2_last_name'
+    assert_fail(url + 'course2/lawrence', data=data, method=POST,
+                msg='Please supply email')
+    data['email'] = 'lawrence_course2_email'
+    assert_success(url + 'course2/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course2')['instructors']) == 2
     # Test updating student to instructor
     user = 'kevin'
-    assert_success(url + 'course1/lawrence', method=POST)
+    data = {
+        'first_name': 'lawrence_course1_first_name',
+        'last_name': 'lawrence_course1_last_name',
+        'email': 'lawrence_course1_email',
+    }
+    assert_success(url + 'course1/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course1')['instructors']) == 2
     assert len(assert_success('/api/students/course1')['students']) == 0
 
@@ -123,9 +141,15 @@ def test_get_instructor():
     resp2 = assert_success(url + 'course2/lawrence')
     assert resp1 == resp2
     assert resp1['username'] == 'lawrence'
-    assert resp1['first_name'] == 'first_name_of_lawrence@course2'
-    assert resp1['last_name'] == 'last_name_of_lawrence@course2'
-    assert resp1['email'] == 'email_of_lawrence@course2'
+    assert resp1['first_name'] == 'lawrence_course2_first_name'
+    assert resp1['last_name'] == 'lawrence_course2_last_name'
+    assert resp1['email'] == 'lawrence_course2_email'
+    user = 'lawrence'
+    resp3 = assert_success(url + 'course1/lawrence')
+    assert resp3['username'] == 'lawrence'
+    assert resp3['first_name'] == 'lawrence_course1_first_name'
+    assert resp3['last_name'] == 'lawrence_course1_last_name'
+    assert resp3['email'] == 'lawrence_course1_email'
 
 def test_delete_instructor():
     'Test DELETE /api/instructor/<course_id>/<instructor_id>'
@@ -156,9 +180,9 @@ def test_list_instructors():
     assert resp1 == resp2
     assert len(resp1) == 1
     assert resp1[0]['username'] == 'abigail'
-    assert resp1[0]['first_name'] == 'first_name_of_abigail@course2'
-    assert resp1[0]['last_name'] == 'last_name_of_abigail@course2'
-    assert resp1[0]['email'] == 'email_of_abigail@course2'
+    assert resp1[0]['first_name'] is None
+    assert resp1[0]['last_name'] is None
+    assert resp1[0]['email'] is None
 
 def test_add_student():
     'Test POST /api/student/<course_id>/<student_id>'
@@ -169,13 +193,28 @@ def test_add_student():
     assert_fail(url + 'course2/lawrence', method=POST,
                 msg='Permission denied (not course instructor)')
     user = 'abigail'
-    assert_success(url + 'course2/lawrence', method=POST)
+    data = {}
+    assert_fail(url + 'course2/lawrence', data=data, method=POST,
+                msg='Please supply first name')
+    data['first_name'] = 'lawrence_course2_first_name'
+    assert_fail(url + 'course2/lawrence', data=data, method=POST,
+                msg='Please supply last name')
+    data['last_name'] = 'lawrence_course2_last_name'
+    assert_fail(url + 'course2/lawrence', data=data, method=POST,
+                msg='Please supply email')
+    data['email'] = 'lawrence_course2_email'
+    assert_success(url + 'course2/lawrence', data=data, method=POST)
     assert len(assert_success('/api/students/course2')['students']) == 2
     # Test updating instructor to student
-    assert_fail(url + 'course2/abigail', method=POST,
+    assert_fail(url + 'course2/abigail', data=data, method=POST,
                 msg='Cannot remove last instructor')
     user = 'kevin'
-    assert_success(url + 'course1/lawrence', method=POST)
+    data = {
+        'first_name': 'lawrence_course1_first_name',
+        'last_name': 'lawrence_course1_last_name',
+        'email': 'lawrence_course1_email',
+    }
+    assert_success(url + 'course1/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course1')['instructors']) == 1
     assert len(assert_success('/api/students/course1')['students']) == 1
 
@@ -194,9 +233,9 @@ def test_get_student():
     assert_fail(url + 'course2/abigail', msg='Student not found')
     resp = assert_success(url + 'course2/lawrence')
     assert resp['username'] == 'lawrence'
-    assert resp['first_name'] == 'first_name_of_lawrence@course2'
-    assert resp['last_name'] == 'last_name_of_lawrence@course2'
-    assert resp['email'] == 'email_of_lawrence@course2'
+    assert resp['first_name'] == 'lawrence_course2_first_name'
+    assert resp['last_name'] == 'lawrence_course2_last_name'
+    assert resp['email'] == 'lawrence_course2_email'
 
 def test_delete_student():
     'Test DELETE /api/student/<course_id>/<student_id>'
@@ -225,9 +264,9 @@ def test_list_students():
     resp = assert_success(url + 'course2')['students']
     assert len(resp) == 1
     assert resp[0]['username'] == 'eric'
-    assert resp[0]['first_name'] == 'first_name_of_eric@course2'
-    assert resp[0]['last_name'] == 'last_name_of_eric@course2'
-    assert resp[0]['email'] == 'email_of_eric@course2'
+    assert resp[0]['first_name'] is None
+    assert resp[0]['last_name'] is None
+    assert resp[0]['email'] is None
 
 def test_list_assignments():
     'Test GET /api/assignments/<course_id>'

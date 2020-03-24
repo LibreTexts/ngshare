@@ -2,11 +2,14 @@
     Test database structure and some properties of SQLAlchemy
 '''
 
+from collections import defaultdict
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # pylint: disable=global-statement
 # pylint: disable=invalid-name
+# pylint: disable=len-as-condition
 # pylint: disable=unused-wildcard-import
 # pylint: disable=wildcard-import
 
@@ -24,9 +27,9 @@ def clear_db(db):
     db.query(Assignment).delete()
     db.query(Submission).delete()
     db.query(File).delete()
+    db.query(InstructorAssociation).delete()
+    db.query(StudentAssociation).delete()
     for table_name in [
-            'instructor_assoc_table',
-            'student_assoc_table',
             'assignment_files_assoc_table',
             'submission_files_assoc_table',
             'feedback_files_assoc_table',
@@ -75,6 +78,25 @@ def init_db(db):
     s1.feedbacks.append(File('file5', b'55555'))
     db.commit()
 
+def dump_db(db):
+    'Dump database out'
+    ans = defaultdict(list)
+    for table in (User, Course, Assignment, Submission, File,
+                  InstructorAssociation, StudentAssociation):
+        for i in db.query(table).all():
+            ans[table.__tablename__].append(i.dump())
+    for table in (
+            assignment_files_assoc_table,
+            submission_files_assoc_table,
+            feedback_files_assoc_table,
+        ):
+        for i in db.query(table).all():
+            ans[table.name].append({
+                'left_id': i.left_id,
+                'right_id': i.right_id,
+            })
+    return ans
+
 def test_legacy():
     'Some test cases created when building database structure'
     global Session
@@ -94,6 +116,7 @@ def test_legacy():
     submission = Submission(student, assignment)
     db.add(course)
     db.commit()
+    print(submission)
 
     # check if values are sane
     print("List of users:")
@@ -118,8 +141,6 @@ def test_init():
     'Test clearing database and fill in default test data'
     db = Session()
     clear_db(db)
-    assert not db.query(instructor_assoc_table).all()
-    assert not db.query(student_assoc_table).all()
     assert not db.query(assignment_files_assoc_table).all()
     assert not db.query(submission_files_assoc_table).all()
     assert not db.query(feedback_files_assoc_table).all()
@@ -128,6 +149,8 @@ def test_init():
     assert not db.query(Assignment).all()
     assert not db.query(Submission).all()
     assert not db.query(File).all()
+    assert not db.query(InstructorAssociation).all()
+    assert not db.query(StudentAssociation).all()
     init_db(db)
     assert len(db.query(User).all()) == 4
     assert len(db.query(Course).all()) == 2
@@ -158,3 +181,67 @@ def test_remove_assignment():
     assert len(db.query(Assignment).all()) == 2
     assert len(db.query(Submission).all()) == 0
     assert len(db.query(File).all()) == 2
+
+def test_instructor_association():
+    'Test instructor association table'
+    db = Session()
+    kevin = db.query(User).filter_by(id='kevin').one_or_none()
+    assert kevin.id == 'kevin'
+    assert len(kevin.teaching) == 1
+    course1 = kevin.teaching[0]
+    assert course1.id == 'course1'
+    relation_count = len(db.query(InstructorAssociation).all())
+    # Check relation
+    kevin.teaching.remove(kevin.teaching[0])
+    db.commit()
+    assert len(course1.instructors) == 0
+    assert len(db.query(InstructorAssociation).all()) == relation_count - 1
+    course1.instructors.append(kevin)
+    db.commit()
+    assert len(db.query(InstructorAssociation).all()) == relation_count
+    assert len(kevin.teaching) == 1
+    # Check data
+    association = InstructorAssociation.find(db, kevin, course1)
+    assert association.first_name is None
+    assert association.last_name is None
+    assert association.email is None
+    association.first_name = 'Kevin.first_name'
+    association.last_name = 'Kevin.last_name'
+    association.email = 'Kevin.email'
+    db.commit()
+    association = InstructorAssociation.find(db, kevin, course1)
+    assert association.first_name == 'Kevin.first_name'
+    assert association.last_name == 'Kevin.last_name'
+    assert association.email == 'Kevin.email'
+
+def test_student_association():
+    'Test student association table'
+    db = Session()
+    lawrence = db.query(User).filter_by(id='lawrence').one_or_none()
+    assert lawrence.id == 'lawrence'
+    assert len(lawrence.taking) == 1
+    course1 = lawrence.taking[0]
+    assert course1.id == 'course1'
+    relation_count = len(db.query(StudentAssociation).all())
+    # Check relation
+    lawrence.taking.remove(lawrence.taking[0])
+    db.commit()
+    assert len(course1.students) == 0
+    assert len(db.query(StudentAssociation).all()) == relation_count - 1
+    course1.students.append(lawrence)
+    db.commit()
+    assert len(db.query(StudentAssociation).all()) == relation_count
+    assert len(lawrence.taking) == 1
+    # Check data
+    association = StudentAssociation.find(db, lawrence, course1)
+    assert association.first_name is None
+    assert association.last_name is None
+    assert association.email is None
+    association.first_name = 'Lawrence.first_name'
+    association.last_name = 'Lawrence.last_name'
+    association.email = 'Lawrence.email'
+    db.commit()
+    association = StudentAssociation.find(db, lawrence, course1)
+    assert association.first_name == 'Lawrence.first_name'
+    assert association.last_name == 'Lawrence.last_name'
+    assert association.email == 'Lawrence.email'

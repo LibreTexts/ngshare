@@ -8,6 +8,7 @@
 # pylint: disable=invalid-name
 # pylint: disable=no-member
 # pylint: disable=no-self-use
+# pylint: disable=too-many-public-methods
 
 import os
 import json
@@ -25,7 +26,9 @@ from jupyterhub.services.auth import HubAuthenticated
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 
-from database.database import Base, User, Course, Assignment, Submission, File
+from database.database import (Base, User, Course, Assignment, Submission, File,
+                               InstructorAssociation, StudentAssociation)
+from database.test_database import clear_db, init_db, dump_db
 
 class MyHelpers:
     'Helper functions for database accesses'
@@ -110,7 +113,7 @@ class MyHelpers:
 
     def find_user(self, user_id):
         'Return a User object from id'
-        user = self.db.query(User).filter(User.id==user_id).one_or_none()
+        user = self.db.query(User).filter(User.id == user_id).one_or_none()
         if user is None:
             self.json_error("User not found")
         return user
@@ -184,13 +187,38 @@ class MyHelpers:
 
     # User management
 
-    def wrap_user_info(self, user, course):
-        'Return dict of user info (full name, email, etc)'
+    def wrap_instructor_info(self, user, course):
+        'Return dict of instructor info (full name, email, etc)'
+        association = InstructorAssociation.find(self.db, user, course)
+        if association is None: # Error in data integrity
+            return {
+                'username': user.id,
+                'first_name': None,
+                'last_name': None,
+                'email': None,
+            }
         return {
             'username': user.id,
-            'first_name': 'first_name_of_%s@%s' % (user.id, course.id),
-            'last_name': 'last_name_of_%s@%s' % (user.id, course.id),
-            'email': 'email_of_%s@%s' % (user.id, course.id),
+            'first_name': association.first_name,
+            'last_name': association.last_name,
+            'email': association.email,
+        }
+
+    def wrap_student_info(self, user, course):
+        'Return dict of student info (full name, email, etc)'
+        association = StudentAssociation.find(self.db, user, course)
+        if association is None: # Error in data integrity
+            return {
+                'username': user.id,
+                'first_name': None,
+                'last_name': None,
+                'email': None,
+            }
+        return {
+            'username': user.id,
+            'first_name': association.first_name,
+            'last_name': association.last_name,
+            'email': association.email,
         }
 
     # Auth APIs
@@ -206,13 +234,19 @@ class MyHelpers:
     def check_course_instructor(self, course):
         'Assert user is an instructor in the course'
         if not self.is_course_instructor(course, self.user):
-            self.json_error('Permission denied (not course instructor)')
+            msg = 'Permission denied'
+            if self.application.debug:
+                msg += ' (not course instructor)'
+            self.json_error(msg)
 
     def check_course_user(self, course):
         'Assert user is a student or an instructor in the course'
         if not self.is_course_instructor(course, self.user) and \
             not self.is_course_student(course, self.user):
-            self.json_error('Permission denied (not related to course)')
+            msg = 'Permission denied'
+            if self.application.debug:
+                msg += ' (not related to course)'
+            self.json_error(msg)
 
 class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
     'Custom request handler for ngshare'
@@ -246,17 +280,16 @@ class HomePage(MyRequestHandler):
     @authenticated
     def get(self):
         'Display an HTML page for debugging'
-        pwd = os.path.dirname(os.path.realpath(__file__))
-        file_name = os.path.join(pwd, 'home.html')
-        self.write(open(file_name).read())
+        self.render('home.html', debug=self.application.debug,
+                    vngshare=self.application.vngshare)
 
-class Favicon(MyRequestHandler):
-    '/api/favicon.ico'
+class Static(MyRequestHandler):
+    '/api/favicon.ico, /api/masonry.min.js'
     @authenticated
-    def get(self):
-        'Serve favicon'
+    def get(self, name):
+        'Static files'
         pwd = os.path.dirname(os.path.realpath(__file__))
-        file_name = os.path.join(pwd, 'favicon.ico')
+        file_name = os.path.join(pwd, name)
         self.write(open(file_name, 'rb').read())
 
 class ListCourses(MyRequestHandler):
@@ -291,11 +324,23 @@ class ManageInstructor(MyRequestHandler):
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         instructor = self.find_user(instructor_id)
+        first_name = self.get_argument('first_name', None)
+        if not first_name:
+            self.json_error('Please supply first name')
+        last_name = self.get_argument('last_name', None)
+        if not last_name:
+            self.json_error('Please supply last name')
+        email = self.get_argument('email', None)
+        if not email:
+            self.json_error('Please supply email')
         if instructor in course.students:
             course.students.remove(instructor)
         if instructor not in course.instructors:
             course.instructors.append(instructor)
-        # TODO: update first name etc.
+        association = InstructorAssociation.find(self.db, instructor, course)
+        association.first_name = first_name
+        association.last_name = last_name
+        association.email = email
         self.db.commit()
         self.json_success()
 
@@ -305,7 +350,7 @@ class ManageInstructor(MyRequestHandler):
         course = self.find_course(course_id)
         self.check_course_user(course)
         instructor = self.find_course_instructor(course, instructor_id)
-        ans = self.wrap_user_info(instructor, course)
+        ans = self.wrap_instructor_info(instructor, course)
         self.json_success(**ans)
 
     @authenticated
@@ -317,7 +362,6 @@ class ManageInstructor(MyRequestHandler):
         if len(course.instructors) <= 1:
             self.json_error('Cannot remove last instructor')
         course.instructors.remove(instructor)
-        # TODO: update first name etc.
         self.db.commit()
         self.json_success()
 
@@ -330,7 +374,7 @@ class ListInstructors(MyRequestHandler):
         self.check_course_user(course)
         ans = []
         for instructor in course.instructors:
-            ans.append(self.wrap_user_info(instructor, course))
+            ans.append(self.wrap_instructor_info(instructor, course))
         self.json_success(instructors=ans)
 
 class ManageStudent(MyRequestHandler):
@@ -341,13 +385,25 @@ class ManageStudent(MyRequestHandler):
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         student = self.find_user(student_id)
+        first_name = self.get_argument('first_name', None)
+        if not first_name:
+            self.json_error('Please supply first name')
+        last_name = self.get_argument('last_name', None)
+        if not last_name:
+            self.json_error('Please supply last name')
+        email = self.get_argument('email', None)
+        if not email:
+            self.json_error('Please supply email')
         if student in course.instructors:
             if len(course.instructors) <= 1:
                 self.json_error('Cannot remove last instructor')
             course.instructors.remove(student)
         if student not in course.students:
             course.students.append(student)
-        # TODO: update first name etc.
+        association = StudentAssociation.find(self.db, student, course)
+        association.first_name = first_name
+        association.last_name = last_name
+        association.email = email
         self.db.commit()
         self.json_success()
 
@@ -361,7 +417,7 @@ class ManageStudent(MyRequestHandler):
         if self.user.id != student_id:
             self.check_course_instructor(course)
         student = self.find_course_student(course, student_id)
-        ans = self.wrap_user_info(student, course)
+        ans = self.wrap_student_info(student, course)
         self.json_success(**ans)
 
     @authenticated
@@ -371,7 +427,6 @@ class ManageStudent(MyRequestHandler):
         self.check_course_instructor(course)
         student = self.find_course_student(course, student_id)
         course.students.remove(student)
-        # TODO: update first name etc.
         self.db.commit()
         self.json_success()
 
@@ -384,7 +439,7 @@ class ListStudents(MyRequestHandler):
         self.check_course_instructor(course)
         ans = []
         for student in course.students:
-            ans.append(self.wrap_user_info(student, course))
+            ans.append(self.wrap_student_info(student, course))
         self.json_success(students=ans)
 
 class ListAssignments(MyRequestHandler):
@@ -553,31 +608,60 @@ class UploadDownloadFeedback(MyRequestHandler):
         self.json_success(files=files,
                           timestamp=self.strftime(submission.timestamp))
 
-class Test404Handler(RequestHandler):
+class InitDatabase(MyRequestHandler):
+    '/initialize-Data6ase'
+    @authenticated
+    def get(self):
+        'Initialize database similar to in vserver'
+        # Dangerous: do not use in production
+        if not self.application.debug:
+            self.json_error('Debug mode is off')
+        action = self.get_argument('action', None)
+        if action == 'clear':
+            clear_db(self.db)
+            self.json_success('done')
+        elif action == 'init':
+            init_db(self.db)
+            self.json_success('done')
+        elif action == 'dump':
+            result = dump_db(self.db)
+            if self.get_argument('human-readable', 'false') != 'true':
+                self.json_success(**result)
+            ans = []
+            for key, value in result.items():
+                if value:
+                    thead = list(value[0])
+                else:
+                    thead = ['']
+                tbody = []
+                for line in value:
+                    tbody.append(list(map(line.__getitem__, thead)))
+                ans.append({
+                    'header': key,
+                    'thead': thead,
+                    'tbody': tbody,
+                })
+            self.render('dump.html', tables=ans)
+        else:
+            self.json_error('action should be clear, init, or dump')
+
+class NotFoundHandler(RequestHandler):
     '404 handler'
     def get(self):
         'Disable 404 page'
         self.write("<h1>404 Not Found</h1>\n")
-        # TODO: if not DEBUG: return
+        if not self.application.debug:
+            return
         self.write(json.dumps(dict(os.environ), indent=1, sort_keys=True))
         self.write('\n' + self.request.uri + '\n' + self.request.path + '\n')
 
-def main():
-    'Main function'
-    parser = argparse.ArgumentParser(
-        description='ngshare, a REST API nbgrader exchange')
-    parser.add_argument(
-        '--jupyterhub_api_url',
-        help='Override the JUPYTERHUB_API_URL environment variable')
-    args = parser.parse_args()
-    if args.jupyterhub_api_url is not None:
-        os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
-
-    prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
-    app = Application(
-        [
+class MyApplication(Application):
+    'Custom application for ngshare'
+    def __init__(self, prefix, db_url, debug=False, autoreload=True):
+        handlers = [
             (prefix, HomePage),
-            (prefix + 'favicon.ico', Favicon),
+            (prefix + r'(favicon\.ico)', Static),
+            (prefix + r'(masonry\.min\.js)', Static),
             (prefix + 'courses', ListCourses),
             (prefix + 'course/([^/]+)', AddCourse),
             (prefix + 'instructor/([^/]+)/([^/]+)', ManageInstructor),
@@ -593,15 +677,35 @@ def main():
             (prefix + 'submission/([^/]+)/([^/]+)/([^/]+)', DownloadAssignment),
             (prefix + 'feedback/([^/]+)/([^/]+)/([^/]+)',
              UploadDownloadFeedback),
-            (r'.*', Test404Handler),
-        ],
-        autoreload=True
-    )
+        ]
+        if debug:
+            handlers.append((prefix + 'initialize-Data6ase', InitDatabase))
+        handlers.append((r'.*', NotFoundHandler))
+        super(MyApplication, self).__init__(handlers, debug=debug,
+                                            autoreload=autoreload)
+        # Connect Database
+        engine = create_engine(db_url)
+        Base.metadata.bind = engine
+        Base.metadata.create_all(engine)
+        self.db_session = sessionmaker(bind=engine)
+        self.debug = debug
+        self.vngshare = False
 
-    engine = create_engine('sqlite:////srv/ngshare/ngshare.db')
-    Base.metadata.bind = engine
-    Base.metadata.create_all(engine)
-    app.db_session = sessionmaker(bind=engine)
+def main():
+    'Main function'
+    parser = argparse.ArgumentParser(
+        description='ngshare, a REST API nbgrader exchange')
+    parser.add_argument('--jupyterhub_api_url',
+                        help='override $JUPYTERHUB_API_URL')
+    parser.add_argument('--debug', type=bool, help='output debug information')
+    parser.add_argument('--database', help='database url',
+                        default='sqlite:////srv/ngshare/ngshare.db')
+    args = parser.parse_args()
+    if args.jupyterhub_api_url is not None:
+        os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
+
+    prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
+    app = MyApplication(prefix, args.database, debug=args.debug)
 
     http_server = HTTPServer(app)
     url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])
