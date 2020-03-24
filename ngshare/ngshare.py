@@ -325,13 +325,13 @@ class ManageInstructor(MyRequestHandler):
         self.check_course_instructor(course)
         instructor = self.find_user(instructor_id)
         first_name = self.get_argument('first_name', None)
-        if not first_name:
+        if first_name is None:
             self.json_error('Please supply first name')
         last_name = self.get_argument('last_name', None)
-        if not last_name:
+        if last_name is None:
             self.json_error('Please supply last name')
         email = self.get_argument('email', None)
-        if not email:
+        if email is None:
             self.json_error('Please supply email')
         if instructor in course.students:
             course.students.remove(instructor)
@@ -386,13 +386,13 @@ class ManageStudent(MyRequestHandler):
         self.check_course_instructor(course)
         student = self.find_user(student_id)
         first_name = self.get_argument('first_name', None)
-        if not first_name:
+        if first_name is None:
             self.json_error('Please supply first name')
         last_name = self.get_argument('last_name', None)
-        if not last_name:
+        if last_name is None:
             self.json_error('Please supply last name')
         email = self.get_argument('email', None)
-        if not email:
+        if email is None:
             self.json_error('Please supply email')
         if student in course.instructors:
             if len(course.instructors) <= 1:

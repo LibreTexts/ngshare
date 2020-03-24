@@ -114,12 +114,12 @@ def test_add_instructor():
     data['email'] = 'lawrence_course2_email'
     assert_success(url + 'course2/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course2')['instructors']) == 2
-    # Test updating student to instructor
+    # Test updating student to instructor, and empty email
     user = 'kevin'
     data = {
         'first_name': 'lawrence_course1_first_name',
         'last_name': 'lawrence_course1_last_name',
-        'email': 'lawrence_course1_email',
+        'email': '',
     }
     assert_success(url + 'course1/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course1')['instructors']) == 2
@@ -149,7 +149,7 @@ def test_get_instructor():
     assert resp3['username'] == 'lawrence'
     assert resp3['first_name'] == 'lawrence_course1_first_name'
     assert resp3['last_name'] == 'lawrence_course1_last_name'
-    assert resp3['email'] == 'lawrence_course1_email'
+    assert resp3['email'] == ''
 
 def test_delete_instructor():
     'Test DELETE /api/instructor/<course_id>/<instructor_id>'
@@ -205,14 +205,14 @@ def test_add_student():
     data['email'] = 'lawrence_course2_email'
     assert_success(url + 'course2/lawrence', data=data, method=POST)
     assert len(assert_success('/api/students/course2')['students']) == 2
-    # Test updating instructor to student
+    # Test updating instructor to student, and empty email
     assert_fail(url + 'course2/abigail', data=data, method=POST,
                 msg='Cannot remove last instructor')
     user = 'kevin'
     data = {
         'first_name': 'lawrence_course1_first_name',
         'last_name': 'lawrence_course1_last_name',
-        'email': 'lawrence_course1_email',
+        'email': '',
     }
     assert_success(url + 'course1/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course1')['instructors']) == 1
