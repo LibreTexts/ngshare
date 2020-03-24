@@ -6,6 +6,7 @@
 # pylint: disable=too-few-public-methods
 # pylint: disable=fixme
 
+import base64
 import datetime
 import hashlib
 
@@ -57,6 +58,12 @@ class User(Base):
     def __str__(self):
         return '<User %s>' % self.id
 
+    def dump(self):
+        'Dump data to dict'
+        return {
+            'id': self.id,
+        }
+
     def delete(self, db):
         'Remove user and dependent data'
         raise NotImplementedError('Currently users cannot be deleted')
@@ -89,6 +96,13 @@ class Course(Base):
                                  ),
                                  cascade_scalar_deletes=True)
     assignments = relationship('Assignment', backref='course')
+
+    def dump(self):
+        'Dump data to dict'
+        return {
+            '_id': self._id,
+            'id': self.id,
+        }
 
     def __init__(self, name, instructor):
         'Initialize with course name and teacher'
@@ -123,6 +137,16 @@ class Assignment(Base):
     def __str__(self):
         return '<Assignment %s>' % self.id
 
+    def dump(self):
+        'Dump data to dict'
+        return {
+            '_id': self._id,
+            'id': self.id,
+            'course_id': self.course_id,
+            'released': bool(self.released),
+            'due': self.due and self.due.strftime('%Y-%m-%d %H:%M:%S.%f %Z'),
+        }
+
     def delete(self, db):
         'Remove assignment and dependent data (files, submissions)'
         for file_obj in self.files:
@@ -151,6 +175,16 @@ class Submission(Base):
     def __str__(self):
         return '<Submission %d>' % self._id
 
+    def dump(self):
+        'Dump data to dict'
+        return {
+            '_id': self._id,
+            'assignment_id': self.assignment_id,
+            'timestamp': self.timestamp and \
+                         self.timestamp.strftime('%Y-%m-%d %H:%M:%S.%f %Z'),
+            'student_id': self.student_id,
+        }
+
     def delete(self, db):
         'Remove submission and dependent data (files, feedbacks)'
         for file_obj in self.files:
@@ -175,6 +209,15 @@ class File(Base):
 
     def __str__(self):
         return '<File %s>' % self.filename
+
+    def dump(self):
+        'Dump data to dict'
+        return {
+            '_id': self._id,
+            'filename': self.filename,
+            'contents': base64.encodebytes(self.contents).decode(),
+            'checksum': self.checksum,
+        }
 
     def delete(self, db):
         'Remove file'
@@ -201,6 +244,16 @@ class InstructorAssociation(Base):
         return db.query(InstructorAssociation) \
             .filter_by(user=instructor, course=course).one_or_none()
 
+    def dump(self):
+        'Dump data to dict'
+        return {
+            'left_id': self.left_id,
+            'right_id': self.right_id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
+        }
+
 # Student -> Course (Many to Many)
 class StudentAssociation(Base):
     'Relationship between student and course, many to many, with extra data'
@@ -220,3 +273,13 @@ class StudentAssociation(Base):
         'Find association object from user and course'
         return db.query(StudentAssociation) \
             .filter_by(user=student, course=course).one_or_none()
+
+    def dump(self):
+        'Dump data to dict'
+        return {
+            'left_id': self.left_id,
+            'right_id': self.right_id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
+        }

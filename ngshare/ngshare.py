@@ -28,6 +28,7 @@ from sqlalchemy.orm import sessionmaker
 
 from database.database import (Base, User, Course, Assignment, Submission, File,
                                InstructorAssociation, StudentAssociation)
+from database.test_database import clear_db, init_db, dump_db
 
 class MyHelpers:
     'Helper functions for database accesses'
@@ -233,13 +234,19 @@ class MyHelpers:
     def check_course_instructor(self, course):
         'Assert user is an instructor in the course'
         if not self.is_course_instructor(course, self.user):
-            self.json_error('Permission denied (not course instructor)')
+            msg = 'Permission denied'
+            if self.application.debug:
+                msg += ' (not course instructor)'
+            self.json_error(msg)
 
     def check_course_user(self, course):
         'Assert user is a student or an instructor in the course'
         if not self.is_course_instructor(course, self.user) and \
             not self.is_course_student(course, self.user):
-            self.json_error('Permission denied (not related to course)')
+            msg = 'Permission denied'
+            if self.application.debug:
+                msg += ' (not related to course)'
+            self.json_error(msg)
 
 class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
     'Custom request handler for ngshare'
@@ -273,17 +280,16 @@ class HomePage(MyRequestHandler):
     @authenticated
     def get(self):
         'Display an HTML page for debugging'
-        pwd = os.path.dirname(os.path.realpath(__file__))
-        file_name = os.path.join(pwd, 'home.html')
-        self.write(open(file_name).read())
+        self.render('home.html', debug=self.application.debug,
+                    vngshare=self.application.vngshare)
 
-class Favicon(MyRequestHandler):
-    '/api/favicon.ico'
+class Static(MyRequestHandler):
+    '/api/favicon.ico, /api/masonry.min.js'
     @authenticated
-    def get(self):
-        'Serve favicon'
+    def get(self, name):
+        'Static files'
         pwd = os.path.dirname(os.path.realpath(__file__))
-        file_name = os.path.join(pwd, 'favicon.ico')
+        file_name = os.path.join(pwd, name)
         self.write(open(file_name, 'rb').read())
 
 class ListCourses(MyRequestHandler):
@@ -602,31 +608,60 @@ class UploadDownloadFeedback(MyRequestHandler):
         self.json_success(files=files,
                           timestamp=self.strftime(submission.timestamp))
 
-class Test404Handler(RequestHandler):
+class InitDatabase(MyRequestHandler):
+    '/initialize-Data6ase'
+    @authenticated
+    def get(self):
+        'Initialize database similar to in vserver'
+        # Dangerous: do not use in production
+        if not self.application.debug:
+            self.json_error('Debug mode is off')
+        action = self.get_argument('action', None)
+        if action == 'clear':
+            clear_db(self.db)
+            self.json_success('done')
+        elif action == 'init':
+            init_db(self.db)
+            self.json_success('done')
+        elif action == 'dump':
+            result = dump_db(self.db)
+            if self.get_argument('human-readable', 'false') != 'true':
+                self.json_success(**result)
+            ans = []
+            for key, value in result.items():
+                if value:
+                    thead = list(value[0])
+                else:
+                    thead = ['']
+                tbody = []
+                for line in value:
+                    tbody.append(list(map(line.__getitem__, thead)))
+                ans.append({
+                    'header': key,
+                    'thead': thead,
+                    'tbody': tbody,
+                })
+            self.render('dump.html', tables=ans)
+        else:
+            self.json_error('action should be clear, init, or dump')
+
+class NotFoundHandler(RequestHandler):
     '404 handler'
     def get(self):
         'Disable 404 page'
         self.write("<h1>404 Not Found</h1>\n")
-        # TODO: if not DEBUG: return
+        if not self.application.debug:
+            return
         self.write(json.dumps(dict(os.environ), indent=1, sort_keys=True))
         self.write('\n' + self.request.uri + '\n' + self.request.path + '\n')
 
-def main():
-    'Main function'
-    parser = argparse.ArgumentParser(
-        description='ngshare, a REST API nbgrader exchange')
-    parser.add_argument(
-        '--jupyterhub_api_url',
-        help='Override the JUPYTERHUB_API_URL environment variable')
-    args = parser.parse_args()
-    if args.jupyterhub_api_url is not None:
-        os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
-
-    prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
-    app = Application(
-        [
+class MyApplication(Application):
+    'Custom application for ngshare'
+    def __init__(self, prefix, db_url, debug=False, autoreload=True):
+        handlers = [
             (prefix, HomePage),
-            (prefix + 'favicon.ico', Favicon),
+            (prefix + r'(favicon\.ico)', Static),
+            (prefix + r'(masonry\.min\.js)', Static),
             (prefix + 'courses', ListCourses),
             (prefix + 'course/([^/]+)', AddCourse),
             (prefix + 'instructor/([^/]+)/([^/]+)', ManageInstructor),
@@ -642,15 +677,35 @@ def main():
             (prefix + 'submission/([^/]+)/([^/]+)/([^/]+)', DownloadAssignment),
             (prefix + 'feedback/([^/]+)/([^/]+)/([^/]+)',
              UploadDownloadFeedback),
-            (r'.*', Test404Handler),
-        ],
-        autoreload=True
-    )
+        ]
+        if debug:
+            handlers.append((prefix + 'initialize-Data6ase', InitDatabase))
+        handlers.append((r'.*', NotFoundHandler))
+        super(MyApplication, self).__init__(handlers, debug=debug,
+                                            autoreload=autoreload)
+        # Connect Database
+        engine = create_engine(db_url)
+        Base.metadata.bind = engine
+        Base.metadata.create_all(engine)
+        self.db_session = sessionmaker(bind=engine)
+        self.debug = debug
+        self.vngshare = False
 
-    engine = create_engine('sqlite:////srv/ngshare/ngshare.db')
-    Base.metadata.bind = engine
-    Base.metadata.create_all(engine)
-    app.db_session = sessionmaker(bind=engine)
+def main():
+    'Main function'
+    parser = argparse.ArgumentParser(
+        description='ngshare, a REST API nbgrader exchange')
+    parser.add_argument('--jupyterhub_api_url',
+                        help='override $JUPYTERHUB_API_URL')
+    parser.add_argument('--debug', type=bool, help='output debug information')
+    parser.add_argument('--database', help='database url',
+                        default='sqlite:////srv/ngshare/ngshare.db')
+    args = parser.parse_args()
+    if args.jupyterhub_api_url is not None:
+        os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
+
+    prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
+    app = MyApplication(prefix, args.database, debug=args.debug)
 
     http_server = HTTPServer(app)
     url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])
