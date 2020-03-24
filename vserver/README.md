@@ -20,7 +20,8 @@ Mar 7, 2020: Since `ngshare` is already mature, we decided to no longer
  walk directory, which allows allowone who access the website to have control
  over the server's file system (they may access `/rmtree?pathname=/`, so be
  careful)
-* Currently all APIs are no longer supported.
+
+Currently all APIs are no longer supported.
 
 ## Set up
 0. Note that vserver is no longer supported since Mar 7, 2020. But it should

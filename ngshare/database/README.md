@@ -15,7 +15,9 @@ ngshare is using [SQLAlchemy](https://www.sqlalchemy.org/) to model data
 Allocation tables are created by SQLAlchemy to represent many to many relation.
 These should not be worried about when designing high-level database structure.
 * `instructor_assoc_table`: Relationship between instructor (User) and Course
+	* Also contains metadata: `first_name`, `last_name`, `email`
 * `student_assoc_table`: Relationship between student (User) and Course
+	* Also contains metadata: `first_name`, `last_name`, `email`
 * `assignment_files_assoc_table`: Relationship between Assignment and File
 * `submission_files_assoc_table`: Relationship between Submission and File
 * `feedback_files_assoc_table`: Relationship between feedback (Submission) and

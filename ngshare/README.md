@@ -1,9 +1,9 @@
 # ngshare
-* `ngshare` is the final API server that will be used in nbgrader in production.
+`ngshare` is the final API server that will be used in nbgrader in production.
  Written as Tornado Web Server and using SQLAlchemy.
 
 ## Setup
-* Document for setting up ngshare is in [/testing](/testing#testing-setup)
+Document for setting up ngshare is in [/testing](/testing#testing-setup)
 
 ### vngshare setup
 vngshare stands for Vserver-like Notebook Grader Share. It is similar to vserver
