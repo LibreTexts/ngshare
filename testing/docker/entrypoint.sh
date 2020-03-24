@@ -10,11 +10,6 @@ jupyter nbextension install --symlink --sys-prefix --py nbgrader
 jupyter nbextension enable --sys-prefix --py nbgrader
 jupyter serverextension enable --sys-prefix --py nbgrader
 
-cd -
-
-cd /kubespawner_service_jupyterhub
-pip install .
-
 # Then start jupyterhub
 
 cd -
