@@ -47,6 +47,9 @@ This will take a while, but at the end you should see something like this:
 ```
 This means you may access and test JupyterHub on `http://192.168.99.123:31110`.
 
+* If Kubenetes is running on a remote server, you may want SSH local forward
+ like `-L 127.0.0.1:66666:192.168.99.123:31110`
+
 After everything, you may run `./test.sh delete` to delete the minikube environment. You can run `./test.sh` for a list of supported commands.
 
 Also, you may run `complete -W 'init install uninstall upgrade reinstall delete reboot' ./test.sh` if you have the bash-completion package installed to speed up typing the commands.
