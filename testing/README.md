@@ -9,6 +9,13 @@ You should clone the following repos in the same folder:
 3. [zero-to-jupyterhub-k8s](https://github.com/rkevin-arch/zero-to-jupyterhub-k8s) (not necessary if only using Docker), which is built on the official Z2JH repo but with ngshare support, and in the near future, the ability to customize k8s-aware hub managed services (WIP).
 4. [kubespawner_service_jupyterhub](https://github.com/rkevin-arch/kubespawner_service_jupyterhub) (not necessary if only using Docker), which allows spawning of JupyterHub managed services in Kubernetes.
 
+```
+git clone https://github.com/lxylxy123456/ngshare
+git clone https://github.com/lxylxy123456/nbgrader
+git clone https://github.com/rkevin-arch/zero-to-jupyterhub-k8s
+git clone https://github.com/rkevin-arch/kubespawner_service_jupyterhub
+```
+
 ## Docker
 To use the Docker dev environment, you should have [Docker](https://docs.docker.com/install/) and [Docker-compose](https://docs.docker.com/compose/install/) installed.
 
