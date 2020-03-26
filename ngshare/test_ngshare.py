@@ -124,6 +124,10 @@ def test_add_instructor():
     assert_success(url + 'course1/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course1')['instructors']) == 2
     assert len(assert_success('/api/students/course1')['students']) == 0
+    # Test adding non-existing instructor
+    user = 'eric'
+    data = {'first_name': '', 'last_name': '', 'email': ''}
+    assert_success(url + 'course3/instructor', data=data, method=POST)
 
 def test_get_instructor():
     'Test GET /api/instructor/<course_id>/<instructor_id>'
@@ -217,6 +221,10 @@ def test_add_student():
     assert_success(url + 'course1/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course1')['instructors']) == 1
     assert len(assert_success('/api/students/course1')['students']) == 1
+    # Test adding non-existing instructor
+    user = 'eric'
+    data = {'first_name': '', 'last_name': '', 'email': ''}
+    assert_success(url + 'course3/student', data=data, method=POST)
 
 def test_get_student():
     'Test GET /api/student/<course_id>/<student_id>'

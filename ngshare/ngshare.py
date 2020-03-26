@@ -111,11 +111,13 @@ class MyHelpers:
                 self.json_error('Content cannot be base64 decoded')
             target.append(File(i['path'], content))
 
-    def find_user(self, user_id):
-        'Return a User object from id'
+    def find_or_create_user(self, user_id):
+        'Return a User object from id; create if not found'
         user = self.db.query(User).filter(User.id == user_id).one_or_none()
         if user is None:
-            self.json_error("User not found")
+            user = User(user_id)
+            self.db.add(user)
+            self.db.commit()
         return user
 
     def find_course(self, course_id):
@@ -323,7 +325,7 @@ class ManageInstructor(MyRequestHandler):
         'Add or update a course instructor. (instructors only)'
         course = self.find_course(course_id)
         self.check_course_instructor(course)
-        instructor = self.find_user(instructor_id)
+        instructor = self.find_or_create_user(instructor_id)
         first_name = self.get_argument('first_name', None)
         if first_name is None:
             self.json_error('Please supply first name')
@@ -384,7 +386,7 @@ class ManageStudent(MyRequestHandler):
         'Add or update a student. (instructors only)'
         course = self.find_course(course_id)
         self.check_course_instructor(course)
-        student = self.find_user(student_id)
+        student = self.find_or_create_user(student_id)
         first_name = self.get_argument('first_name', None)
         if first_name is None:
             self.json_error('Please supply first name')
