@@ -40,5 +40,5 @@ c.Authenticator.admin_users = {'rkevin'}
 c.JupyterHub.services.append({
     'name':'ngshare',
     'url': 'http://127.0.0.1:10101',
-    'command': [sys.executable, '/ngshare/ngshare.py'],
+    'command': [sys.executable, '/ngshare/ngshare.py', '--debug', 'true'],
 })
