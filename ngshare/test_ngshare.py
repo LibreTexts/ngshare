@@ -10,6 +10,7 @@ import base64
 import datetime
 import hashlib
 import socket
+import tempfile
 from subprocess import Popen, PIPE
 
 import requests
@@ -21,17 +22,18 @@ from ngshare import MyHelpers
 # pylint: disable=invalid-name
 # pylint: disable=len-as-condition
 
-URL_PREFIX = 'http://127.0.0.1:12121'
 GET = requests.get
 POST = requests.post
 DELETE = requests.delete
+url_prefix = 'http://127.0.0.1:12121'
 user = None
 server_proc = None
+db_file = None
 
 def request_page(url, data=None, params=None, method=GET):
     'Request a page'
     assert url.startswith('/') and not url.startswith('//')
-    resp = method(URL_PREFIX + url, data=data, params=params)
+    resp = method(url_prefix + url, data=data, params=params)
     return resp.json()
 
 def assert_success(url, data=None, params=None, method=GET):
@@ -70,15 +72,17 @@ def assert_fail(url, data=None, params=None, method=GET, msg=None):
 
 def test_start_server():
     'Start a vngshare server'
-    global server_proc
+    global server_proc, url_prefix, db_file
     pwd = os.path.dirname(os.path.realpath(__file__))
     s = socket.socket()
     s.bind(('', 0))
     port = s.getsockname()[1]
     s.close()
-    cmd = ['python3', os.path.join(pwd, 'vngshare.py'), '--port', str(port)]
-    global URL_PREFIX
-    URL_PREFIX = 'http://127.0.0.1:%d' % port
+    url_prefix = 'http://127.0.0.1:%d' % port
+    db_file = tempfile.mktemp(suffix='.db', prefix='/tmp/')
+    cmd = ['python3', os.path.join(pwd, 'vngshare.py'), '--port', str(port),
+           '--database', 'sqlite:///' + db_file]
+    print(cmd)
     server_proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     time.sleep(2)
 
@@ -617,3 +621,4 @@ def test_stop_server():
     'Stop a vngshare server'
     global server_proc
     server_proc.kill()
+    os.remove(db_file)
