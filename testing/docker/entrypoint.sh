@@ -4,7 +4,7 @@
 
 cd /srv/src/nbgrader
 
-pip install .
+pip install -e .
 
 jupyter nbextension install --symlink --sys-prefix --py nbgrader
 jupyter nbextension enable --sys-prefix --py nbgrader

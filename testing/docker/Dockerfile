@@ -6,10 +6,10 @@ RUN pip install -r requirements.txt
 
 COPY entrypoint.sh /
 
-# Create exchange directory for nbgrader. Maybe no longer needed.
-RUN mkdir -p /srv/nbgrader/exchange && chmod 777 /srv/nbgrader/exchange
-
 RUN useradd kale -d / -s /bin/bash
 COPY jupyterhub_config.py .
+
+COPY nbgrader_config.py /etc/jupyter/nbgrader_config.py
+RUN touch /tmp/nbgrader.log && chmod a+rw /tmp/nbgrader.log
 
 CMD ["/entrypoint.sh"]
