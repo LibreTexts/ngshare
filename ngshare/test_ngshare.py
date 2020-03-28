@@ -2,12 +2,15 @@
     Tests for ngshare APIs
 '''
 
+import os
 import sys
+import time
 import json
 import base64
 import datetime
 import hashlib
 import requests
+from subprocess import Popen, PIPE
 
 from ngshare import MyHelpers
 
@@ -61,6 +64,13 @@ def assert_fail(url, data=None, params=None, method=GET, msg=None):
     if msg is not None:
         assert resp['message'] == msg
     return resp
+
+def test_start_server():
+    global server_proc
+    pwd = os.path.dirname(os.path.realpath(__file__))
+    cmd = ['python3', os.path.join(pwd, 'vngshare.py')]
+    server_proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    time.sleep(2)
 
 def test_init():
     'Clear database'
@@ -592,3 +602,7 @@ def test_download_feedback():
     user = 'eric'
     assert_fail(url + 'course1/challenge/lawrence',
                 msg='Permission denied (not course instructor)')
+
+def test_stop_server():
+    global server_proc
+    server_proc.kill()
