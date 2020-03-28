@@ -9,8 +9,10 @@ import json
 import base64
 import datetime
 import hashlib
-import requests
+import socket
 from subprocess import Popen, PIPE
+
+import requests
 
 from ngshare import MyHelpers
 
@@ -24,6 +26,7 @@ GET = requests.get
 POST = requests.post
 DELETE = requests.delete
 user = None
+server_proc = None
 
 def request_page(url, data=None, params=None, method=GET):
     'Request a page'
@@ -66,9 +69,16 @@ def assert_fail(url, data=None, params=None, method=GET, msg=None):
     return resp
 
 def test_start_server():
+    'Start a vngshare server'
     global server_proc
     pwd = os.path.dirname(os.path.realpath(__file__))
-    cmd = ['python3', os.path.join(pwd, 'vngshare.py')]
+    s = socket.socket()
+    s.bind(('', 0))
+    port = s.getsockname()[1]
+    s.close()
+    cmd = ['python3', os.path.join(pwd, 'vngshare.py'), '--port', str(port)]
+    global URL_PREFIX
+    URL_PREFIX = 'http://127.0.0.1:%d' % port
     server_proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     time.sleep(2)
 
@@ -604,5 +614,6 @@ def test_download_feedback():
                 msg='Permission denied (not course instructor)')
 
 def test_stop_server():
+    'Stop a vngshare server'
     global server_proc
     server_proc.kill()
