@@ -2,11 +2,17 @@
     Tests for ngshare APIs
 '''
 
+import os
 import sys
+import time
 import json
 import base64
 import datetime
 import hashlib
+import socket
+import tempfile
+from subprocess import Popen, PIPE
+
 import requests
 
 from ngshare import MyHelpers
@@ -16,16 +22,18 @@ from ngshare import MyHelpers
 # pylint: disable=invalid-name
 # pylint: disable=len-as-condition
 
-URL_PREFIX = 'http://127.0.0.1:12121'
 GET = requests.get
 POST = requests.post
 DELETE = requests.delete
+url_prefix = 'http://127.0.0.1:12121'
 user = None
+server_proc = None
+db_file = None
 
 def request_page(url, data=None, params=None, method=GET):
     'Request a page'
     assert url.startswith('/') and not url.startswith('//')
-    resp = method(URL_PREFIX + url, data=data, params=params)
+    resp = method(url_prefix + url, data=data, params=params)
     return resp.json()
 
 def assert_success(url, data=None, params=None, method=GET):
@@ -61,6 +69,22 @@ def assert_fail(url, data=None, params=None, method=GET, msg=None):
     if msg is not None:
         assert resp['message'] == msg
     return resp
+
+def test_start_server():
+    'Start a vngshare server'
+    global server_proc, url_prefix, db_file
+    pwd = os.path.dirname(os.path.realpath(__file__))
+    s = socket.socket()
+    s.bind(('', 0))
+    port = s.getsockname()[1]
+    s.close()
+    url_prefix = 'http://127.0.0.1:%d' % port
+    db_file = tempfile.mktemp(suffix='.db', prefix='/tmp/')
+    cmd = ['python3', os.path.join(pwd, 'vngshare.py'), '--port', str(port),
+           '--database', 'sqlite:///' + db_file]
+    print(cmd)
+    server_proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    time.sleep(2)
 
 def test_init():
     'Clear database'
@@ -124,6 +148,10 @@ def test_add_instructor():
     assert_success(url + 'course1/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course1')['instructors']) == 2
     assert len(assert_success('/api/students/course1')['students']) == 0
+    # Test adding non-existing instructor
+    user = 'eric'
+    data = {'first_name': '', 'last_name': '', 'email': ''}
+    assert_success(url + 'course3/instructor', data=data, method=POST)
 
 def test_get_instructor():
     'Test GET /api/instructor/<course_id>/<instructor_id>'
@@ -217,6 +245,10 @@ def test_add_student():
     assert_success(url + 'course1/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course1')['instructors']) == 1
     assert len(assert_success('/api/students/course1')['students']) == 1
+    # Test adding non-existing instructor
+    user = 'eric'
+    data = {'first_name': '', 'last_name': '', 'email': ''}
+    assert_success(url + 'course3/student', data=data, method=POST)
 
 def test_get_student():
     'Test GET /api/student/<course_id>/<student_id>'
@@ -584,3 +616,9 @@ def test_download_feedback():
     user = 'eric'
     assert_fail(url + 'course1/challenge/lawrence',
                 msg='Permission denied (not course instructor)')
+
+def test_stop_server():
+    'Stop a vngshare server'
+    global server_proc
+    server_proc.kill()
+    os.remove(db_file)

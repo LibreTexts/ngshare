@@ -130,7 +130,6 @@ email=/*instructor email*/
 * Login required
 * Permission denied
 * Course not found
-* User not found
 * Please supply first name
 * Please supply last name
 * Please supply email name
@@ -231,7 +230,6 @@ email=/*student email*/
 * Login required
 * Permission denied
 * Course not found
-* User not found
 * Cannot remove last instructor
 * Please supply first name
 * Please supply last name
