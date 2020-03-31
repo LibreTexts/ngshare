@@ -8,10 +8,10 @@ import grp
 import subprocess
 
 # https://www.geeksforgeeks.org/print-colors-python-terminal/
-def prRed(skk): print("\033[91m {}\033[00m" .format(skk)) 
-def prGreen(skk): print("\033[92m {}\033[00m" .format(skk)) 
-def prYellow(skk): print("\033[93m {}\033[00m" .format(skk)) 
-def prCyan(skk): print("\033[96m {}\033[00m" .format(skk)) 
+def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
+def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
+def prYellow(skk): print("\033[93m {}\033[00m" .format(skk))
+def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
 
 class User:
     def __init__(self, id, first_name, last_name, email):
@@ -58,7 +58,7 @@ def ngshare_url():
     if 'PROXY_PUBLIC_SERVICE_HOST' in os.environ:
         return "http://proxy-public/services/ngshare"
     else:
-        return 'http://0.0.0.0:12121/api'
+        return 'http://172.17.0.3:11111/api'
 
 def get_header():
     if 'JUPYTERHUB_API_TOKEN' in os.environ:
@@ -87,10 +87,10 @@ def run_as_user(user_name, cwd, *args):
     user_gid       = pw_record.pw_gid
     cwd = user_home_dir if cwd == '~' else cwd
     env = os.environ.copy()
-    env[ 'HOME'     ]  = user_home_dir
-    env[ 'LOGNAME'  ]  = user_name
-    env[ 'PWD'      ]  = cwd
-    env[ 'USER'     ]  = user_name
+    env[ 'HOME'     ] = user_home_dir
+    env[ 'LOGNAME'  ] = user_name
+    env[ 'PWD'      ] = cwd
+    env[ 'USER'     ] = user_name
     process = subprocess.Popen(
         args, preexec_fn=demote(user_uid, user_gid), cwd=cwd, env=env
     )
@@ -113,7 +113,10 @@ def post(url, data):
 
     try:
         response = requests.post(url, data=data, headers=header)
-        response.raise_for_status()     
+        response.raise_for_status()
+    except requests.exceptions.ConnectionError:
+        prRed('Could not establish connection to ngshare server')
+        return None
     except Exception:
         check_status_code(response)
         return None
@@ -132,7 +135,7 @@ def delete(url, data):
     
     return check_message(response)
 
-def create_course(course_id, JupyterHub):
+def create_course(course_id, jhub):
     prGreen('Creating ngshare course {}'.format(course_id))
     url = '{}/course/{}'.format(ngshare_url(), course_id)
     data = {'user': get_username()}
@@ -141,10 +144,11 @@ def create_course(course_id, JupyterHub):
 
     if response is None:
         prRed('An error occurred while trying to create the course {}'.format(course_id))
+        return None
     else:
         prGreen('Successfully created {} with {} as the instructor.'.format(course_id, get_username()))
 
-    if JupyterHub:
+    if jhub:
         create_jh_course(course_id)
 
 def create_jh_course(course_id):
@@ -172,18 +176,16 @@ def create_jh_course(course_id):
     if not os.path.exists(jupyter_folder):
         os.mkdir(jupyter_folder)
 
-    # write user config file
-    user_config_file = '{}/nbgrader_config.py'.format(jupyter_folder)
-
     # add user config file in the .jupyter folder
+    user_config_file = '{}/nbgrader_config.py'.format(jupyter_folder)
     with open(user_config_file, 'w') as f:
         f.write('c = get_config()\n')
         f.write("c.CourseDirectory.root = '{}'".format(course_root_dir))
 
-    prGreen('Sucessfully created JupyterHub course {}. Restart server to see it on Formgrader.'.format(course_id))
+    prGreen('Sucessfully created JupyterHub course {}.'.format(course_id))
     # enable extensions for user? or is that done in setup?
 
-def add_student(course_id, student:User, JupyterHub):
+def add_student(course_id, student:User, jhub):
     # add student to ngshare
     url = '{}/student/{}/{}'.format(ngshare_url(), course_id, student.id)
     data = {'user': get_username(), 'first_name': student.first_name, 'last_name': student.last_name, 'email': student.email}
@@ -192,26 +194,27 @@ def add_student(course_id, student:User, JupyterHub):
 
     if response is None:
         prRed('An error occurred while trying to add {} to {}'.format(student.id, course_id))
+        return None
     else:
         prGreen('Successfully added {} to {}'.format(student.id, course_id))
 
-    if JupyterHub:
+    if jhub:
         add_jh_student(course_id, student)
 
 def add_jh_student(course_id, student:User):
     # add student to nbgrader database
-    ret = run_as_user(get_username(), os.getcwd(),'nbgrader','db','student','add','--first-name',student.first_name,'--last-name',student.last_name,'--email',student.email, student.id)
+    ret = run_as_user(get_username(), os.getcwd(), 'nbgrader', 'db', 'student', 'add', '--first-name', student.first_name, '--last-name',student.last_name, '--email', student.email, student.id)
 
     if ret  == 0:
         prGreen('Sucessfully added {} to nbgrader database'.format(student.id))
     # add as jhub user?
     
-def add_students(course_id, students_csv):
+def add_students(course_id, students_csv, jhub):
     with open(students_csv,'r') as f:
         csv_reader = csv.reader(f, delimiter=',')
         header = next(csv_reader)
 
-        #TODO if you want to add them to jupyterhub also need the password
+        # TODO if you want to add them to jupyterhub also need the password
         required_cols = ['student_id', 'first_name', 'last_name', 'email']
 
         cols_dict = dict()
@@ -233,7 +236,7 @@ def add_students(course_id, students_csv):
             email = row[cols_dict['email']]
 
             student = Student(student_id, first_name, last_name, email)
-            add_student(course_id, student)
+            add_student(course_id, student, jhub)
 
 def remove_student(course_id, student_id):
     url = '{}/student/{}/{}'.format(ngshare_url(), course_id, student_id)
@@ -268,7 +271,7 @@ def remove_instructor(course_id, instructor_id):
 def parse_input(argv):
     if len(argv) < 3:
         print_usage()
-    
+
     command = (argv[1]).lower()
     shortopts = 'c:s:i:f:l:e:'
     longopts = 'course_id= student_id= instructor_id= first_name= last_name= email= students_csv= jhub'.split()
@@ -277,18 +280,18 @@ def parse_input(argv):
         optlist, args = getopt.getopt(argv[2:], shortopts, longopts)
     except getopt.GetoptError:
         print_usage()
-    
+
     return command, optlist
 
 def execute_command(command, optlist):
     course_id = None
     student_id = None
     instructor_id = None
-    first_name = None 
+    first_name = None
     last_name = None
     email = None
     students_csv = None
-    JupyterHub = False
+    jhub = False
 
     for opt, arg in optlist:
         if opt in ('-c', '--course_id'):
@@ -306,15 +309,15 @@ def execute_command(command, optlist):
         elif opt == '--students_csv':
             students_csv = arg
         elif opt == '--jhub':
-            JupyterHub = True
+            jhub = True
 
     if command == 'create_course' and course_id:
-        create_course(course_id, JupyterHub)
+        create_course(course_id, jhub)
     elif command == 'add_student' and course_id and student_id:
-        student =  User(student_id, first_name, last_name, email)
-        add_student(course_id, student, JupyterHub)
+        student = User(student_id, first_name, last_name, email)
+        add_student(course_id, student, jhub)
     elif command == 'add_students' and course_id and students_csv:
-        add_students(course_id, students_csv)
+        add_students(course_id, students_csv, jhub)
     elif command == 'remove_student' and course_id and student_id:
         remove_student(course_id, student_id)
     elif command == 'add_instructor' and course_id and instructor_id:
