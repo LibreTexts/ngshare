@@ -44,7 +44,7 @@ def print_usage():
     print('     python3 ngshare_management.py remove_instructor --course_id=math101  --instructor_id=12345')   
     print('     python3 ngshare_management.py remove_instructor -c math101  -i 12345\n')
     prGreen('You can add the --jhub flag at the end of any command to execute the same action in JupyterHub')
-    prGreen('For example running \'python3 ngshare_management.py create_course --course_id=math101 --jhub\' cretes the course in JupyterHub and ngshare')
+    prGreen('For example running \'python3 ngshare_management.py create_course --course_id=math101 --jhub\' creates the course in JupyterHub and ngshare')
     prYellow('------------------------------------------------------------------------------------------------------------------------')
     sys.exit(2)
 
@@ -182,7 +182,7 @@ def create_jh_course(course_id):
         f.write('c = get_config()\n')
         f.write("c.CourseDirectory.root = '{}'".format(course_root_dir))
 
-    prGreen('Sucessfully created JupyterHub course {}.'.format(course_id))
+    prGreen('Successfully created JupyterHub course {}.'.format(course_id))
     # enable extensions for user? or is that done in setup?
 
 def add_student(course_id, student:User, jhub):
@@ -206,7 +206,7 @@ def add_jh_student(course_id, student:User):
     ret = run_as_user(get_username(), os.getcwd(), 'nbgrader', 'db', 'student', 'add', '--first-name', student.first_name, '--last-name',student.last_name, '--email', student.email, student.id)
 
     if ret  == 0:
-        prGreen('Sucessfully added {} to nbgrader database'.format(student.id))
+        prGreen('Successfully added {} to nbgrader database'.format(student.id))
     # add as jhub user?
     
 def add_students(course_id, students_csv, jhub):
@@ -235,7 +235,7 @@ def add_students(course_id, students_csv, jhub):
             last_name = row[cols_dict['last_name']]
             email = row[cols_dict['email']]
 
-            student = Student(student_id, first_name, last_name, email)
+            student = User(student_id, first_name, last_name, email)
             add_student(course_id, student, jhub)
 
 def remove_student(course_id, student_id):
