@@ -382,6 +382,7 @@ files=/* encoded directory tree in JSON */
 * Illegal path
 * Files cannot be JSON decoded
 * Content cannot be base64 decoded
+* Internal server error
 
 #### DELETE /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;
 *Remove an assignment (instructors only).*
@@ -485,6 +486,7 @@ files=/* encoded directory tree in JSON */
 * Illegal path
 * Files cannot be JSON decoded
 * Content cannot be base64 decoded
+* Internal server error
 
 #### GET /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 *download a student's submitted assignment (instructors only)*
@@ -551,6 +553,7 @@ files=/* encoded directory tree in JSON */
 * Illegal path
 * Files cannot be JSON decoded
 * Content cannot be base64 decoded
+* Internal server error
 
 #### GET /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 *download feedback on a student's assignment (instructors+students, though students are restricted to only viewing their own feedback)*

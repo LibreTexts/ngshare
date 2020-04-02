@@ -198,14 +198,14 @@ class File(Base):
     __tablename__ = 'files'
     _id = Column(INTEGER, primary_key=True)
     filename = Column(TEXT)
-    contents = Column(BLOB)
     checksum = Column(TEXT)
+    actual_name = Column(TEXT)
 
-    def __init__(self, filename, contents):
+    def __init__(self, filename, contents, actual_name=None):
         'Initialize with file name and content; auto-compute md5'
         self.filename = filename
-        self.contents = contents
         self.checksum = hashlib.md5(contents).hexdigest()
+        self.actual_name = actual_name
 
     def __str__(self):
         return '<File %s>' % self.filename
@@ -215,8 +215,8 @@ class File(Base):
         return {
             '_id': self._id,
             'filename': self.filename,
-            'contents': base64.encodebytes(self.contents).decode(),
             'checksum': self.checksum,
+            'actual_name': self.actual_name,
         }
 
     def delete(self, db):

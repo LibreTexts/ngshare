@@ -8,9 +8,12 @@
 # pylint: disable=invalid-name
 # pylint: disable=no-member
 # pylint: disable=no-self-use
+# pylint: disable=too-many-arguments
 # pylint: disable=too-many-public-methods
 
 import os
+import time
+import uuid
 import json
 import argparse
 import base64
@@ -77,6 +80,13 @@ class MyHelpers:
             return False
         return True
 
+    def filename_create(self, filename):
+        'Create a file name for storage; trying to follow extension'
+        ext = os.path.splitext(filename)[1]
+        if len(ext) > 10:
+            ext = ''
+        return str(uuid.uuid4()) + ext
+
     def json_files_pack(self, file_list, list_only):
         'Generate JSON directory tree from a list of File objects'
         ans = []
@@ -86,7 +96,10 @@ class MyHelpers:
                 'checksum': i.checksum,
             }
             if not list_only:
-                entry['content'] = base64.encodebytes(i.contents).decode()
+                storage_path = self.application.storage_path
+                actual_path = os.path.join(storage_path, i.actual_name)
+                content = open(actual_path, 'rb').read()
+                entry['content'] = base64.encodebytes(content).decode()
             ans.append(entry)
         return ans
 
@@ -102,6 +115,7 @@ class MyHelpers:
             json_obj = json.loads(json_str)
         except json.decoder.JSONDecodeError:
             self.json_error('Files cannot be JSON decoded')
+        content_list = []
         for i in json_obj:
             if not self.path_check(i['path']):
                 self.json_error('Illegal path')
@@ -110,6 +124,24 @@ class MyHelpers:
             except binascii.Error:
                 self.json_error('Content cannot be base64 decoded')
             target.append(File(i['path'], content))
+            content_list.append(content)
+        # Commit files
+        storage_path = self.application.storage_path
+        os.makedirs(storage_path, exist_ok=True)
+        for file_obj, content in zip(target, content_list):
+            f = None
+            for i in range(10):
+                actual_name = self.filename_create(file_obj.filename)
+                try:
+                    f = open(os.path.join(storage_path, actual_name), 'xb')
+                    break
+                except FileExistsError:
+                    time.sleep(0.1)
+            if f is None:
+                raise self.json_error('Internal server error')
+            f.write(content)
+            f.close()
+            file_obj.actual_name = actual_name
 
     def find_or_create_user(self, user_id):
         'Return a User object from id; create if not found'
@@ -623,7 +655,7 @@ class InitDatabase(MyRequestHandler):
             clear_db(self.db)
             self.json_success('done')
         elif action == 'init':
-            init_db(self.db)
+            init_db(self.db, self.application.storage_path)
             self.json_success('done')
         elif action == 'dump':
             result = dump_db(self.db)
@@ -659,7 +691,8 @@ class NotFoundHandler(RequestHandler):
 
 class MyApplication(Application):
     'Custom application for ngshare'
-    def __init__(self, prefix, db_url, debug=False, autoreload=True):
+    def __init__(self, prefix, db_url, storage_path, debug=False,
+                 autoreload=True):
         handlers = [
             (prefix, HomePage),
             (prefix + r'(favicon\.ico)', Static),
@@ -690,6 +723,7 @@ class MyApplication(Application):
         Base.metadata.bind = engine
         Base.metadata.create_all(engine)
         self.db_session = sessionmaker(bind=engine)
+        self.storage_path = storage_path
         self.debug = debug
         self.vngshare = False
 
@@ -709,7 +743,7 @@ def main():
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
 
     prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
-    app = MyApplication(prefix, args.database, debug=args.debug)
+    app = MyApplication(prefix, args.database, args.storage, debug=args.debug)
 
     http_server = HTTPServer(app)
     url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])
