@@ -258,5 +258,5 @@ def test_student_association():
     assert association.last_name == 'Lawrence.last_name'
     assert association.email == 'Lawrence.email'
 
-def test_clean():    
+def test_clean():
     shutil.rmtree(storage_path)
