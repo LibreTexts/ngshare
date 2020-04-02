@@ -12,7 +12,6 @@
 # pylint: disable=too-many-public-methods
 
 import os
-import time
 import uuid
 import json
 import argparse
@@ -136,7 +135,7 @@ class MyHelpers:
                     f = open(os.path.join(storage_path, actual_name), 'xb')
                     break
                 except FileExistsError:
-                    time.sleep(0.1)
+                    pass
             if f is None:
                 raise self.json_error('Internal server error')
             f.write(content)
