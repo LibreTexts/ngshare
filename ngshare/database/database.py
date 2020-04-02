@@ -6,11 +6,10 @@
 # pylint: disable=too-few-public-methods
 # pylint: disable=fixme
 
-import base64
 import datetime
 import hashlib
 
-from sqlalchemy import (Table, Column, INTEGER, TEXT, BLOB, TIMESTAMP, BOOLEAN,
+from sqlalchemy import (Table, Column, INTEGER, TEXT, TIMESTAMP, BOOLEAN,
                         ForeignKey)
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.associationproxy import association_proxy

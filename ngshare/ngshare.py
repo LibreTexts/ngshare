@@ -651,7 +651,7 @@ class InitDatabase(MyRequestHandler):
             self.json_error('Debug mode is off')
         action = self.get_argument('action', None)
         if action == 'clear':
-            clear_db(self.db)
+            clear_db(self.db, self.application.storage_path)
             self.json_success('done')
         elif action == 'init':
             init_db(self.db, self.application.storage_path)

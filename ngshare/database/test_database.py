@@ -18,14 +18,14 @@ from sqlalchemy.orm import sessionmaker
 # pylint: disable=wildcard-import
 
 Session = None
-storage_path = None
+test_storage = None
 
 try:
     from .database import *
 except ImportError:
     from database import *
 
-def clear_db(db):
+def clear_db(db, storage_path):
     'Remove all data from database'
     db.query(User).delete()
     db.query(Course).delete()
@@ -41,6 +41,8 @@ def clear_db(db):
         ]:
         db.execute('DELETE FROM %s' % table_name)
     db.commit()
+    if storage_path is not None:
+        shutil.rmtree(storage_path)
 
 def init_db(db, storage_path):
     '''
@@ -149,10 +151,10 @@ def test_legacy():
 
 def test_init():
     'Test clearing database and fill in default test data'
-    global storage_path
-    storage_path = tempfile.mkdtemp()
+    global test_storage
+    test_storage = tempfile.mkdtemp()
     db = Session()
-    clear_db(db)
+    clear_db(db, None)
     assert not db.query(assignment_files_assoc_table).all()
     assert not db.query(submission_files_assoc_table).all()
     assert not db.query(feedback_files_assoc_table).all()
@@ -163,7 +165,7 @@ def test_init():
     assert not db.query(File).all()
     assert not db.query(InstructorAssociation).all()
     assert not db.query(StudentAssociation).all()
-    init_db(db, storage_path)
+    init_db(db, test_storage)
     assert len(db.query(User).all()) == 4
     assert len(db.query(Course).all()) == 2
     assert len(db.query(Assignment).all()) == 3
@@ -259,4 +261,6 @@ def test_student_association():
     assert association.email == 'Lawrence.email'
 
 def test_clean():
-    shutil.rmtree(storage_path)
+    'Clean test space'
+    db = Session()
+    clear_db(db, test_storage)
