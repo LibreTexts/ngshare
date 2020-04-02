@@ -38,6 +38,7 @@ def main():
                         default='sqlite:////tmp/ngshare.db')
     parser.add_argument('--host', help='bind hostname', default='127.0.0.1')
     parser.add_argument('--port', help='bind port', type=int, default=12121)
+    parser.add_argument('--storage', help='path to store files')
     args = parser.parse_args()
 
     app = MyApplication(args.prefix, args.database, debug=not args.no_debug)
