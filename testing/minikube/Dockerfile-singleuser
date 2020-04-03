@@ -1,4 +1,4 @@
-FROM jupyterhub/k8s-singleuser-sample:0.9.0-beta.3.n001.h1cd1311
+FROM jupyterhub/k8s-singleuser-sample:0.9.0-beta.4
 USER 0
 RUN apt update && apt install -y curl nano
 COPY nbgrader_config.py /etc/jupyter/

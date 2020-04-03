@@ -1,7 +1,6 @@
 #!/bin/bash -e
 
-# git repo from https://github.com/rkevin-arch/zero-to-jupyterhub-k8s
-HELM_CHART_LOC=../../../zero-to-jupyterhub-k8s/jupyterhub
+HELM_CHART_VER=0.9.0-beta.4
 
 function build_hub_img {
     eval $(minikube docker-env)
@@ -27,12 +26,14 @@ function build_ngshare_img {
 
 case $1 in
     init )
-        minikube start --memory 10g ;;
+        minikube start --memory 10g
+        helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+        helm repo update ;;
     install )
         build_hub_img
         build_singleuser_img
         build_ngshare_img
-        helm install jhub $HELM_CHART_LOC -f config.yaml --debug
+        helm install jhub jupyterhub/jupyterhub --version=$HELM_CHART_VER -f config.yaml --debug
         minikube service list ;;
     uninstall )
         helm uninstall jhub
@@ -43,13 +44,13 @@ case $1 in
         build_singleuser_img
         build_ngshare_img
         sleep 10 # sometimes PVCs arent unmounted properly, giving an error when doing helm install
-        helm install jhub $HELM_CHART_LOC -f config.yaml --debug
+        helm install jhub jupyterhub/jupyterhub --version=$HELM_CHART_LOC -f config.yaml --debug
         minikube service list ;;
     upgrade )
         build_hub_img
         build_singleuser_img
         build_ngshare_img
-        helm upgrade jhub $HELM_CHART_LOC -f config.yaml --debug
+        helm upgrade jhub jupyterhub/jupyterhub --version=$HELM_CHART_LOC -f config.yaml --debug
         minikube service list ;;
     delete )
         minikube delete ;;

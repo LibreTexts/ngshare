@@ -6,13 +6,11 @@ This is the testing / dev environment setup. We have two dev environments, one u
 You should clone the following repos in the same folder:
 1. [ngshare](https://github.com/lxylxy123456/ngshare) (this repo!)
 2. [nbgrader](https://github.com/lxylxy123456/nbgrader), which is built on the [pluggable exchange](https://github.com/jupyter/nbgrader/pull/1238) pull request, with an exchange that works with ngshare.
-3. [zero-to-jupyterhub-k8s](https://github.com/rkevin-arch/zero-to-jupyterhub-k8s) (not necessary if only using Docker), which is built on the official Z2JH repo but with ngshare support, and in the near future, the ability to customize k8s-aware hub managed services (WIP).
 4. [kubespawner_service_jupyterhub](https://github.com/rkevin-arch/kubespawner_service_jupyterhub) (not necessary if only using Docker), which allows spawning of JupyterHub managed services in Kubernetes.
 
 ```
 git clone https://github.com/lxylxy123456/ngshare
 git clone https://github.com/lxylxy123456/nbgrader
-git clone https://github.com/rkevin-arch/zero-to-jupyterhub-k8s
 git clone https://github.com/rkevin-arch/kubespawner_service_jupyterhub
 ```
 
@@ -24,8 +22,6 @@ All you need is to do a `docker-compose build && docker-compose up` in the `test
 ## minikube
 
 For the k8s dev environment, you need [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) (along with a hypervisor like [VirtualBox](https://www.virtualbox.org/wiki/Downloads)), [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) (no need to configure it; it will be done in `minikube`), [helm](https://helm.sh/docs/intro/install/) (v3), and chartpress(`pip install chartpress`) installed on your system.
-
-Before testing, make sure you run `chartpress` on the `zero-to-jupyterhub-k8s` repo. Simply `cd` into it and run `chartpress`. This only needs to be done once.
 
 To test, simply do the following:
 ```sh
