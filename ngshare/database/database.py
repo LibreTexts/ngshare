@@ -168,7 +168,7 @@ class Submission(Base):
 
     def __init__(self, student, assignment):
         'Initialize with student and assignment'
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = datetime.datetime.now(datetime.timezone.utc)
         self.student = student
         self.assignment = assignment
 
