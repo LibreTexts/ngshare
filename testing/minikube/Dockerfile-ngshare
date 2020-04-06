@@ -1,3 +1,0 @@
-FROM jupyterhub/jupyterhub:latest
-COPY ngshare/ /ngshare/
-CMD ["python3", "/ngshare/ngshare.py", "--debug"]
