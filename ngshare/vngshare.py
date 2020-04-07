@@ -38,6 +38,8 @@ def main():
                         default='sqlite:////tmp/ngshare.db')
     parser.add_argument('--host', help='bind hostname', default='127.0.0.1')
     parser.add_argument('--port', help='bind port', type=int, default=12121)
+    parser.add_argument('--storage', help='path to store files',
+                        default='/tmp/ngshare/')
     args = parser.parse_args()
 
     app = MyApplication(args.prefix, args.database, debug=not args.no_debug)
@@ -48,6 +50,7 @@ def main():
 
     print('Starting vngshare (Vserver-like Notebook Grader Share)')
     print('Database file is %s' % repr(args.database))
+    print('Storage directory is %s' % repr(args.storage))
     print('Please go to http://%s:%d/api/' % (args.host, args.port))
     IOLoop.current().start()
 
