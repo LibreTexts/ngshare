@@ -3,6 +3,8 @@
 
 **This service is under development. Use this at your own risk.**
 
+Click [here](#installation-and-setup) for installation instructions.
+
 <img src="ngshare/favicon.png" width="64px" />
 
 ## What is ngshare?
@@ -131,7 +133,66 @@ The API specifications for `ngshare` are available in
  [`api-specifications.md`](api-specifications.md).
 
 ## Installation and setup
-* See [/testing](/testing#testing-setup) for setting up `ngshare`
-* See [/ngshare](/ngshare#vngshare-setup) for setting up `vngshare`
-* See [/vserver](/vserver#vserver) for setting up `vserver`
+* See [/testing](/testing#testing-setup) for setting up `ngshare` and `JupyterHub` for simple testing.
 
+To install `ngshare` onto your cluster with some default values, simply do:
+
+`helm install ngshare helmchart/ngshare`
+
+We recommend using some configurations manually. Here's a sample `config.yaml` file:
+```yaml
+deployment:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+ngshare:
+  # You may omit this, but the token will be randomly generated.
+  # It's recommended to specify an API token here.
+  hub_api_token: ENTER_TOP_SECRET_TOKEN_HERE
+
+pvc:
+  # Amount of storage for ngshare
+  storage: 1Gi
+```
+For a reference of all the options you can specify, check [here](/helmchart/ngshare/values.yaml).
+
+After you install, you should see a message like this:
+```
+Congrats, ngshare should be installed!
+To get started, add the following to your JupyterHub helm chart's values:
+
+hub:
+  extraConfig:
+    ngshare.py: |
+      c.JupyterHub.services.append({
+        'name': 'ngshare',
+        'url': 'http://ngshare:8080',
+        'api_token': 'a4IHeiHZuswZrmYbWxSGpLZs3x0pXVxa'})
+```
+You should:
+1. Follow the first part of the instructions, and add the `extraConfig` part into your JupyterHub's helm chart.
+2. Modify your singleuser image to install our fork of nbgrader, and add some configuration to your default `nbgrader_config.py` so it uses ngshare. You can add something like this to your singleuser Dockerfile:
+```dockerfile
+RUN pip install git+https://github.com/lxylxy123456/nbgrader@exchange_server && \
+jupyter nbextension install --symlink --sys-prefix --py nbgrader && \
+jupyter nbextension enable --sys-prefix --py nbgrader && \
+jupyter serverextension enable --sys-prefix --py nbgrader
+
+COPY nbgrader_config.py /etc/jupyter/
+```
+with an accompanying `nbgrader_config.py` like this:
+```python
+from nbgrader.exchange import ngshare
+c = get_config()
+c.ExchangeFactory.exchange = ngshare.Exchange
+c.ExchangeFactory.fetch_assignment = ngshare.ExchangeFetchAssignment
+c.ExchangeFactory.fetch_feedback = ngshare.ExchangeFetchFeedback
+c.ExchangeFactory.release_assignment = ngshare.ExchangeReleaseAssignment
+c.ExchangeFactory.release_feedback = ngshare.ExchangeReleaseFeedback
+c.ExchangeFactory.list = ngshare.ExchangeList
+c.ExchangeFactory.submit = ngshare.ExchangeSubmit
+c.ExchangeFactory.collect = ngshare.ExchangeCollect
+```
+Afterwards, the setup should be complete.
