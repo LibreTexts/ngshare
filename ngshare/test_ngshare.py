@@ -5,6 +5,7 @@
 import os
 import sys
 import time
+import shutil
 import json
 import base64
 import datetime
@@ -29,6 +30,7 @@ url_prefix = 'http://127.0.0.1:12121'
 user = None
 server_proc = None
 db_file = None
+storage_path = None
 
 def request_page(url, data=None, params=None, method=GET):
     'Request a page'
@@ -72,7 +74,7 @@ def assert_fail(url, data=None, params=None, method=GET, msg=None):
 
 def test_start_server():
     'Start a vngshare server'
-    global server_proc, url_prefix, db_file
+    global server_proc, url_prefix, db_file, storage_path
     pwd = os.path.dirname(os.path.realpath(__file__))
     s = socket.socket()
     s.bind(('', 0))
@@ -80,6 +82,7 @@ def test_start_server():
     s.close()
     url_prefix = 'http://127.0.0.1:%d' % port
     db_file = tempfile.mktemp(suffix='.db', prefix='/tmp/')
+    storage_path = tempfile.mkdtemp()
     cmd = ['python3', os.path.join(pwd, 'vngshare.py'), '--port', str(port),
            '--database', 'sqlite:///' + db_file]
     print(cmd)
@@ -622,3 +625,4 @@ def test_stop_server():
     global server_proc
     server_proc.kill()
     os.remove(db_file)
+    shutil.rmtree(storage_path)
