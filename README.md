@@ -232,7 +232,15 @@ c.CourseDirectory.course_id = "course1"
 20. Login as user "kevin".
 21. Click "Collect" in Formgrader. 
 22. You should see "1" under "# Submissions". Click on this number. 
-23. Click "Autograde", "Generate Feedback", and "Release Feedback" in order.
-24. Login as user "lawrence".
-25. Under "Assignments", click "Fetch Feedback"
-26. ...
+23. Click "Autograde"
+24. Click Student Name, and then the notebook name, then write some feedback and
+	click "Next".
+25. Go back to "Manage Assignments"
+26. Click "Generate Feedback", and "Release Feedback" in order.
+27. Login as user "lawrence".
+28. Under "Assignments", click "Fetch Feedback"
+29. You should see "(view feedback)" on the right of the time stamp, but do not
+	click on it. 
+30. Go to "Files" tab and go to `<assignment name>/feedback/<timestamp>`, then
+	you can view the html feedbacks. 
+
