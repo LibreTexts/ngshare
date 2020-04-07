@@ -205,8 +205,34 @@ If you are configuring our project correctly, you should be able to run this dem
 4. Click on "init with test data". You should see
 	`{"success": true, "message": "done"}`.
 5. Login as user "kevin".
-6. Go to "Formgrader".
-7. You may see "The course id has not been set in nbgrader_config.py."
-	This is yet to be fixed. As a workaround you can ...
-8. Login as user "lawrence" (you may want to use incognito mode).
-9. ...
+6. Create a new file with New -> Text File, name it `nbgrader_config.py` and
+	with the following content:
+```
+c = get_config()
+c.CourseDirectory.course_id = "course1"
+```
+7. Go to "Control Panel", click on "Stop My Server"
+8. Click on "Start My Server"
+9. Go to "Formgrader".
+10. Click "Add new assignment..."
+11. Click on the name of the assignment you just added
+12. New -> Notebook -> Python 3, and edit the notebook as in normal nbgrader
+	1. Add some code to the block
+	2. View -> Cell Toolbar -> Create Assignment
+	3. Select "Autograded answer"
+	4. ...
+	5. Save notebook
+13. Click "Generate" in Formgrader
+14. Click "Release" in Formgrader
+15. Login as user "lawrence" (you may want to use incognito mode).
+16. Go to "Assignments" tab
+17. Click "Fetch" for the new assignment (the one that is not "challenge")
+18. Do your homework.
+19. Click "Submit".
+20. Login as user "kevin".
+21. Click "Collect" in Formgrader. 
+22. You should see "1" under "# Submissions". Click on this number. 
+23. Click "Autograde", "Generate Feedback", and "Release Feedback" in order.
+24. Login as user "lawrence".
+25. Under "Assignments", click "Fetch Feedback"
+26. ...
