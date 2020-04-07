@@ -1,6 +1,0 @@
-FROM jupyterhub/k8s-hub:0.9.0-beta.4
-COPY ngshare/ngshare/ /ngshare/
-COPY kubespawner_service_jupyterhub/ /tmp/kubespawner_service_jupyterhub/
-USER root
-RUN pip3 install /tmp/kubespawner_service_jupyterhub/
-USER $NB_UID

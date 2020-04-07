@@ -1,0 +1,29 @@
+Congrats, ngshare should be installed!
+To get started, add the following to your JupyterHub helm chart's values:
+
+hub:
+  extraConfig:
+    ngshare.py: |
+      c.JupyterHub.services.append({
+        'name': '{{ include "ngshare.name" . }}',
+        'url': 'http://{{ include "ngshare.fullname" . }}:{{ .Values.deployment.port }}',
+        'api_token': '{{ include "ngshare.getToken" . }}'})
+
+Afterwards, tell nbgrader to use ngshare as the exchange using something like this:
+https://github.com/lxylxy123456/ngshare/blob/master/testing/minikube/nbgrader_config.py
+
+Please let us know on Github if you encounter any issues, thanks!
+{{- if not (typeIs "string" .Values.ngshare.hub_api_token) }}
+
+WARNING: You didn't specify an API token, and one is generated automatically for you.
+This will change every time you do a helm install or upgrade on ngshare,
+so please consider specifying it explicitly in values.yaml under ngshare.hub_api_token
+{{- end }}
+{{- if gt .Values.deployment.replicaCount 1.0 }}
+
+WARNING: You have specified more than one replica for ngshare.
+This means the PVC for it will be mounted ReadWriteMany.
+Make sure you have a storage provisioner that supports that.
+We haven't tested whether sqlite will break when it's mounted multiple times,
+so you are walking into uncharted territory here. Please reconsider.
+{{- end }}

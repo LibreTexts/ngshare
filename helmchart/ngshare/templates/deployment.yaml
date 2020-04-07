@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ngshare.fullname" . }}
+  labels:
+    {{- include "ngshare.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ngshare.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ngshare.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: {{ .Values.deployment.fsGroup }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.version }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: ngshare-pvc
+              mountPath: /srv/ngshare
+          ports:
+            - name: http
+              containerPort: {{ .Values.deployment.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.deployment.resources | nindent 12 }}
+          {{- with .Values.ngshare.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: JUPYTERHUB_SERVICE_NAME
+              value: {{ include "ngshare.name" . }}
+            - name: JUPYTERHUB_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ngshare.name" . }}-token
+                  key: token
+            - name: JUPYTERHUB_API_URL
+              value: {{ .Values.ngshare.hub_api_url }}
+            - name: JUPYTERHUB_BASE_URL
+              value: {{ .Values.ngshare.hub_base_url }}
+            - name: JUPYTERHUB_SERVICE_PREFIX
+              value: /services/{{ include "ngshare.name" . }}/
+            - name: JUPYTERHUB_SERVICE_URL
+              value: http://0.0.0.0:8080/
+            {{- range $k, $v := .Values.ngshare.env }}
+            - name: {{ $k }}
+              value: {{ $v }}
+            {{- end }}
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsUser: 65535
+      volumes:
+        - name: ngshare-pvc
+          persistentVolumeClaim:
+            claimName: {{ include "ngshare.name" . }}-pvc
+      {{- with .Values.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
