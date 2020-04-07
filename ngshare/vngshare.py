@@ -42,7 +42,8 @@ def main():
                         default='/tmp/ngshare/')
     args = parser.parse_args()
 
-    app = MyApplication(args.prefix, args.database, debug=not args.no_debug)
+    app = MyApplication(args.prefix, args.database, args.storage,
+                        debug=not args.no_debug)
     app.vngshare = True
 
     http_server = HTTPServer(app)
