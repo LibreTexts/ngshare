@@ -196,3 +196,17 @@ c.ExchangeFactory.submit = ngshare.ExchangeSubmit
 c.ExchangeFactory.collect = ngshare.ExchangeCollect
 ```
 Afterwards, the setup should be complete.
+
+## Demo
+If you are configuring our project correctly, you should be able to run this demo.
+1. Setup a clean environment using JupyterHub + nbgrader + ngshare (debug mode). You can use the [minikube testing setup](/testing#testing-setup) to do it easily.
+2. Login as user "user". All usernames are login-able with any passwords.
+3. Go to "Control Panel" at upper right corner, then Services -> ngshare
+4. Click on "init with test data". You should see
+	`{"success": true, "message": "done"}`.
+5. Login as user "kevin".
+6. Go to "Formgrader".
+7. You may see "The course id has not been set in nbgrader_config.py."
+	This is yet to be fixed. As a workaround you can ...
+8. Login as user "lawrence" (you may want to use incognito mode).
+9. ...
