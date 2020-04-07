@@ -135,3 +135,17 @@ The API specifications for `ngshare` are available in
 * See [/ngshare](/ngshare#vngshare-setup) for setting up `vngshare`
 * See [/vserver](/vserver#vserver) for setting up `vserver`
 
+## Demo
+If you are configuring our project correctly, you should be able to run this
+ demo.
+1. Setup a clean environment using JupyterHub + nbgrader + ngshare (debug mode).
+2. Login as user "user". All usernames are login-able with any passwords.
+3. Go to "Control Panel" at upper right corner, then Services -> ngshare
+4. Click on "init with test data". You should see
+	`{"success": true, "message": "done"}`.
+5. Login as user "kevin".
+6. Go to "Formgrader".
+7. You may see "The course id has not been set in nbgrader_config.py."
+	This is yet to be fixed. As a workaround you can ...
+8. Login as user "lawrence" (you may want to use incognito mode).
+9. ...
