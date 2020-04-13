@@ -244,3 +244,7 @@ c.CourseDirectory.course_id = "course1"
 30. Go to "Files" tab and go to `<assignment name>/feedback/<timestamp>`, then
 	you can view the html feedbacks. 
 
+### Youtube Video Demo
+http://www.youtube.com/watch?v=iiaVpKLj89c
+
+[![Youtube Video Demo](http://img.youtube.com/vi/iiaVpKLj89c/0.jpg)](http://www.youtube.com/watch?v=iiaVpKLj89c)
