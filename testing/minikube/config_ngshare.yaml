@@ -1,0 +1,5 @@
+ngshare:
+  # again, just for testing, don't use in prod
+  hub_api_token: a4IHeiHZuswZrmYbWxSGpLZs3x0pXVxa
+  args:
+    - --debug

@@ -699,9 +699,11 @@ def main():
         description='ngshare, a REST API nbgrader exchange')
     parser.add_argument('--jupyterhub_api_url',
                         help='override $JUPYTERHUB_API_URL')
-    parser.add_argument('--debug', type=bool, help='output debug information')
+    parser.add_argument('--debug', action='store_true', help='enable debug')
     parser.add_argument('--database', help='database url',
                         default='sqlite:////srv/ngshare/ngshare.db')
+    parser.add_argument('--storage', help='path to store files',
+                        default='/tmp/ngshare/')
     args = parser.parse_args()
     if args.jupyterhub_api_url is not None:
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url

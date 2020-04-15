@@ -1,15 +1,11 @@
 #!/bin/bash -e
 
-# git repo from https://github.com/rkevin-arch/zero-to-jupyterhub-k8s
-HELM_CHART_LOC=../../../zero-to-jupyterhub-k8s/jupyterhub
-
-function build_hub_img {
-    eval $(minikube docker-env)
-    cd ../../..
-    docker build -f ngshare/testing/minikube/Dockerfile-hub -t hub-testing:0.0.1 .
-    cd -
-    eval $(minikube docker-env -u)
-}
+# beta.4 is broken for some reason
+# ModuleNotFoundError: No module named 'kubernetes'
+# File "/etc/jupyterhub/jupyterhub_config.py", line 6: from kubernetes import client
+# reverting to beta.3
+Z2JH_HELM_CHART_VER=0.9.0-beta.3
+NGSHARE_HELM_CHART_LOC=../../helmchart/ngshare
 
 function build_singleuser_img {
     eval $(minikube docker-env)
@@ -20,36 +16,42 @@ function build_singleuser_img {
 function build_ngshare_img {
     eval $(minikube docker-env)
     cd ../..
-    docker build -f testing/minikube/Dockerfile-ngshare -t ngshare-testing:0.0.1 .
+    docker build -f Dockerfile -t rkevin/ngshare:latest .
     cd -
     eval $(minikube docker-env -u)
 }
 
 case $1 in
     init )
-        minikube start --memory 10g ;;
+        minikube start --memory 10g
+        helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+        helm repo update ;;
     install )
-        build_hub_img
         build_singleuser_img
         build_ngshare_img
-        helm install jhub $HELM_CHART_LOC -f config.yaml --debug
+        helm install jhub jupyterhub/jupyterhub --version=$Z2JH_HELM_CHART_VER -f config.yaml --debug
+        helm install ngshare $NGSHARE_HELM_CHART_LOC -f config_ngshare.yaml --debug
         minikube service list ;;
     uninstall )
         helm uninstall jhub
+        helm uninstall ngshare
         kubectl delete pod jupyter-service-ngshare ;;
     reinstall )
         helm uninstall jhub
+        helm uninstall ngshare
         build_hub_img
         build_singleuser_img
         build_ngshare_img
         sleep 10 # sometimes PVCs arent unmounted properly, giving an error when doing helm install
-        helm install jhub $HELM_CHART_LOC -f config.yaml --debug
+        helm install jhub jupyterhub/jupyterhub --version=$Z2JH_HELM_CHART_LOC -f config.yaml --debug
+        helm install ngshare $NGSHARE_HELM_CHART_LOC -f config_ngshare.yaml --debug
         minikube service list ;;
     upgrade )
         build_hub_img
         build_singleuser_img
         build_ngshare_img
-        helm upgrade jhub $HELM_CHART_LOC -f config.yaml --debug
+        helm upgrade jhub jupyterhub/jupyterhub --version=$Z2JH_HELM_CHART_LOC -f config.yaml --debug
+        helm upgrade ngshare $NGSHARE_HELM_CHART_LOC -f config_ngshare.yaml --debug
         minikube service list ;;
     delete )
         minikube delete ;;

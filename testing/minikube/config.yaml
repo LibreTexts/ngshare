@@ -14,18 +14,12 @@ auth:
     users:
       - rkevin
 hub:
-  image:
-    name: hub-testing
-    tag: 0.0.1
-    imagePullPolicy: Always
   extraConfig:
-    test.py: |
-      c.JupyterHub.service_check_interval = 0
-      c.JupyterHub.services.append({'name':'ngshare', 'image': 'ngshare-testing:0.0.1', 'port': 10101})
-  services:
-    ngshare_notworking:
-      image: 'ngshare-testing:0.0.1'
-      port: 10101
+    ngshare.py: |
+      c.JupyterHub.services.append({
+        'name': 'ngshare',
+        'url': 'http://ngshare:8080',
+        'api_token': 'a4IHeiHZuswZrmYbWxSGpLZs3x0pXVxa'})
 singleuser:
   image:
     name: singleuser-testing
