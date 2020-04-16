@@ -736,7 +736,7 @@ def main():
     parser.add_argument('--database', help='database url',
                         default='sqlite:////srv/ngshare/ngshare.db')
     parser.add_argument('--storage', help='path to store files',
-                        default='/tmp/ngshare/')
+                        default='/srv/ngshare/files/')
     args = parser.parse_args()
     if args.jupyterhub_api_url is not None:
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url

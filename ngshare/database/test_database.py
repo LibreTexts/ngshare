@@ -42,7 +42,7 @@ def clear_db(db, storage_path):
         db.execute('DELETE FROM %s' % table_name)
     db.commit()
     if storage_path is not None:
-        shutil.rmtree(storage_path)
+        shutil.rmtree(storage_path, ignore_errors=True)
 
 def init_db(db, storage_path):
     '''
