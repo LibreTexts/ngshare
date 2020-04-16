@@ -1,8 +1,6 @@
 # ngshare
 [nbgrader](https://github.com/jupyter/nbgrader) sharing service.
 
-**This service is under development. Use this at your own risk.**
-
 Click [here](#installation-and-setup) for installation instructions.
 
 <img src="ngshare/favicon.png" width="64px" />

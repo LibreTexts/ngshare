@@ -18,6 +18,12 @@ Also referred to as `course_id`, this is a unique name for a course. For example
 ### Notebook name
 Also referred to as `notebook_id`, this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
 
+### User name
+User name is a user in nbgrader, which is used as Instructor ID and Student ID.
+ They are the same username in JupyterHub and are created automatically.
+ Deletion is not supported so do not remove a user in JupyterHub and create a
+ new one with the same name. 
+
 ### Instructor ID
 The ID given to an instructor. For example, "course1_instructor" or "doe_jane"
 
