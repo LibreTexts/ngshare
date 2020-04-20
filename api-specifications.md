@@ -84,7 +84,7 @@ Used for ExchangeList.
 ```
 
 ##### Error messages
-* Login required
+* 302 (Login required)
 
 ### /api/course: Course
 
@@ -101,8 +101,8 @@ The new course will have no students. Its only instructor is the creator.
 ```
 
 ##### Error messages
-* Login required
-* Course already exists
+* 302 (Login required)
+* 409 Course already exists
 
 ### /api/instructor: Course instructor management
 
@@ -127,12 +127,12 @@ email=/*instructor email*/
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Please supply first name
-* Please supply last name
-* Please supply email name
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 400 Please supply first name
+* 400 Please supply last name
+* 400 Please supply email name
 
 #### GET /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Get information about a course instructor. (instructors+students)*
@@ -151,10 +151,10 @@ When first name, last name, or email not set, the field is null
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Instructor not found
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Instructor not found
 
 #### DELETE /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Remove a course instructor (instructors only)*
@@ -169,11 +169,11 @@ Submissions of the instructor are not removed (visible to other instructors).
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Instructor not found
-* Cannot remove last instructor
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Instructor not found
+* 409 Cannot remove last instructor
 
 ### /api/instructors: List course instructors
 
@@ -199,10 +199,10 @@ When first name, last name, or email not set, the field is null
 }
 ```
 
-#### Error messages
-* Login required
-* Permission denied
-* Course not found
+##### Error messages
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
 
 ### /api/student: Student management
 
@@ -227,13 +227,13 @@ email=/*student email*/
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Cannot remove last instructor
-* Please supply first name
-* Please supply last name
-* Please supply email
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 409 Cannot remove last instructor
+* 400 Please supply first name
+* 400 Please supply last name
+* 400 Please supply email
 
 #### GET /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Get information about a student. (instructors+student with same student_id)*
@@ -252,10 +252,10 @@ When first name, last name, or email not set, the field is null
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Student not found
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Student not found
 
 #### DELETE /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Remove a student (instructors only)*
@@ -270,10 +270,10 @@ Submissions of the student are not removed (visible to instructors).
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Student not found
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Student not found
 
 ### /api/students: List course students
 
@@ -300,9 +300,9 @@ When first name, last name, or email not set, the field is null
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
 
 ### /api/assignments: Course assignments
 
@@ -324,9 +324,9 @@ Used for the outbound part of ExchangeList.
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
 
 ### /api/assignment: Fetching and releasing an assignment
 
@@ -351,10 +351,10 @@ list_only=/* true or false */
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Assignment not found
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
 
 #### POST /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;
 *release an assignment (instructors only)*
@@ -374,15 +374,15 @@ files=/* encoded directory tree in JSON */
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Assignment already exists
-* Please supply files
-* Illegal path
-* Files cannot be JSON decoded
-* Content cannot be base64 decoded
-* Internal server error
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 409 Assignment already exists
+* 400 Please supply files
+* 400 Illegal path
+* 400 Files cannot be JSON decoded
+* 400 Content cannot be base64 decoded
+* 500 Internal server error
 
 #### DELETE /api/assignment/&lt;course_id&gt;/&lt;assignment_id&gt;
 *Remove an assignment (instructors only).*
@@ -399,10 +399,10 @@ Note: this may be replaced by assignment states in the future.
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Assignment not found
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
 
 ### /api/submissions: Listing submissions
 
@@ -427,10 +427,10 @@ Used for the inbound part of ExchangeList.
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Assignment not found
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
 
 #### GET /api/submissions/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 *list all submissions for an assignment from a particular student (instructors+students, though students are restricted to only viewing their own submissions)*
@@ -451,11 +451,11 @@ Used for the inbound part of ExchangeList.
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Assignment not found
-* Student not found
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+* 404 Student not found
 
 ### /api/submission: Collecting and submitting a submission
 
@@ -478,15 +478,15 @@ files=/* encoded directory tree in JSON */
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Assignment not found
-* Please supply files
-* Illegal path
-* Files cannot be JSON decoded
-* Content cannot be base64 decoded
-* Internal server error
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+* 400 Please supply files
+* 400 Illegal path
+* 400 Files cannot be JSON decoded
+* 400 Content cannot be base64 decoded
+* 500 Internal server error
 
 #### GET /api/submission/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 *download a student's submitted assignment (instructors only)*
@@ -511,12 +511,12 @@ timestamp=/* submission timestamp */
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Assignment not found
-* Student not found
-* Submission not found
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+* 404 Student not found
+* 404 Submission not found
 
 ### /api/feedback: Fetching and releasing submission feedback
 
@@ -541,19 +541,19 @@ files=/* encoded directory tree in JSON */
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Assignment not found
-* Student not found
-* Submission not found
-* Please supply timestamp
-* Time format incorrect
-* Please supply files
-* Illegal path
-* Files cannot be JSON decoded
-* Content cannot be base64 decoded
-* Internal server error
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+* 404 Student not found
+* 404 Submission not found
+* 400 Please supply timestamp
+* 400 Time format incorrect
+* 400 Please supply files
+* 400 Illegal path
+* 400 Files cannot be JSON decoded
+* 400 Content cannot be base64 decoded
+* 500 Internal server error
 
 #### GET /api/feedback/&lt;course_id&gt;/&lt;assignment_id&gt;/&lt;student_id&gt;
 *download feedback on a student's assignment (instructors+students, though students are restricted to only viewing their own feedback)*
@@ -579,11 +579,11 @@ list_only=/* true or false */
 ```
 
 ##### Error messages
-* Login required
-* Permission denied
-* Course not found
-* Assignment not found
-* Student not found
-* Submission not found
-* Please supply timestamp
-* Time format incorrect
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+* 404 Student not found
+* 404 Submission not found
+* 400 Please supply timestamp
+* 400 Time format incorrect
