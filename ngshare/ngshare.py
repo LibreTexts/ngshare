@@ -281,7 +281,13 @@ class MyHelpers:
                 msg += ' (not related to course)'
             self.json_error(msg)
 
-class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
+class HubAuthenticated401(HubAuthenticated):
+    'Return 401 when not logged in'
+    def get_login_url(self):
+        self.set_status(401)
+        raise Finish(json.dumps({'success': False, 'message': 'Unauthorized'}))
+
+class MyRequestHandler(HubAuthenticated401, RequestHandler, MyHelpers):
     'Custom request handler for ngshare'
     def json_success(self, msg=None, **kwargs):
         'Return success as a JSON object'
