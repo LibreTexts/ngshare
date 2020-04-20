@@ -63,7 +63,7 @@ Clients will send HTTP request to server. Possible methods are:
 The method to use is specified in each API entry point below
 
 ### Response
-When client is not authenticaed (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
+When client is not authenticaed (e.g. not logged in), server will return HTTP 401 Unauthorized
 
 When client is authenticated, server will return 200 and a JSON object (specified below).
 * When success, the response will be `{"success": true, ...}`, where "`...`" contains extra information
