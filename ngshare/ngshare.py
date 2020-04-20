@@ -294,6 +294,7 @@ class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
     def json_error(self, msg, **kwargs):
         'Return error as a JSON object'
         assert 'success' not in kwargs and 'message' not in kwargs
+        self.set_status(404)	# TODO: changable status code
         raise Finish(json.dumps({'success': False, 'message': msg, **kwargs}))
 
     def prepare(self):
