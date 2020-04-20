@@ -68,7 +68,7 @@ When client is not authenticaed (e.g. not logged in), server will return HTTP 30
 When client is authenticated, server will return 200 and a JSON object (specified below).
 * When success, the response will be `{"success": true, ...}`, where "`...`" contains extra information
 * When fail, the response will be `{"success": false, "message": "Error Message"}`. "`Error Message`" is defined in each "Error messages" sections below.
-* When server encounters an error, it will return 500. 
+* When server encounters an error, it will return 500. In this case, the client should submit a bug report and report this to ngshare maintainers.
 
 ---
 
