@@ -32,12 +32,11 @@ server_proc = None
 db_file = None
 storage_path = None
 
-def request_page(url, data=None, params=None, method=GET, code=200):
-    'Request a page, and make sure HTTP status code is `code`'
+def request_page(url, data=None, params=None, method=GET):
+    'Request a page, return status code and JSON response object'
     assert url.startswith('/') and not url.startswith('//')
     resp = method(url_prefix + url, data=data, params=params)
-    assert resp.status_code == code
-    return resp.json()
+    return resp.status_code, resp.json()
 
 def assert_success(url, data=None, params=None, method=GET):
     'Assert requesting a page is success'
@@ -49,7 +48,8 @@ def assert_success(url, data=None, params=None, method=GET):
         else:
             data = data if data is not None else {}
             data['user'] = user
-    resp = request_page(url, data, params, method, 200)
+    status_code, resp = request_page(url, data, params, method)
+    assert status_code == 200
     if not resp['success']:
         print(repr(resp), file=sys.stderr)
         raise Exception('Not success')
@@ -65,7 +65,8 @@ def assert_fail(url, data=None, params=None, method=GET, msg=None):
         else:
             data = data if data is not None else {}
             data['user'] = user
-    resp = request_page(url, data, params, method, 404)
+    status_code, resp = request_page(url, data, params, method)
+    assert status_code in range(400, 500)
     if resp['success']:
         print(repr(resp), file=sys.stderr)
         raise Exception('Success')
