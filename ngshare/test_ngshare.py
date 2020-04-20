@@ -16,7 +16,7 @@ from subprocess import Popen, PIPE
 
 import requests
 
-from ngshare import MyHelpers
+from .ngshare import MyHelpers
 
 # pylint: disable=comparison-with-callable
 # pylint: disable=global-statement

@@ -20,10 +20,7 @@ from sqlalchemy.orm import sessionmaker
 Session = None
 test_storage = None
 
-try:
-    from .database import *
-except ImportError:
-    from database import *
+from .database import *
 
 def clear_db(db, storage_path):
     'Remove all data from database'
