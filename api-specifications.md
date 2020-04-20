@@ -1,6 +1,6 @@
 
 # Server API
-Last updated 2020-03-11
+Last updated 2020-04-19
 
 ---
 
@@ -23,9 +23,6 @@ The ID given to an instructor. For example, "course1_instructor" or "doe_jane"
 
 ### Student ID
 The ID given to a student. For example, "doe_jane".
-
-### Success
-`true` if the request is successful, `false` otherwise. If unsuccessful, the response will only contain the fields `"success"` and `"message"`. The message field contains the error message, if any.
 
 ### Timestamp
 A timestamp of when a user initiates the assignment submission process. It follows the [format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) `"%Y-%m-%d %H:%M:%S.%f %Z"`. For example, "2020-01-30 10:30:47.524219 UTC".
@@ -52,6 +49,26 @@ Assignments consist of a directory, notebook files in the root, and optional sup
 
 ### Multiple directory trees and files
 Each file and directory tree will be transferred individually.
+
+---
+
+## Requests and Responses
+
+### Requests
+Clients will send HTTP request to server. Possible methods are:
+* GET
+* POST
+* DELETE
+
+The method to use is specified in each API entry point below
+
+### Response
+When client is not authenticaed (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
+
+When client is authenticated, server will return 200 and a JSON object (specified below).
+* When success, the response will be `{"success": true, ...}`, where "`...`" contains extra information
+* When fail, the response will be `{"success": false, "message": "Error Message"}`. "`Error Message`" is defined in each "Error messages" sections below.
+* When server encounters an error, it will return 500. In this case, the client should submit a bug report and report this to ngshare maintainers.
 
 ---
 
