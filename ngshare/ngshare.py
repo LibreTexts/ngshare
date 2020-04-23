@@ -40,7 +40,7 @@ class MyHelpers:
 
     def strftime(self, dt):
         'Use API specified format to strftime'
-        return dt.strftime('%Y-%m-%d %H:%M:%S.%f %Z')
+        return dt.strftime('%Y-%m-%d %H:%M:%S.%f %Z').strip()
 
     def strptime(self, string):
         'Use API specified format to strptime'
