@@ -87,9 +87,9 @@ Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyt
 ### /api/courses: Courses
 
 #### GET /api/courses
-*List all available courses taking or teaching (students+instructors).*
+*List all available courses taking or teaching. (students+instructors)*
 
-*List all courses in ngshare (root).*
+*List all courses in ngshare. (root)*
 
 Used for ExchangeList.
 
@@ -131,6 +131,8 @@ The new course will have no students. Its only instructor is the creator.
 
 #### POST /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
 *Add or update a course instructor. (root)*
+
+*Update self full name or email. (instructors)*
 
 If the user is already a student of the course, the student-relationship
  will be removed.
@@ -196,7 +198,6 @@ Submissions of the instructor are not removed.
 * 403 Permission denied
 * 404 Course not found
 * 404 Instructor not found
-* 409 Cannot remove last instructor
 
 ### /api/instructors: List course instructors
 

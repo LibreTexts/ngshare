@@ -344,7 +344,10 @@ class ListCourses(MyRequestHandler):
     '/api/courses'
     @authenticated
     def get(self):
-        'List all available courses the user is taking or teaching (anyone)'
+        '''
+            List all available courses the user is taking or teaching. (anyone)
+            List all courses in ngshare. (root)
+        '''
         courses = set()
         if self.is_root():
             for i in self.db.query(Course).all():
@@ -373,8 +376,10 @@ class ManageInstructor(MyRequestHandler):
     '/api/instructor/<course_id>/<instructor_id>'
     @authenticated
     def post(self, course_id, instructor_id):
-        'Add or update a course instructor. (root)'
-        # TODO: allow instructors to change email
+        '''
+            Add or update a course instructor. (root)
+            Update self full name or email. (instructors)
+        '''
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         instructor = self.find_or_create_user(instructor_id)
@@ -421,10 +426,7 @@ class ManageInstructor(MyRequestHandler):
         'Remove a course instructor (root)'
         self.check_root()
         course = self.find_course(course_id)
-        # self.check_course_instructor(course)
         instructor = self.find_course_instructor(course, instructor_id)
-        if len(course.instructors) <= 1:
-            self.json_error(409, 'Cannot remove last instructor')
         course.instructors.remove(instructor)
         self.db.commit()
         self.json_success()

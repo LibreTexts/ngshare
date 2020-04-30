@@ -219,8 +219,9 @@ def test_delete_instructor():
     assert_fail(url + 'course9/lawrence', method=DELETE, msg='Course not found')
     assert_fail(url + 'course2/eric', method=DELETE, msg='Instructor not found')
     assert_success(url + 'course2/lawrence', method=DELETE)
-    assert_fail(url + 'course2/abigail', method=DELETE,
-                msg='Cannot remove last instructor')
+    assert_success(url + 'course1/kevin', method=DELETE)
+    assert_success(url + 'course1/kevin', method=POST,
+                   data={'first_name': '', 'last_name': '', 'email': ''})
 
 def test_list_instructors():
     'Test GET /api/instructors/<course_id>'
