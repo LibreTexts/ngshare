@@ -120,8 +120,18 @@ def test_add_course():
     url = '/api/course/'
     global user
     user = 'eric'
+    assert_fail(url + 'course3', method=POST,
+                msg='Permission denied (not root)')
+    user = 'root'
     assert_success(url + 'course3', method=POST)
     assert_fail(url + 'course3', method=POST, msg='Course already exists')
+
+    assert_success('/api/instructor/course3/eric', method=POST,
+                   data={'first_name': '', 'last_name': '', 'email': ''})
+    assert assert_success('/api/courses')['courses'] == \
+           ['course1', 'course2', 'course3']
+    user = 'eric'
+
     assert assert_success('/api/courses')['courses'] == ['course2', 'course3']
 
 def test_add_instructor():

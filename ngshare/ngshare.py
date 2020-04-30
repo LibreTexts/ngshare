@@ -268,6 +268,14 @@ class MyHelpers:
         'Return whether user is an instructor in the course'
         return course in user.teaching
 
+    def check_root(self):
+        'Assert user is root user'
+        if not self.is_root():
+            msg = 'Permission denied'
+            if self.application.debug:
+                msg += ' (not root)'
+            self.json_error(403, msg)
+
     def check_course_instructor(self, course):
         'Assert user is an instructor in the course'
         if not self.is_course_instructor(course, self.user):
@@ -350,7 +358,8 @@ class AddCourse(MyRequestHandler):
     '/api/course/<course_id>'
     @authenticated
     def post(self, course_id):
-        'Add a course (anyone)'
+        'Add a course (root)'
+        self.check_root()
         if self.db.query(Course).filter(Course.id == course_id).one_or_none():
             self.json_error(409, 'Course already exists')
         course = Course(course_id, self.user)

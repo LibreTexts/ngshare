@@ -124,6 +124,7 @@ The new course will have no students. Its only instructor is the creator.
 
 ##### Error messages
 * 302 (Login required)
+* 403 Permission denied
 * 409 Course already exists
 
 ### /api/instructor: Course instructor management
