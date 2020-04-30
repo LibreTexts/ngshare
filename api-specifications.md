@@ -122,10 +122,20 @@ The new course will have no students. Its only instructor is the creator.
 }
 ```
 
+#### DELETE /api/course/&lt;course_id&gt;
+*Remove a course (root). Used for outside Exchange.*
+
+##### Response
+```javascript
+{
+    "success": true
+}
+```
+
 ##### Error messages
 * 302 (Login required)
 * 403 Permission denied
-* 409 Course already exists
+* 404 Course not found
 
 ### /api/instructor: Course instructor management
 

@@ -113,7 +113,13 @@ class Course(Base):
 
     def delete(self, db):
         'Remove course and dependent data'
-        raise NotImplementedError('Currently courses cannot be deleted')
+        for assignment in self.assignments:
+            assignment.delete(db)
+        for student in self.students[:]:
+            self.students.remove(student)
+        for instructor in self.instructors[:]:
+            self.instructors.remove(instructor)
+        db.delete(self)
 
 class Assignment(Base):
     'An nbgrader assignment'
@@ -148,10 +154,12 @@ class Assignment(Base):
 
     def delete(self, db):
         'Remove assignment and dependent data (files, submissions)'
-        for file_obj in self.files:
+        for file_obj in self.files[:]:
             file_obj.delete(db)
-        for submission in self.submissions:
+            self.files.remove(file_obj)
+        for submission in self.submissions[:]:
             submission.delete(db)
+            self.submissions.remove(submission)
         db.delete(self)
 
 class Submission(Base):
@@ -186,10 +194,12 @@ class Submission(Base):
 
     def delete(self, db):
         'Remove submission and dependent data (files, feedbacks)'
-        for file_obj in self.files:
+        for file_obj in self.files[:]:
             file_obj.delete(db)
-        for file_obj in self.feedbacks:
+            self.files.remove(file_obj)
+        for file_obj in self.feedbacks[:]:
             file_obj.delete(db)
+            self.feedbacks.remove(file_obj)
         db.delete(self)
 
 class File(Base):

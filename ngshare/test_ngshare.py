@@ -704,6 +704,22 @@ def test_download_feedback():
     assert_fail(url + 'course1/challenge/lawrence',
                 msg='Permission denied (not course instructor)')
 
+def test_remove_course():
+    'Test DELETE /api/course/<course_id>'
+    url = '/api/course/'
+    global user
+    user = 'kevin'
+    assert_fail(url + 'course1', method=DELETE,
+                msg='Permission denied (not root)')
+    user = 'root'
+    assert_success(url + 'course1', method=DELETE)
+    assert_success(url + 'course2', method=DELETE)
+    assert_success(url + 'course3', method=DELETE)
+    assert_fail(url + 'course4', method=DELETE, msg='Course not found')
+    resp = assert_success('/api/initialize-Data6ase', params={'action': 'dump'})
+    # All other tables should be empty
+    assert set(resp.keys()) == {'success', 'users'}
+
 def test_stop_server():
     'Stop a vngshare server'
     global server_proc

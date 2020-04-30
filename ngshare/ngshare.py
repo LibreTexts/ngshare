@@ -372,6 +372,15 @@ class AddCourse(MyRequestHandler):
         self.db.commit()
         self.json_success()
 
+    @authenticated
+    def delete(self, course_id):
+        'Remove a course (root)'
+        self.check_root()
+        course = self.find_course(course_id)
+        course.delete(self.db)
+        self.db.commit()
+        self.json_success()
+
 class ManageInstructor(MyRequestHandler):
     '/api/instructor/<course_id>/<instructor_id>'
     @authenticated
