@@ -328,7 +328,7 @@ class HomePage(MyRequestHandler):
     @authenticated
     def get(self):
         'Display an HTML page for debugging'
-        self.render('home.html', debug=self.application.debug,
+        self.render('home.html', debug=self.application.debug or self.is_root(),
                     vngshare=self.application.vngshare)
 
 class Static(MyRequestHandler):
@@ -675,9 +675,10 @@ class InitDatabase(MyRequestHandler):
     def get(self):
         'Initialize database similar to in vserver'
         # Dangerous: do not use in production
-        if not self.application.debug:
-            self.json_error(403, 'Debug mode is off')
         action = self.get_argument('action', None)
+        if not self.application.debug:
+            if not self.is_root() or action != 'dump':
+                self.json_error(403, 'Debug mode is off')
         if action == 'clear':
             clear_db(self.db, self.application.storage_path)
             self.json_success('done')
@@ -739,9 +740,8 @@ class MyApplication(Application):
             (prefix + 'submission/([^/]+)/([^/]+)/([^/]+)', DownloadAssignment),
             (prefix + 'feedback/([^/]+)/([^/]+)/([^/]+)',
              UploadDownloadFeedback),
+            (prefix + 'initialize-Data6ase', InitDatabase),
         ]
-        if debug:
-            handlers.append((prefix + 'initialize-Data6ase', InitDatabase))
         handlers.append((r'.*', NotFoundHandler))
         super(MyApplication, self).__init__(handlers, debug=debug,
                                             autoreload=autoreload)
