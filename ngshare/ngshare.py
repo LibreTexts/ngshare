@@ -491,7 +491,48 @@ class ListStudents(MyRequestHandler):
         'Add or update students. (instructors only)'
         course = self.find_course(course_id)
         self.check_course_instructor(course)
-
+        students_str = self.get_argument('students', None)
+        # Check request format
+        if not students_str:
+            self.json_error(400, 'Please supply students')
+        try:
+            students = json.loads(students_str)
+        except json.decoder.JSONDecodeError:
+            self.json_error(400, 'Students cannot be JSON decoded')
+        if type(students) != list:
+            self.json_error(400, 'Incorrect request format')
+        if not students:
+            self.json_error(400, 'Please supply students')
+        for i in students:
+            if type(i) is not dict or \
+                type(i.get('username')) is not str or \
+                type(i.get('first_name')) is not str or \
+                type(i.get('last_name')) is not str or \
+                type(i.get('email')) is not str:
+                self.json_error(400, 'Incorrect request format')
+        # Commit
+        ans = []
+        for i in students:
+            student = self.find_or_create_user(i['username'])
+            if student in course.instructors:
+                ans.append({
+                    'username': i['username'],
+                    'success': False,
+                    'message': 'Cannot add instructor as student',
+                })
+                continue
+            if student not in course.students:
+                course.students.append(student)
+            association = StudentAssociation.find(self.db, student, course)
+            association.first_name = i['first_name']
+            association.last_name = i['last_name']
+            association.email = i['email']
+            ans.append({
+                'username': i['username'],
+                'success': True,
+            })
+        self.db.commit()
+        self.json_success(status=ans)
 
     @authenticated
     def get(self, course_id):

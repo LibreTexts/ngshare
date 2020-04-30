@@ -92,6 +92,15 @@
     /api/student/&lt;course_id&gt;/&lt;student_id&gt;</u>:
   Remove course student
 </p>
+<form id="form6" action="students/course2" method="POST">
+  <input type="hidden" name="students" value="[{&quot;username&quot;: &quot;kevin&quot;, &quot;first_name&quot;: &quot;kevin_first_name&quot;, &quot;last_name&quot;: &quot;kevin_last_name&quot;, &quot;email&quot;: &quot;kevin_email&quot;}]" />
+  {% if vngshare %}<input type="hidden" name="user" value="abigail" />{% end %}
+  <p>
+    POST
+      <a href="" onclick="document.getElementById('form6').submit(); event.preventDefault();">/api/students/&lt;course_id&gt;</a>:
+    Add multiple students to course
+  </p>
+</form>
 <p>
   GET
   <a href="students/course2{% if vngshare %}?user=abigail{% end %}">

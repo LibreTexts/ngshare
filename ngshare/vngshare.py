@@ -51,9 +51,11 @@ def main():
     http_server = HTTPServer(app)
     http_server.listen(args.port, args.host)
 
+    print()
     print('Starting vngshare (Vserver-like Notebook Grader Share)')
     print('Database file is %s' % repr(args.database))
     print('Storage directory is %s' % repr(args.storage))
+    print('Root users are %s' % repr(app.root))
     print('Please go to http://%s:%d/api/' % (args.host, args.port))
     IOLoop.current().start()
 

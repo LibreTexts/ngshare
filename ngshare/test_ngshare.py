@@ -302,6 +302,56 @@ def test_delete_student():
     assert_fail(url + 'course2/kevin', method=DELETE, msg='Student not found')
     assert_success(url + 'course2/lawrence', method=DELETE)
 
+def test_add_students():
+    'Test POST /api/students/<course_id>'
+    url = '/api/students/'
+    global user
+    user = 'kevin'
+    assert_fail(url + 'course9', msg='Course not found')
+    assert_fail(url + 'course2', method=POST,
+                msg='Permission denied (not course instructor)')
+    assert_fail(url + 'course1', method=POST, data={},
+                msg='Please supply students')
+    assert_fail(url + 'course1', method=POST, data={'students': '"'},
+                msg='Students cannot be JSON decoded')
+    assert_fail(url + 'course1', method=POST, data={'students': '12'},
+                msg='Incorrect request format')
+    assert_fail(url + 'course1', method=POST, data={'students': '[]'},
+                msg='Please supply students')
+    assert_fail(url + 'course1', method=POST, data={'students': '[1,2]'},
+                msg='Incorrect request format')
+    students = [{'username': 'a', 'email': 'b', 'first_name': 'c'}]
+    assert_fail(url + 'course1', method=POST,
+                data={'students': json.dumps(students)},
+                msg='Incorrect request format')
+    students = [
+        {'username': 'a', 'first_name': 'af', 'last_name': 'al', 'email': 'ae'},
+        {'username': 'b', 'first_name': 'bf', 'last_name': 'bl', 'email': 'be'},
+        {'username': 'c', 'first_name': 'cf', 'last_name': 'cl', 'email': 'ce'},
+        {'username': 'd', 'first_name': 'df', 'last_name': 'dl', 'email': 'de'},
+        {'username': 'e', 'first_name': '', 'last_name': '', 'email': ''},
+        {'username': 'kevin', 'first_name': '', 'last_name': '', 'email': ''},
+        {'username': 'lawrence', 'first_name': '', 'last_name': '',
+            'email': ''},
+    ]
+    resp = assert_success(url + 'course1', method=POST,
+                          data={'students': json.dumps(students)})
+    expected = [
+        {'username': 'a', 'success': True},
+        {'username': 'b', 'success': True},
+        {'username': 'c', 'success': True},
+        {'username': 'd', 'success': True},
+        {'username': 'e', 'success': True},
+        {'username': 'kevin', 'success': False,
+            'message': 'Cannot add instructor as student'},
+        {'username': 'lawrence', 'success': True},
+    ]
+    assert resp['status'] == expected
+    resp = assert_success(url + 'course1')['students']
+    assert len(resp) == 6
+    for i in resp:
+        assert i in students
+
 def test_list_students():
     'Test GET /api/students/<course_id>'
     url = '/api/students/'

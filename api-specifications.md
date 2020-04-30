@@ -302,9 +302,12 @@ Submissions of the student are not removed (visible to instructors).
 #### POST /api/students/&lt;course_id&gt;
 *Add or update students. (instructors only)*
 
+If the request syntax is correct, will return 200 and report whether each
+ student is added correctly.
+
 ##### Request (HTTP POST data)
 ```
-data = [/* JSON object */
+students=[/* JSON object */
     {
         "username": "/* student 1 ID */",
         "first_name": "/*student 1 first name*/",
@@ -344,6 +347,8 @@ data = [/* JSON object */
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
+* 400 Please supply students
+* 400 Students cannot be JSON decoded
 * 400 Incorrect request format
 
 #### GET /api/students/&lt;course_id&gt;
