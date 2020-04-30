@@ -348,7 +348,7 @@ def test_add_students():
         {'username': 'e', 'first_name': '', 'last_name': '', 'email': ''},
         {'username': 'kevin', 'first_name': '', 'last_name': '', 'email': ''},
         {'username': 'lawrence', 'first_name': '', 'last_name': '',
-            'email': ''},
+         'email': ''},
     ]
     resp = assert_success(url + 'course1', method=POST,
                           data={'students': json.dumps(students)})
@@ -359,7 +359,7 @@ def test_add_students():
         {'username': 'd', 'success': True},
         {'username': 'e', 'success': True},
         {'username': 'kevin', 'success': False,
-            'message': 'Cannot add instructor as student'},
+         'message': 'Cannot add instructor as student'},
         {'username': 'lawrence', 'success': True},
     ]
     assert resp['status'] == expected

@@ -509,16 +509,16 @@ class ListStudents(MyRequestHandler):
             students = json.loads(students_str)
         except json.decoder.JSONDecodeError:
             self.json_error(400, 'Students cannot be JSON decoded')
-        if type(students) != list:
+        if not isinstance(students, list):
             self.json_error(400, 'Incorrect request format')
         if not students:
             self.json_error(400, 'Please supply students')
         for i in students:
-            if type(i) is not dict or \
-                type(i.get('username')) is not str or \
-                type(i.get('first_name')) is not str or \
-                type(i.get('last_name')) is not str or \
-                type(i.get('email')) is not str:
+            if not isinstance(i, dict) or \
+                not isinstance(i.get('username'), str) or \
+                not isinstance(i.get('first_name'), str) or \
+                not isinstance(i.get('last_name'), str) or \
+                not isinstance(i.get('email'), str):
                 self.json_error(400, 'Incorrect request format')
         # Commit
         ans = []
@@ -771,7 +771,7 @@ class NotFoundHandler(RequestHandler):
 class MyApplication(Application):
     'Custom application for ngshare'
     def __init__(self, prefix, db_url, storage_path, debug=False,
-                 root=[], autoreload=True):
+                 root=(), autoreload=True):
         handlers = [
             (prefix, HomePage),
             (prefix + r'(favicon\.ico)', Static),
