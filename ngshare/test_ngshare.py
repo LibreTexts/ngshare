@@ -125,13 +125,13 @@ def test_add_course():
     user = 'root'
     assert_success(url + 'course3', method=POST)
     assert_fail(url + 'course3', method=POST, msg='Course already exists')
-
+    # change owner to eric
     assert_success('/api/instructor/course3/eric', method=POST,
                    data={'first_name': '', 'last_name': '', 'email': ''})
     assert assert_success('/api/courses')['courses'] == \
            ['course1', 'course2', 'course3']
+    assert_success('/api/instructor/course3/root', method=DELETE)
     user = 'eric'
-
     assert assert_success('/api/courses')['courses'] == ['course2', 'course3']
 
 def test_add_instructor():
@@ -140,7 +140,7 @@ def test_add_instructor():
     global user
     user = 'eric'
     assert_fail(url + 'course2/lawrence', method=POST,
-                msg='Permission denied (not root)')
+                msg='Permission denied (not course instructor)')
     user = 'root'
     assert_fail(url + 'course9/lawrence', method=POST, msg='Course not found')
     data = {}
@@ -155,12 +155,27 @@ def test_add_instructor():
     data['email'] = 'lawrence_course2_email'
     assert_success(url + 'course2/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course2')['instructors']) == 2
+    # Test changing instructor name
+    user = 'abigail'
+    assert_fail(url + 'course2/lawrence', data=data, method=POST,
+                msg='Permission denied (cannot modify other instructors)')
+    user = 'abigail'
+    assert_fail(url + 'course2/eric', data=data, method=POST,
+                msg='Permission denied (cannot modify instructors)')
+    user = 'abigail'
+    assert_fail(url + 'course2/kevin', data=data, method=POST,
+                msg='Permission denied (cannot modify instructors)')
+    user = 'lawrence'
+    assert_success(url + 'course2/lawrence', data=data, method=POST)
     # Test updating student to instructor, and empty email
     data = {
         'first_name': 'lawrence_course1_first_name',
         'last_name': 'lawrence_course1_last_name',
         'email': '',
     }
+    assert_fail(url + 'course1/lawrence', data=data, method=POST,
+                msg='Permission denied (not course instructor)')
+    user = 'root'
     assert_success(url + 'course1/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course1')['instructors']) == 2
     assert len(assert_success('/api/students/course1')['students']) == 0

@@ -375,9 +375,8 @@ class ManageInstructor(MyRequestHandler):
     def post(self, course_id, instructor_id):
         'Add or update a course instructor. (root)'
         # TODO: allow instructors to change email
-        self.check_root()
         course = self.find_course(course_id)
-        # self.check_course_instructor(course)
+        self.check_course_instructor(course)
         instructor = self.find_or_create_user(instructor_id)
         first_name = self.get_argument('first_name', None)
         if first_name is None:
@@ -389,9 +388,18 @@ class ManageInstructor(MyRequestHandler):
         if email is None:
             self.json_error(400, 'Please supply email')
         if instructor in course.students:
+            if not self.is_root():
+                self.json_error(400, 'Permission denied'
+                                ' (cannot modify instructors)')
             course.students.remove(instructor)
         if instructor not in course.instructors:
+            if not self.is_root():
+                self.json_error(400, 'Permission denied'
+                                ' (cannot modify instructors)')
             course.instructors.append(instructor)
+        if not self.is_root() and instructor.id != self.user.id:
+            self.json_error(400, 'Permission denied'
+                            ' (cannot modify other instructors)')
         association = InstructorAssociation.find(self.db, instructor, course)
         association.first_name = first_name
         association.last_name = last_name
