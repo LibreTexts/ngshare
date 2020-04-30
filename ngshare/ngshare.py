@@ -277,16 +277,18 @@ class MyHelpers:
             self.json_error(403, msg)
 
     def check_course_instructor(self, course):
-        'Assert user is an instructor in the course'
-        if not self.is_course_instructor(course, self.user):
+        'Assert user is an instructor in the course, or root'
+        if not self.is_root() and \
+            not self.is_course_instructor(course, self.user):
             msg = 'Permission denied'
             if self.application.debug:
                 msg += ' (not course instructor)'
             self.json_error(403, msg)
 
     def check_course_user(self, course):
-        'Assert user is a student or an instructor in the course'
-        if not self.is_course_instructor(course, self.user) and \
+        'Assert user is a student or an instructor in the course, or root'
+        if not self.is_root() and \
+            not self.is_course_instructor(course, self.user) and \
             not self.is_course_student(course, self.user):
             msg = 'Permission denied'
             if self.application.debug:
@@ -371,9 +373,11 @@ class ManageInstructor(MyRequestHandler):
     '/api/instructor/<course_id>/<instructor_id>'
     @authenticated
     def post(self, course_id, instructor_id):
-        'Add or update a course instructor. (instructors only)'
+        'Add or update a course instructor. (root)'
+        # TODO: allow instructors to change email
+        self.check_root()
         course = self.find_course(course_id)
-        self.check_course_instructor(course)
+        # self.check_course_instructor(course)
         instructor = self.find_or_create_user(instructor_id)
         first_name = self.get_argument('first_name', None)
         if first_name is None:
@@ -406,9 +410,10 @@ class ManageInstructor(MyRequestHandler):
 
     @authenticated
     def delete(self, course_id, instructor_id):
-        'Remove a course instructor (instructors only)'
+        'Remove a course instructor (root)'
+        self.check_root()
         course = self.find_course(course_id)
-        self.check_course_instructor(course)
+        # self.check_course_instructor(course)
         instructor = self.find_course_instructor(course, instructor_id)
         if len(course.instructors) <= 1:
             self.json_error(409, 'Cannot remove last instructor')

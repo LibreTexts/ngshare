@@ -139,10 +139,10 @@ def test_add_instructor():
     url = '/api/instructor/'
     global user
     user = 'eric'
-    assert_fail(url + 'course9/lawrence', method=POST, msg='Course not found')
     assert_fail(url + 'course2/lawrence', method=POST,
-                msg='Permission denied (not course instructor)')
-    user = 'abigail'
+                msg='Permission denied (not root)')
+    user = 'root'
+    assert_fail(url + 'course9/lawrence', method=POST, msg='Course not found')
     data = {}
     assert_fail(url + 'course2/lawrence', data=data, method=POST,
                 msg='Please supply first name')
@@ -156,7 +156,6 @@ def test_add_instructor():
     assert_success(url + 'course2/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course2')['instructors']) == 2
     # Test updating student to instructor, and empty email
-    user = 'kevin'
     data = {
         'first_name': 'lawrence_course1_first_name',
         'last_name': 'lawrence_course1_last_name',
@@ -166,7 +165,6 @@ def test_add_instructor():
     assert len(assert_success('/api/instructors/course1')['instructors']) == 2
     assert len(assert_success('/api/students/course1')['students']) == 0
     # Test adding non-existing instructor
-    user = 'eric'
     data = {'first_name': '', 'last_name': '', 'email': ''}
     assert_success(url + 'course3/instructor', data=data, method=POST)
 
@@ -200,11 +198,10 @@ def test_delete_instructor():
     'Test DELETE /api/instructor/<course_id>/<instructor_id>'
     url = '/api/instructor/'
     global user
-    user = 'eric'
-    assert_fail(url + 'course9/lawrence', method=DELETE, msg='Course not found')
     assert_fail(url + 'course2/lawrence', method=DELETE,
-                msg='Permission denied (not course instructor)')
-    user = 'abigail'
+                msg='Permission denied (not root)')
+    user = 'root'
+    assert_fail(url + 'course9/lawrence', method=DELETE, msg='Course not found')
     assert_fail(url + 'course2/eric', method=DELETE, msg='Instructor not found')
     assert_success(url + 'course2/lawrence', method=DELETE)
     assert_fail(url + 'course2/abigail', method=DELETE,
