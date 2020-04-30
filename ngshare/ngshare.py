@@ -451,9 +451,7 @@ class ManageStudent(MyRequestHandler):
         if email is None:
             self.json_error(400, 'Please supply email')
         if student in course.instructors:
-            if len(course.instructors) <= 1:
-                self.json_error(409, 'Cannot remove last instructor')
-            course.instructors.remove(student)
+            self.json_error(409, 'Cannot add instructor as student')
         if student not in course.students:
             course.students.append(student)
         association = StudentAssociation.find(self.db, student, course)

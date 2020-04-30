@@ -249,13 +249,20 @@ def test_add_student():
     assert len(assert_success('/api/students/course2')['students']) == 2
     # Test updating instructor to student, and empty email
     assert_fail(url + 'course2/abigail', data=data, method=POST,
-                msg='Cannot remove last instructor')
+                msg='Cannot add instructor as student')
     user = 'kevin'
     data = {
         'first_name': 'lawrence_course1_first_name',
         'last_name': 'lawrence_course1_last_name',
         'email': '',
     }
+    assert_fail(url + 'course1/lawrence', data=data, method=POST,
+                msg='Cannot add instructor as student')
+    assert len(assert_success('/api/instructors/course1')['instructors']) == 2
+    assert len(assert_success('/api/students/course1')['students']) == 0
+    user = 'root'
+    assert_success('/api/instructor/course1/lawrence', method=DELETE)
+    user = 'kevin'
     assert_success(url + 'course1/lawrence', data=data, method=POST)
     assert len(assert_success('/api/instructors/course1')['instructors']) == 1
     assert len(assert_success('/api/students/course1')['students']) == 1

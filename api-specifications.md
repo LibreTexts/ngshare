@@ -232,8 +232,7 @@ When first name, last name, or email not set, the field is null
 #### POST /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Add or update a student. (instructors only)*
 
-If the user is an instructor of the course, the instructor-relation will be
- removed.
+Fails if the user is an instructor of the course
 
 ##### Request (HTTP POST data)
 ```
@@ -253,7 +252,7 @@ email=/*student email*/
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
-* 409 Cannot remove last instructor
+* 409 Cannot add instructor as student
 * 400 Please supply first name
 * 400 Please supply last name
 * 400 Please supply email
