@@ -30,6 +30,13 @@ Root user have special privilege on ngshare (e.g. create / delete courses)
 ### Timestamp
 A timestamp of when a user initiates the assignment submission process. It follows the [format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) `"%Y-%m-%d %H:%M:%S.%f %Z"`. For example, "2020-01-30 10:30:47.524219 UTC".
 
+### Note on Removals
+Currently removing something will remove relevant objects and relations in
+ database, but the actual files are not removed from the file system.
+
+If storage space is a problem, the administrators can dump the database and
+ remove files from the file system that are not referenced by the database.
+
 ---
 
 ## Exchanging multiple files
