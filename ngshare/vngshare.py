@@ -40,10 +40,12 @@ def main():
     parser.add_argument('--port', help='bind port', type=int, default=12121)
     parser.add_argument('--storage', help='path to store files',
                         default='/tmp/ngshare/')
+    parser.add_argument('--root', help='root user ids (comma splitted)',
+                        default='root')
     args = parser.parse_args()
 
     app = MyApplication(args.prefix, args.database, args.storage,
-                        debug=not args.no_debug)
+                        root=args.root.split(','), debug=not args.no_debug)
     app.vngshare = True
 
     http_server = HTTPServer(app)

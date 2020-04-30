@@ -256,6 +256,10 @@ class MyHelpers:
 
     # Auth APIs
 
+    def is_root(self):
+        'Return whether user is root user'
+        return self.user.id in self.application.root
+
     def is_course_student(self, course, user):
         'Return whether user is a student in the course'
         return course in user.taking
@@ -332,10 +336,14 @@ class ListCourses(MyRequestHandler):
     def get(self):
         'List all available courses the user is taking or teaching (anyone)'
         courses = set()
-        for i in self.user.teaching:
-            courses.add(i.id)
-        for i in self.user.taking:
-            courses.add(i.id)
+        if self.is_root():
+            for i in self.db.query(Course).all():
+                courses.add(i.id)
+        else:
+            for i in self.user.teaching:
+                courses.add(i.id)
+            for i in self.user.taking:
+                courses.add(i.id)
         self.json_success(courses=sorted(courses))
 
 class AddCourse(MyRequestHandler):
@@ -699,7 +707,7 @@ class NotFoundHandler(RequestHandler):
 class MyApplication(Application):
     'Custom application for ngshare'
     def __init__(self, prefix, db_url, storage_path, debug=False,
-                 autoreload=True):
+                 root=[], autoreload=True):
         handlers = [
             (prefix, HomePage),
             (prefix + r'(favicon\.ico)', Static),
@@ -733,6 +741,7 @@ class MyApplication(Application):
         self.storage_path = storage_path
         self.debug = debug
         self.vngshare = False
+        self.root = root
 
 def main():
     'Main function'
@@ -745,12 +754,15 @@ def main():
                         default='sqlite:////srv/ngshare/ngshare.db')
     parser.add_argument('--storage', help='path to store files',
                         default='/srv/ngshare/files/')
+    parser.add_argument('--root', help='root user ids (comma splitted)',
+                        default='root')
     args = parser.parse_args()
     if args.jupyterhub_api_url is not None:
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
 
     prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
-    app = MyApplication(prefix, args.database, args.storage, debug=args.debug)
+    app = MyApplication(prefix, args.database, args.storage,
+                        root=args.root.split(','), debug=args.debug)
 
     http_server = HTTPServer(app)
     url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])

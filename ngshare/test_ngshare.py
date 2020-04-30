@@ -112,6 +112,8 @@ def test_list_courses():
     assert assert_success(url)['courses'] == ['course1']
     user = 'eric'
     assert assert_success(url)['courses'] == ['course2']
+    user = 'root'
+    assert assert_success(url)['courses'] == ['course1', 'course2']
 
 def test_add_course():
     'Test GET /api/course/<course_id>'
