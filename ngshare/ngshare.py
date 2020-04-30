@@ -294,7 +294,7 @@ class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
     def json_error(self, code, msg, **kwargs):
         'Return error as a JSON object'
         assert 'success' not in kwargs and 'message' not in kwargs
-        self.set_status(code)	# TODO: changable status code
+        self.set_status(code)
         raise Finish(json.dumps({'success': False, 'message': msg, **kwargs}))
 
     def prepare(self):
@@ -466,6 +466,13 @@ class ManageStudent(MyRequestHandler):
 
 class ListStudents(MyRequestHandler):
     '/api/students/<course_id>/'
+    @authenticated
+    def post(self, course_id):
+        'Add or update students. (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+
+
     @authenticated
     def get(self, course_id):
         'Get information about all course students. (instructors only)'

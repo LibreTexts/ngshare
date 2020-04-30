@@ -208,7 +208,7 @@ When first name, last name, or email not set, the field is null
         {
             "username": /* instructor ID */,
             "first_name": /* instructor first name*/,
-            "last_name": /* instructor lastname */,
+            "last_name": /* instructor last name */,
             "email": /* instructor email */
         },
         ...
@@ -231,7 +231,7 @@ If the user is an instructor of the course, the instructor-relation will be
 
 ##### Request (HTTP POST data)
 ```
-first_name=/*student name*/&
+first_name=/*student first name*/&
 last_name=/*student last name*/&
 email=/*student email*/
 ```
@@ -293,6 +293,53 @@ Submissions of the student are not removed (visible to instructors).
 * 404 Student not found
 
 ### /api/students: List course students
+
+#### POST /api/students/&lt;course_id&gt;
+*Add or update students. (instructors only)*
+
+##### Request (HTTP POST data)
+```
+data = [/* JSON object */
+    {
+        "username": "/* student 1 ID */",
+        "first_name": "/*student 1 first name*/",
+        "last_name": "/*student 1 last name",
+        "email": "/*student 1 email*/"
+    },
+    {
+        "username": "/* student 2 ID */",
+        "first_name": "/*student 2 first name*/",
+        "last_name": "/*student 2 last name",
+        "email": "/*student 2 email*/"
+    },
+    ...
+]
+```
+
+##### Response
+```javascript
+{
+    "success": true
+    "status": [
+        {
+            "username": "/* student 1 ID */",
+            "success": true
+        },
+        {
+            "username": "/* student 2 ID */",
+            "success": false,
+            "message": "Cannot add instructor as student"
+        },
+        ...
+    ]
+}
+```
+
+##### Error messages
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 400 Incorrect request format
 
 #### GET /api/students/&lt;course_id&gt;
 *Get information about all course students. (instructors only)*
