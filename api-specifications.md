@@ -24,6 +24,9 @@ The ID given to an instructor. For example, "course1_instructor" or "doe_jane"
 ### Student ID
 The ID given to a student. For example, "doe_jane".
 
+### Root user
+Root user have special privilege on ngshare (e.g. create / delete courses)
+
 ### Timestamp
 A timestamp of when a user initiates the assignment submission process. It follows the [format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) `"%Y-%m-%d %H:%M:%S.%f %Z"`. For example, "2020-01-30 10:30:47.524219 UTC".
 
@@ -86,6 +89,8 @@ Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyt
 #### GET /api/courses
 *List all available courses taking or teaching (students+instructors).*
 
+*List all courses in ngshare (root).*
+
 Used for ExchangeList.
 
 ##### Response
@@ -106,7 +111,7 @@ Used for ExchangeList.
 ### /api/course: Course
 
 #### POST /api/course/&lt;course_id&gt;
-*Create a course (anyone logged in). Used for outside Exchange.*
+*Create a course (root). Used for outside Exchange.*
 
 The new course will have no students. Its only instructor is the creator.
 
@@ -124,7 +129,7 @@ The new course will have no students. Its only instructor is the creator.
 ### /api/instructor: Course instructor management
 
 #### POST /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Add or update a course instructor. (instructors only)*
+*Add or update a course instructor. (root)*
 
 If the user is already a student of the course, the student-relationship
  will be removed.
@@ -174,9 +179,9 @@ When first name, last name, or email not set, the field is null
 * 404 Instructor not found
 
 #### DELETE /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Remove a course instructor (instructors only)*
+*Remove a course instructor (root)*
 
-Submissions of the instructor are not removed (visible to other instructors).
+Submissions of the instructor are not removed.
 
 ##### Response
 ```javascript
