@@ -248,3 +248,17 @@ c.CourseDirectory.course_id = "course1"
 http://www.youtube.com/watch?v=iiaVpKLj89c
 
 [![Youtube Video Demo](http://img.youtube.com/vi/iiaVpKLj89c/0.jpg)](http://www.youtube.com/watch?v=iiaVpKLj89c)
+
+## Database migrations
+ngshare uses [Alembic](https://alembic.sqlalchemy.org/) to manage database
+ migrations.
+
+For development, first install ngshare as a repo using
+ `pip3 install . --user --upgrade`, then initialize the database using
+ `alembic upgrade head` (the path to database is defined in `alembic.ini`,
+ which is `sqlite:////tmp/ngshare.db` by default).
+
+After changing database structure, use `pip3 install . --user --upgrade` and
+ then `alembic revision --autogenerate -m "message"` to automatically detect
+ changes, then `alembic upgrade head` to upgrade database structures.
+
