@@ -208,12 +208,14 @@ class File(Base):
     _id = Column(INTEGER, primary_key=True)
     filename = Column(TEXT)
     checksum = Column(TEXT)
+    size = Column(INTEGER)
     actual_name = Column(TEXT)
 
     def __init__(self, filename, contents, actual_name=None):
-        'Initialize with file name and content; auto-compute md5'
+        'Initialize with file name and content; auto-compute md5 and size'
         self.filename = filename
         self.checksum = hashlib.md5(contents).hexdigest()
+        self.size = len(contents)
         self.actual_name = actual_name
 
     def __str__(self):
@@ -225,6 +227,7 @@ class File(Base):
             '_id': self._id,
             'filename': self.filename,
             'checksum': self.checksum,
+            'size': self.size,
             'actual_name': self.actual_name,
         }
 

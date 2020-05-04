@@ -28,9 +28,14 @@ from jupyterhub.services.auth import HubAuthenticated
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 
-from database.database import (Base, User, Course, Assignment, Submission, File,
-                               InstructorAssociation, StudentAssociation)
-from database.test_database import clear_db, init_db, dump_db
+try:
+    from .database import (Base, User, Course, Assignment, Submission, File,
+                           InstructorAssociation, StudentAssociation, clear_db,
+                           init_db, dump_db)
+except ImportError:
+    from database import (Base, User, Course, Assignment, Submission, File,
+                          InstructorAssociation, StudentAssociation, clear_db,
+                          init_db, dump_db)
 
 class MyHelpers:
     'Helper functions for database accesses'
