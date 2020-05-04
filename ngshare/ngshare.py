@@ -29,13 +29,13 @@ from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 
 try:
-    from database import (Base, User, Course, Assignment, Submission, File,
-                          InstructorAssociation, StudentAssociation, clear_db,
-                          init_db, dump_db)
-except ImportError:
     from .database import (Base, User, Course, Assignment, Submission, File,
                            InstructorAssociation, StudentAssociation, clear_db,
                            init_db, dump_db)
+except ImportError:
+    from database import (Base, User, Course, Assignment, Submission, File,
+                          InstructorAssociation, StudentAssociation, clear_db,
+                          init_db, dump_db)
 
 class MyHelpers:
     'Helper functions for database accesses'
