@@ -35,7 +35,7 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
-        'SQLAlchemy>=1.13.2', 'alembic>=1.3.2', 'tornado>=6.0.3',
+        'SQLAlchemy>=1.3.12', 'alembic>=1.3.2', 'tornado>=6.0.3',
         'jupyterhub>=1.1.0',
     ],
 )
