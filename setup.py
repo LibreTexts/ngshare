@@ -19,7 +19,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="ngshare",
+    name="ngshare-lxylxy123456",
     version=get_version('ngshare/version.py'),
     author="Team KALE",
     author_email="ercli@ucdavis.edu",
