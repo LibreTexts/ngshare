@@ -8,9 +8,11 @@
 # pylint: disable=invalid-name
 # pylint: disable=no-member
 # pylint: disable=no-self-use
+# pylint: disable=too-many-arguments
 # pylint: disable=too-many-public-methods
 
 import os
+import uuid
 import json
 import argparse
 import base64
@@ -32,13 +34,13 @@ from database.test_database import clear_db, init_db, dump_db
 
 class MyHelpers:
     'Helper functions for database accesses'
-    def json_error(self, msg, **kwargs):
+    def json_error(self, code, msg, **kwargs):
         'Abstract method resolved in MyRequestHandler'
         raise NotImplementedError
 
     def strftime(self, dt):
         'Use API specified format to strftime'
-        return dt.strftime('%Y-%m-%d %H:%M:%S.%f %Z')
+        return dt.strftime('%Y-%m-%d %H:%M:%S.%f %Z').strip()
 
     def strptime(self, string):
         'Use API specified format to strptime'
@@ -50,7 +52,7 @@ class MyHelpers:
                 return datetime.datetime.strptime(string.strip(),
                                                   '%Y-%m-%d %H:%M:%S.%f')
             except ValueError:
-                self.json_error('Time format incorrect')
+                self.json_error(400, 'Time format incorrect')
 
     def path_check(self, pathname):
         '''
@@ -77,6 +79,13 @@ class MyHelpers:
             return False
         return True
 
+    def filename_create(self, filename):
+        'Create a file name for storage; trying to follow extension'
+        ext = os.path.splitext(filename)[1]
+        if len(ext) > 10:
+            ext = ''
+        return str(uuid.uuid4()) + ext
+
     def json_files_pack(self, file_list, list_only):
         'Generate JSON directory tree from a list of File objects'
         ans = []
@@ -86,7 +95,10 @@ class MyHelpers:
                 'checksum': i.checksum,
             }
             if not list_only:
-                entry['content'] = base64.encodebytes(i.contents).decode()
+                storage_path = self.application.storage_path
+                actual_path = os.path.join(storage_path, i.actual_name)
+                content = open(actual_path, 'rb').read()
+                entry['content'] = base64.encodebytes(content).decode()
             ans.append(entry)
         return ans
 
@@ -97,19 +109,38 @@ class MyHelpers:
             target: a list to put file objects in
         '''
         if json_str is None:
-            self.json_error('Please supply files')
+            self.json_error(400, 'Please supply files')
         try:
             json_obj = json.loads(json_str)
         except json.decoder.JSONDecodeError:
-            self.json_error('Files cannot be JSON decoded')
+            self.json_error(400, 'Files cannot be JSON decoded')
+        content_list = []
         for i in json_obj:
             if not self.path_check(i['path']):
-                self.json_error('Illegal path')
+                self.json_error(400, 'Illegal path')
             try:
                 content = base64.decodebytes(i['content'].encode())
             except binascii.Error:
-                self.json_error('Content cannot be base64 decoded')
+                self.json_error(400, 'Content cannot be base64 decoded')
             target.append(File(i['path'], content))
+            content_list.append(content)
+        # Commit files
+        storage_path = self.application.storage_path
+        os.makedirs(storage_path, exist_ok=True)
+        for file_obj, content in zip(target, content_list):
+            f = None
+            for i in range(10):
+                actual_name = self.filename_create(file_obj.filename)
+                try:
+                    f = open(os.path.join(storage_path, actual_name), 'xb')
+                    break
+                except FileExistsError:
+                    pass
+            if f is None:
+                raise self.json_error(500, 'Internal server error')
+            f.write(content)
+            f.close()
+            file_obj.actual_name = actual_name
 
     def find_or_create_user(self, user_id):
         'Return a User object from id; create if not found'
@@ -125,7 +156,7 @@ class MyHelpers:
         qry = self.db.query(Course)
         course = qry.filter(Course.id == course_id).one_or_none()
         if course is None:
-            self.json_error('Course not found')
+            self.json_error(404, 'Course not found')
         return course
 
     def find_assignment(self, course, assignment_id):
@@ -134,7 +165,7 @@ class MyHelpers:
             Assignment.id == assignment_id,
             Assignment.course == course).one_or_none()
         if assignment is None:
-            self.json_error('Assignment not found')
+            self.json_error(404, 'Assignment not found')
         return assignment
 
     def find_course_instructor(self, course, instructor_id):
@@ -143,7 +174,7 @@ class MyHelpers:
             User.id == instructor_id,
             User.teaching.contains(course)).one_or_none()
         if instructor is None:
-            self.json_error('Instructor not found')
+            self.json_error(404, 'Instructor not found')
         return instructor
 
     def find_course_student(self, course, student_id):
@@ -152,7 +183,7 @@ class MyHelpers:
             User.id == student_id,
             User.taking.contains(course)).one_or_none()
         if student is None:
-            self.json_error('Student not found')
+            self.json_error(404, 'Student not found')
         return student
 
     def find_course_user(self, course, user_id):
@@ -162,7 +193,7 @@ class MyHelpers:
             or_(User.taking.contains(course),
                 User.teaching.contains(course))).one_or_none()
         if user is None:
-            self.json_error('Student not found')
+            self.json_error(404, 'Student not found')
         return user
 
     def find_student_submissions(self, assignment, student):
@@ -176,7 +207,7 @@ class MyHelpers:
         submission = self.find_student_submissions(assignment, student) \
                     .order_by(Submission.timestamp.desc()).first()
         if submission is None:
-            self.json_error('Submission not found')
+            self.json_error(404, 'Submission not found')
         return submission
 
     def find_student_submission(self, assignment, student, timestamp):
@@ -184,7 +215,7 @@ class MyHelpers:
         submission = self.find_student_submissions(assignment, student).filter(
             Submission.timestamp == timestamp).one_or_none()
         if submission is None:
-            self.json_error('Submission not found')
+            self.json_error(404, 'Submission not found')
         return submission
 
     # User management
@@ -239,7 +270,7 @@ class MyHelpers:
             msg = 'Permission denied'
             if self.application.debug:
                 msg += ' (not course instructor)'
-            self.json_error(msg)
+            self.json_error(403, msg)
 
     def check_course_user(self, course):
         'Assert user is a student or an instructor in the course'
@@ -248,7 +279,7 @@ class MyHelpers:
             msg = 'Permission denied'
             if self.application.debug:
                 msg += ' (not related to course)'
-            self.json_error(msg)
+            self.json_error(403, msg)
 
 class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
     'Custom request handler for ngshare'
@@ -260,9 +291,10 @@ class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
             resp['message'] = msg
         raise Finish(json.dumps(resp))
 
-    def json_error(self, msg, **kwargs):
+    def json_error(self, code, msg, **kwargs):
         'Return error as a JSON object'
         assert 'success' not in kwargs and 'message' not in kwargs
+        self.set_status(code)
         raise Finish(json.dumps({'success': False, 'message': msg, **kwargs}))
 
     def prepare(self):
@@ -312,7 +344,7 @@ class AddCourse(MyRequestHandler):
     def post(self, course_id):
         'Add a course (anyone)'
         if self.db.query(Course).filter(Course.id == course_id).one_or_none():
-            self.json_error('Course already exists')
+            self.json_error(409, 'Course already exists')
         course = Course(course_id, self.user)
         self.db.add(course)
         self.db.commit()
@@ -328,13 +360,13 @@ class ManageInstructor(MyRequestHandler):
         instructor = self.find_or_create_user(instructor_id)
         first_name = self.get_argument('first_name', None)
         if first_name is None:
-            self.json_error('Please supply first name')
+            self.json_error(400, 'Please supply first name')
         last_name = self.get_argument('last_name', None)
         if last_name is None:
-            self.json_error('Please supply last name')
+            self.json_error(400, 'Please supply last name')
         email = self.get_argument('email', None)
         if email is None:
-            self.json_error('Please supply email')
+            self.json_error(400, 'Please supply email')
         if instructor in course.students:
             course.students.remove(instructor)
         if instructor not in course.instructors:
@@ -362,7 +394,7 @@ class ManageInstructor(MyRequestHandler):
         self.check_course_instructor(course)
         instructor = self.find_course_instructor(course, instructor_id)
         if len(course.instructors) <= 1:
-            self.json_error('Cannot remove last instructor')
+            self.json_error(409, 'Cannot remove last instructor')
         course.instructors.remove(instructor)
         self.db.commit()
         self.json_success()
@@ -389,16 +421,16 @@ class ManageStudent(MyRequestHandler):
         student = self.find_or_create_user(student_id)
         first_name = self.get_argument('first_name', None)
         if first_name is None:
-            self.json_error('Please supply first name')
+            self.json_error(400, 'Please supply first name')
         last_name = self.get_argument('last_name', None)
         if last_name is None:
-            self.json_error('Please supply last name')
+            self.json_error(400, 'Please supply last name')
         email = self.get_argument('email', None)
         if email is None:
-            self.json_error('Please supply email')
+            self.json_error(400, 'Please supply email')
         if student in course.instructors:
             if len(course.instructors) <= 1:
-                self.json_error('Cannot remove last instructor')
+                self.json_error(409, 'Cannot remove last instructor')
             course.instructors.remove(student)
         if student not in course.students:
             course.students.append(student)
@@ -434,6 +466,13 @@ class ManageStudent(MyRequestHandler):
 
 class ListStudents(MyRequestHandler):
     '/api/students/<course_id>/'
+    @authenticated
+    def post(self, course_id):
+        'Add or update students. (instructors only)'
+        course = self.find_course(course_id)
+        self.check_course_instructor(course)
+
+
     @authenticated
     def get(self, course_id):
         'Get information about all course students. (instructors only)'
@@ -472,7 +511,7 @@ class DownloadReleaseAssignment(MyRequestHandler):
         if self.db.query(Assignment).filter(
                 Assignment.id == assignment_id,
                 Assignment.course == course).one_or_none():
-            self.json_error('Assignment already exists')
+            self.json_error(409, 'Assignment already exists')
         assignment = Assignment(assignment_id, course)
         files = self.get_argument('files', None)
         self.json_files_unpack(files, assignment.files)
@@ -577,7 +616,7 @@ class UploadDownloadFeedback(MyRequestHandler):
         try:
             timestamp = self.strptime(self.get_body_argument('timestamp'))
         except MissingArgumentError:
-            self.json_error('Please supply timestamp')
+            self.json_error(400, 'Please supply timestamp')
         submission = self.find_student_submission(assignment, student,
                                                   timestamp)
         for file_obj in submission.feedbacks:
@@ -602,7 +641,7 @@ class UploadDownloadFeedback(MyRequestHandler):
         try:
             timestamp = self.strptime(self.get_query_argument('timestamp'))
         except MissingArgumentError:
-            self.json_error('Please supply timestamp')
+            self.json_error(400, 'Please supply timestamp')
         submission = self.find_student_submission(assignment, student,
                                                   timestamp)
         list_only = self.get_argument('list_only', 'false') == 'true'
@@ -617,13 +656,13 @@ class InitDatabase(MyRequestHandler):
         'Initialize database similar to in vserver'
         # Dangerous: do not use in production
         if not self.application.debug:
-            self.json_error('Debug mode is off')
+            self.json_error(403, 'Debug mode is off')
         action = self.get_argument('action', None)
         if action == 'clear':
-            clear_db(self.db)
+            clear_db(self.db, self.application.storage_path)
             self.json_success('done')
         elif action == 'init':
-            init_db(self.db)
+            init_db(self.db, self.application.storage_path)
             self.json_success('done')
         elif action == 'dump':
             result = dump_db(self.db)
@@ -645,7 +684,7 @@ class InitDatabase(MyRequestHandler):
                 })
             self.render('dump.html', tables=ans)
         else:
-            self.json_error('action should be clear, init, or dump')
+            self.json_error(400, 'action should be clear, init, or dump')
 
 class NotFoundHandler(RequestHandler):
     '404 handler'
@@ -659,7 +698,8 @@ class NotFoundHandler(RequestHandler):
 
 class MyApplication(Application):
     'Custom application for ngshare'
-    def __init__(self, prefix, db_url, debug=False, autoreload=True):
+    def __init__(self, prefix, db_url, storage_path, debug=False,
+                 autoreload=True):
         handlers = [
             (prefix, HomePage),
             (prefix + r'(favicon\.ico)', Static),
@@ -690,6 +730,7 @@ class MyApplication(Application):
         Base.metadata.bind = engine
         Base.metadata.create_all(engine)
         self.db_session = sessionmaker(bind=engine)
+        self.storage_path = storage_path
         self.debug = debug
         self.vngshare = False
 
@@ -703,13 +744,13 @@ def main():
     parser.add_argument('--database', help='database url',
                         default='sqlite:////srv/ngshare/ngshare.db')
     parser.add_argument('--storage', help='path to store files',
-                        default='/tmp/ngshare/')
+                        default='/srv/ngshare/files/')
     args = parser.parse_args()
     if args.jupyterhub_api_url is not None:
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
 
     prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
-    app = MyApplication(prefix, args.database, debug=args.debug)
+    app = MyApplication(prefix, args.database, args.storage, debug=args.debug)
 
     http_server = HTTPServer(app)
     url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])

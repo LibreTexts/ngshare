@@ -2,6 +2,10 @@
     Test database structure and some properties of SQLAlchemy
 '''
 
+import os
+import shutil
+import tempfile
+
 from collections import defaultdict
 
 from sqlalchemy import create_engine
@@ -14,13 +18,14 @@ from sqlalchemy.orm import sessionmaker
 # pylint: disable=wildcard-import
 
 Session = None
+test_storage = None
 
 try:
     from .database import *
 except ImportError:
     from database import *
 
-def clear_db(db):
+def clear_db(db, storage_path):
     'Remove all data from database'
     db.query(User).delete()
     db.query(Course).delete()
@@ -36,8 +41,10 @@ def clear_db(db):
         ]:
         db.execute('DELETE FROM %s' % table_name)
     db.commit()
+    if storage_path is not None:
+        shutil.rmtree(storage_path, ignore_errors=True)
 
-def init_db(db):
+def init_db(db, storage_path):
     '''
         Create testing data
         course1
@@ -70,12 +77,17 @@ def init_db(db):
     s1.timestamp = datetime.datetime(2020, 1, 1, 0, 0, 0, 0)
     db.add(s1)
     db.add(s2)
-    aa.files.append(File('file0', b'00000'))
-    ab.files.append(File('file1', b'11111'))
-    ac.files.append(File('file2', b'22222'))
-    s1.files.append(File('file3', b'33333'))
-    s2.files.append(File('file4', b'44444'))
-    s1.feedbacks.append(File('file5', b'55555'))
+    aa.files.append(File('file0', b'00000', 'actual0'))
+    ab.files.append(File('file1', b'11111', 'actual1'))
+    ac.files.append(File('file2', b'22222', 'actual2'))
+    s1.files.append(File('file3', b'33333', 'actual3'))
+    s2.files.append(File('file4', b'44444', 'actual4'))
+    s1.feedbacks.append(File('file5', b'55555', 'actual5'))
+    os.makedirs(storage_path, exist_ok=True)
+    for i in range(6):
+        f = open(os.path.join(storage_path, 'actual%d' % i), 'wb')
+        f.write((b'%d' % i) * 5)
+        f.close()
     db.commit()
 
 def dump_db(db):
@@ -139,8 +151,10 @@ def test_legacy():
 
 def test_init():
     'Test clearing database and fill in default test data'
+    global test_storage
+    test_storage = tempfile.mkdtemp()
     db = Session()
-    clear_db(db)
+    clear_db(db, None)
     assert not db.query(assignment_files_assoc_table).all()
     assert not db.query(submission_files_assoc_table).all()
     assert not db.query(feedback_files_assoc_table).all()
@@ -151,7 +165,7 @@ def test_init():
     assert not db.query(File).all()
     assert not db.query(InstructorAssociation).all()
     assert not db.query(StudentAssociation).all()
-    init_db(db)
+    init_db(db, test_storage)
     assert len(db.query(User).all()) == 4
     assert len(db.query(Course).all()) == 2
     assert len(db.query(Assignment).all()) == 3
@@ -245,3 +259,8 @@ def test_student_association():
     assert association.first_name == 'Lawrence.first_name'
     assert association.last_name == 'Lawrence.last_name'
     assert association.email == 'Lawrence.email'
+
+def test_clean():
+    'Clean test space'
+    db = Session()
+    clear_db(db, test_storage)
