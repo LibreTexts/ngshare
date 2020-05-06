@@ -6,6 +6,7 @@ import csv
 import pwd
 import grp
 import subprocess
+import json
 
 # https://www.geeksforgeeks.org/print-colors-python-terminal/
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
@@ -210,6 +211,7 @@ def add_jh_student(course_id, student:User):
     # add as jhub user?
     
 def add_students(course_id, students_csv, jhub):
+    students = []
     with open(students_csv,'r') as f:
         csv_reader = csv.reader(f, delimiter=',')
         header = next(csv_reader)
@@ -227,6 +229,7 @@ def add_students(course_id, students_csv, jhub):
                 sys.exit(1)
             
         for i, row in enumerate(csv_reader):
+            student_dict = {}
             student_id = row[cols_dict['student_id']]
             if len(student_id.replace(' ', '')) == 0:
                 prRed('Student ID cannot be empty (row {})'.format(i + 1))
@@ -235,6 +238,11 @@ def add_students(course_id, students_csv, jhub):
             last_name = row[cols_dict['last_name']]
             email = row[cols_dict['email']]
 
+            student_dict['username'] = student_id 
+            student_dict['first_name'] = first_name
+            student_dict['last_name'] = last_name
+            student_dict['email'] = email
+            students.append(json.dumps(student_dict))
             student = User(student_id, first_name, last_name, email)
             add_student(course_id, student, jhub)
 
