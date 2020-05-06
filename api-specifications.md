@@ -328,15 +328,15 @@ If the request syntax is correct, will return 200 and report whether each
 students=[/* JSON object */
     {
         "username": "/* student 1 ID */",
-        "first_name": "/*student 1 first name*/",
-        "last_name": "/*student 1 last name",
-        "email": "/*student 1 email*/"
+        "first_name": "/* student 1 first name */",
+        "last_name": "/* student 1 last name */",
+        "email": "/* student 1 email */"
     },
     {
         "username": "/* student 2 ID */",
-        "first_name": "/*student 2 first name*/",
-        "last_name": "/*student 2 last name",
-        "email": "/*student 2 email*/"
+        "first_name": "/* student 2 first name */",
+        "last_name": "/* student 2 last name */",
+        "email": "/* student 2 email */"
     },
     ...
 ]
