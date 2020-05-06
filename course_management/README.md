@@ -1,4 +1,4 @@
-# ngshare Course management
+# ngshare Course Management
 ## Flags
 - `-c`, `--course_id` : A unique name for the course.
 - `-s`, `--student_id` : The ID given to a student.
