@@ -59,7 +59,8 @@ def ngshare_url():
     if 'PROXY_PUBLIC_SERVICE_HOST' in os.environ:
         return "http://proxy-public/services/ngshare"
     else:
-        return 'http://172.17.0.3:11111/api'
+        # replace this with correct URL if you are not using a kubernetes set up
+        return 'http://127.0.0.1:12121/api'
 
 def get_header():
     if 'JUPYTERHUB_API_TOKEN' in os.environ:
@@ -100,6 +101,8 @@ def run_as_user(user_name, cwd, *args):
 def check_status_code(response):
     if response.status_code != requests.codes.ok:
         prRed('ngshare returned an invalid status code {}'.format(response.status_code))
+        check_message(response)
+
 
 def check_message(response):
     response = response.json()
@@ -184,7 +187,7 @@ def create_jh_course(course_id):
         f.write("c.CourseDirectory.root = '{}'".format(course_root_dir))
 
     prGreen('Successfully created JupyterHub course {}.'.format(course_id))
-    # enable extensions for user? or is that done in setup?
+
 
 def add_student(course_id, student:User, jhub):
     # add student to ngshare
@@ -208,7 +211,6 @@ def add_jh_student(course_id, student:User):
 
     if ret  == 0:
         prGreen('Successfully added {} to nbgrader database'.format(student.id))
-    # add as jhub user?
     
 def add_students(course_id, students_csv, jhub):
     students = []
@@ -216,7 +218,6 @@ def add_students(course_id, students_csv, jhub):
         csv_reader = csv.reader(f, delimiter=',')
         header = next(csv_reader)
 
-        # TODO if you want to add them to jupyterhub also need the password
         required_cols = ['student_id', 'first_name', 'last_name', 'email']
 
         cols_dict = dict()
@@ -242,9 +243,28 @@ def add_students(course_id, students_csv, jhub):
             student_dict['first_name'] = first_name
             student_dict['last_name'] = last_name
             student_dict['email'] = email
-            students.append(json.dumps(student_dict))
+            students.append(student_dict)
             student = User(student_id, first_name, last_name, email)
-            add_student(course_id, student, jhub)
+            if jhub:
+                add_jh_student(course_id, student)
+
+    url = '{}/students/{}'.format(ngshare_url(), course_id)
+    data = {'user': get_username(), 'students': json.dumps(students)}
+
+    response = post(url, data)
+
+    if response is None:
+        prRed('An error occurred while trying to add students to the course {}'.format(course_id))
+        return None
+    else:
+
+        if response['success']:
+            for s in response['status']:
+                user = s['username']
+                if s['success']:
+                    prGreen('{} was sucessfuly added to {}'.format(user, course_id))
+                else:
+                    prRed('There was an error adding {} to {}: {}'.format(user, course_id, s['message']))
 
 def remove_student(course_id, student_id):
     url = '{}/student/{}/{}'.format(ngshare_url(), course_id, student_id)
