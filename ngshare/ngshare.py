@@ -29,6 +29,11 @@ from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 
 try:
+    from . import dbutil
+except ImportError:
+    import dbutil
+
+try:
     from .database import (Base, User, Course, Assignment, Submission, File,
                            InstructorAssociation, StudentAssociation, clear_db,
                            init_db, dump_db)
@@ -833,9 +838,14 @@ def main():
                         default='/srv/ngshare/files/')
     parser.add_argument('--root', help='root user ids (comma splitted)',
                         default='root')
+    parser.add_argument('--upgrade-db', help='automatically upgrade database',
+                        action='store_true')
     args = parser.parse_args()
     if args.jupyterhub_api_url is not None:
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
+
+    if args.upgrade_db:
+        dbutil.upgrade(args.database)
 
     prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
     app = MyApplication(prefix, args.database, args.storage,

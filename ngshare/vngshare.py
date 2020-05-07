@@ -7,6 +7,7 @@
 # pylint: disable=function-redefined
 # pylint: disable=invalid-name
 # pylint: disable=no-member
+# pylint: disable=undefined-variable
 # pylint: disable=unused-wildcard-import
 # pylint: disable=wildcard-import
 
@@ -42,7 +43,12 @@ def main():
                         default='/tmp/ngshare/')
     parser.add_argument('--root', help='root user ids (comma splitted)',
                         default='root')
+    parser.add_argument('--upgrade-db', help='automatically upgrade database',
+                        action='store_true')
     args = parser.parse_args()
+
+    if args.upgrade_db:
+        dbutil.upgrade(args.database)
 
     app = MyApplication(args.prefix, args.database, args.storage,
                         root=args.root.split(','), debug=not args.no_debug)

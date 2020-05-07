@@ -255,10 +255,16 @@ ngshare uses [Alembic](https://alembic.sqlalchemy.org/) to manage database
 
 For development, first install ngshare as a repo using
  `pip3 install . --user --upgrade`, then initialize the database using
- `alembic upgrade head` (the path to database is defined in `alembic.ini`,
- which is `sqlite:////tmp/ngshare.db` by default).
+ `python3 dbutil.py upgrade head` (the path to database is defined in
+ `dbutil.py`, which is `sqlite:////tmp/ngshare.db` by default).
 
 After changing database structure, use `pip3 install . --user --upgrade` and
- then `alembic revision --autogenerate -m "message"` to automatically detect
- changes, then `alembic upgrade head` to upgrade database structures.
+ then `python3 dbutil.py revision --autogenerate -m "message"` to automatically
+ detect changes, then `python3 dbutil.py upgrade head` to upgrade database
+ structures.
+
+If you want ngshare / vngshare to auto check db upgrade each time it starts up
+ (e.g. for configuration convenience), you can add the `--upgrade-db` option.
+ In this case, please have a good way to backup your database before running
+ ngshare / vngshare.
 
