@@ -14,7 +14,7 @@ Click [here](#installation-and-setup) for installation instructions.
  setup of JupyterHub like in Kubernetes, because the file systems exchange uses
  are not connected between containers. 
 
-To solve this problem, we are letting exchange to gather all infromation it
+To solve this problem, we are letting exchange to gather all information it
  needs from a set of REST APIs, which is implemented by ngshare. This server
  will be a JupyterHub managed service.
 
