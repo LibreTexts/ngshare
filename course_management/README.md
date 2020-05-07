@@ -9,7 +9,7 @@
 - `--students_csv` : csv file containing a list of students to add. See `students.csv` as an example. 
 ---
 ### Create a course
-User creating course must be `root`.
+User creating course must be *root*.
 ```
 $ python3 ngshare_management.py create_course --course_id=math101
 ```
