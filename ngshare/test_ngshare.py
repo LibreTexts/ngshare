@@ -86,7 +86,7 @@ def test_start_server():
     db_file = tempfile.mktemp(suffix='.db', prefix='/tmp/')
     storage_path = tempfile.mkdtemp()
     cmd = ['python3', os.path.join(pwd, 'vngshare.py'), '--port', str(port),
-           '--database', 'sqlite:///' + db_file]
+           '--database', 'sqlite:///' + db_file, '--admins', 'root']
     print(cmd)
     server_proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     time.sleep(2)

@@ -42,7 +42,7 @@ def main():
     parser.add_argument('--storage', help='path to store files',
                         default='/tmp/ngshare/')
     parser.add_argument('--admins', help='admin user ids (comma splitted)',
-                        default='root')
+                        default='')
     parser.add_argument('--upgrade-db', help='automatically upgrade database',
                         action='store_true')
     args = parser.parse_args()
