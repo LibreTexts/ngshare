@@ -266,9 +266,9 @@ class MyHelpers:
 
     # Auth APIs
 
-    def is_root(self):
-        'Return whether user is root user'
-        return self.user.id in self.application.root
+    def is_admin(self):
+        'Return whether user is admin user'
+        return self.user.id in self.application.admin
 
     def is_course_student(self, course, user):
         'Return whether user is a student in the course'
@@ -278,17 +278,17 @@ class MyHelpers:
         'Return whether user is an instructor in the course'
         return course in user.teaching
 
-    def check_root(self):
-        'Assert user is root user'
-        if not self.is_root():
+    def check_admin(self):
+        'Assert user is admin user'
+        if not self.is_admin():
             msg = 'Permission denied'
             if self.application.debug:
-                msg += ' (not root)'
+                msg += ' (not admin)'
             self.json_error(403, msg)
 
     def check_course_instructor(self, course):
-        'Assert user is an instructor in the course, or root'
-        if not self.is_root() and \
+        'Assert user is an instructor in the course, or admin'
+        if not self.is_admin() and \
             not self.is_course_instructor(course, self.user):
             msg = 'Permission denied'
             if self.application.debug:
@@ -296,8 +296,8 @@ class MyHelpers:
             self.json_error(403, msg)
 
     def check_course_user(self, course):
-        'Assert user is a student or an instructor in the course, or root'
-        if not self.is_root() and \
+        'Assert user is a student or an instructor in the course, or admin'
+        if not self.is_admin() and \
             not self.is_course_instructor(course, self.user) and \
             not self.is_course_student(course, self.user):
             msg = 'Permission denied'
@@ -338,8 +338,8 @@ class HomePage(MyRequestHandler):
     @authenticated
     def get(self):
         'Display an HTML page for debugging'
-        self.render('home.html', debug=self.application.debug or self.is_root(),
-                    vngshare=self.application.vngshare)
+        self.render('home.html', vngshare=self.application.vngshare,
+                    debug=self.application.debug or self.is_admin())
 
 class Static(MyRequestHandler):
     '/api/favicon.ico, /api/masonry.min.js'
@@ -356,10 +356,10 @@ class ListCourses(MyRequestHandler):
     def get(self):
         '''
             List all available courses the user is taking or teaching. (anyone)
-            List all courses in ngshare. (root)
+            List all courses in ngshare. (admin)
         '''
         courses = set()
-        if self.is_root():
+        if self.is_admin():
             for i in self.db.query(Course).all():
                 courses.add(i.id)
         else:
@@ -373,8 +373,8 @@ class AddCourse(MyRequestHandler):
     '/api/course/<course_id>'
     @authenticated
     def post(self, course_id):
-        'Add a course (root)'
-        self.check_root()
+        'Add a course (admin)'
+        self.check_admin()
         if self.db.query(Course).filter(Course.id == course_id).one_or_none():
             self.json_error(409, 'Course already exists')
         course = Course(course_id, self.user)
@@ -384,8 +384,8 @@ class AddCourse(MyRequestHandler):
 
     @authenticated
     def delete(self, course_id):
-        'Remove a course (root)'
-        self.check_root()
+        'Remove a course (admin)'
+        self.check_admin()
         course = self.find_course(course_id)
         course.delete(self.db)
         self.db.commit()
@@ -396,7 +396,7 @@ class ManageInstructor(MyRequestHandler):
     @authenticated
     def post(self, course_id, instructor_id):
         '''
-            Add or update a course instructor. (root)
+            Add or update a course instructor. (admin)
             Update self full name or email. (instructors)
         '''
         course = self.find_course(course_id)
@@ -412,16 +412,16 @@ class ManageInstructor(MyRequestHandler):
         if email is None:
             self.json_error(400, 'Please supply email')
         if instructor in course.students:
-            if not self.is_root():
+            if not self.is_admin():
                 self.json_error(400, 'Permission denied'
                                 ' (cannot modify instructors)')
             course.students.remove(instructor)
         if instructor not in course.instructors:
-            if not self.is_root():
+            if not self.is_admin():
                 self.json_error(400, 'Permission denied'
                                 ' (cannot modify instructors)')
             course.instructors.append(instructor)
-        if not self.is_root() and instructor.id != self.user.id:
+        if not self.is_admin() and instructor.id != self.user.id:
             self.json_error(400, 'Permission denied'
                             ' (cannot modify other instructors)')
         association = InstructorAssociation.find(self.db, instructor, course)
@@ -442,8 +442,8 @@ class ManageInstructor(MyRequestHandler):
 
     @authenticated
     def delete(self, course_id, instructor_id):
-        'Remove a course instructor (root)'
-        self.check_root()
+        'Remove a course instructor (admin)'
+        self.check_admin()
         course = self.find_course(course_id)
         instructor = self.find_course_instructor(course, instructor_id)
         course.instructors.remove(instructor)
@@ -747,7 +747,7 @@ class InitDatabase(MyRequestHandler):
         # Dangerous: do not use in production
         action = self.get_argument('action', None)
         if not self.application.debug:
-            if not self.is_root() or action != 'dump':
+            if not self.is_admin() or action != 'dump':
                 self.json_error(403, 'Debug mode is off')
         if action == 'clear':
             clear_db(self.db, self.application.storage_path)
@@ -790,7 +790,7 @@ class NotFoundHandler(RequestHandler):
 class MyApplication(Application):
     'Custom application for ngshare'
     def __init__(self, prefix, db_url, storage_path, debug=False,
-                 root=(), autoreload=True):
+                 admin=(), autoreload=True):
         handlers = [
             (prefix, HomePage),
             (prefix + r'(favicon\.ico)', Static),
@@ -823,7 +823,7 @@ class MyApplication(Application):
         self.storage_path = storage_path
         self.debug = debug
         self.vngshare = False
-        self.root = root
+        self.admin = admin
 
 def main():
     'Main function'
@@ -836,7 +836,7 @@ def main():
                         default='sqlite:////srv/ngshare/ngshare.db')
     parser.add_argument('--storage', help='path to store files',
                         default='/srv/ngshare/files/')
-    parser.add_argument('--root', help='root user ids (comma splitted)',
+    parser.add_argument('--admins', help='admin user ids (comma splitted)',
                         default='root')
     parser.add_argument('--upgrade-db', help='automatically upgrade database',
                         action='store_true')
@@ -849,7 +849,7 @@ def main():
 
     prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
     app = MyApplication(prefix, args.database, args.storage,
-                        root=args.root.split(','), debug=args.debug)
+                        admin=args.admins.split(','), debug=args.debug)
 
     http_server = HTTPServer(app)
     url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])

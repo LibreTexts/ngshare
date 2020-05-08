@@ -121,7 +121,7 @@ def test_add_course():
     global user
     user = 'eric'
     assert_fail(url + 'course3', method=POST,
-                msg='Permission denied (not root)')
+                msg='Permission denied (not admin)')
     user = 'root'
     assert_success(url + 'course3', method=POST)
     assert_fail(url + 'course3', method=POST, msg='Course already exists')
@@ -214,7 +214,7 @@ def test_delete_instructor():
     url = '/api/instructor/'
     global user
     assert_fail(url + 'course2/lawrence', method=DELETE,
-                msg='Permission denied (not root)')
+                msg='Permission denied (not admin)')
     user = 'root'
     assert_fail(url + 'course9/lawrence', method=DELETE, msg='Course not found')
     assert_fail(url + 'course2/eric', method=DELETE, msg='Instructor not found')
@@ -710,7 +710,7 @@ def test_remove_course():
     global user
     user = 'kevin'
     assert_fail(url + 'course1', method=DELETE,
-                msg='Permission denied (not root)')
+                msg='Permission denied (not admin)')
     user = 'root'
     assert_success(url + 'course1', method=DELETE)
     assert_success(url + 'course2', method=DELETE)

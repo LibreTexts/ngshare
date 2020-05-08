@@ -41,7 +41,7 @@ def main():
     parser.add_argument('--port', help='bind port', type=int, default=12121)
     parser.add_argument('--storage', help='path to store files',
                         default='/tmp/ngshare/')
-    parser.add_argument('--root', help='root user ids (comma splitted)',
+    parser.add_argument('--admins', help='admin user ids (comma splitted)',
                         default='root')
     parser.add_argument('--upgrade-db', help='automatically upgrade database',
                         action='store_true')
@@ -51,7 +51,7 @@ def main():
         dbutil.upgrade(args.database)
 
     app = MyApplication(args.prefix, args.database, args.storage,
-                        root=args.root.split(','), debug=not args.no_debug)
+                        admin=args.admins.split(','), debug=not args.no_debug)
     app.vngshare = True
 
     http_server = HTTPServer(app)
@@ -61,7 +61,7 @@ def main():
     print('Starting vngshare (Vserver-like Notebook Grader Share)')
     print('Database file is %s' % repr(args.database))
     print('Storage directory is %s' % repr(args.storage))
-    print('Root users are %s' % repr(app.root))
+    print('admin users are %s' % repr(app.admin))
     print('Please go to http://%s:%d/api/' % (args.host, args.port))
     IOLoop.current().start()
 
