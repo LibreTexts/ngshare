@@ -6,10 +6,11 @@ import os
 import sys
 import tempfile
 import shutil
+import _io
 
 from contextlib import contextmanager
 from subprocess import check_call
-from typing import Iterator
+from typing import Iterator, Tuple
 
 _here = os.path.abspath(os.path.dirname(__file__))
 
@@ -18,7 +19,7 @@ ALEMBIC_DIR = os.path.join(_here, 'alembic')
 
 DEFAULT_DB = 'sqlite:////tmp/ngshare.db'
 
-def write_alembic_ini(alembic_ini: str = 'alembic.ini', db_url: str = DEFAULT_DB) -> None:
+def write_alembic_ini(file_obj: _io.BufferedRandom, db_url: str = DEFAULT_DB) -> None:
     """Write a complete alembic.ini from our template.
     Parameters
     ----------
@@ -30,17 +31,16 @@ def write_alembic_ini(alembic_ini: str = 'alembic.ini', db_url: str = DEFAULT_DB
     with open(ALEMBIC_INI_TEMPLATE_PATH) as f:
         alembic_ini_tpl = f.read()
 
-    with open(alembic_ini, 'w') as f:
-        f.write(
-            alembic_ini_tpl.format(
-                alembic_dir=ALEMBIC_DIR,
-                db_url=db_url,
-            )
-        )
+    file_obj.write(
+        alembic_ini_tpl.format(
+            alembic_dir=ALEMBIC_DIR,
+            db_url=db_url,
+        ).encode()
+    )
 
 
 @contextmanager
-def _temp_alembic_ini(db_url: str) -> Iterator[str]:
+def _temp_alembic_ini(db_url: str) -> Iterator[Tuple[str, int]]:
     """Context manager for temporary JupyterHub alembic directory
     Temporarily write an alembic.ini file for use with alembic migration scripts.
     Context manager yields alembic.ini path.
@@ -54,13 +54,14 @@ def _temp_alembic_ini(db_url: str) -> Iterator[str]:
         The path to the temporary alembic.ini that we have created.
         This file will be cleaned up on exit from the context manager.
     """
-    td = tempfile.mkdtemp()
+    tf = tempfile.TemporaryFile()
     try:
-        alembic_ini = os.path.join(td, 'alembic.ini')
-        write_alembic_ini(alembic_ini, db_url)
-        yield alembic_ini
+        write_alembic_ini(tf, db_url)
+        tf.seek(0, 0)
+        fd = tf.fileno()
+        yield '/dev/fd/%d' % fd, fd
     finally:
-        shutil.rmtree(td)
+        tf.close()
 
 
 def upgrade(db_url, revision='head'):
@@ -70,17 +71,19 @@ def upgrade(db_url, revision='head'):
     revision: str [default: head]
         The alembic revision to upgrade to.
     """
-    with _temp_alembic_ini(db_url) as alembic_ini:
+    with _temp_alembic_ini(db_url) as (alembic_ini, fd):
         check_call(
-            ['alembic', '-c', alembic_ini, 'upgrade', revision]
+            ['alembic', '-c', alembic_ini, 'upgrade', revision],
+            pass_fds=(fd,)
         )
 
 
 def _alembic(*args):
     """Run an alembic command with a temporary alembic.ini"""
-    with _temp_alembic_ini(DEFAULT_DB) as alembic_ini:
+    with _temp_alembic_ini(DEFAULT_DB) as (alembic_ini, fd):
         check_call(
-            ['alembic', '-c', alembic_ini] + list(args)
+            ['alembic', '-c', alembic_ini] + list(args),
+            pass_fds=(fd,)
         )
 
 
