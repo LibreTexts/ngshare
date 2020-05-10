@@ -2,21 +2,32 @@
     Tests for ngshare APIs
 '''
 
-import pytest
 import json
+import pytest
+from urllib.parse import urlencode
 from tornado.httputil import url_concat
 
 from .vngshare import MyApplication
 
+# pylint: disable=comparison-with-callable
+# pylint: disable=global-statement
+# pylint: disable=invalid-name
+# pylint: disable=len-as-condition
+# pylint: disable=singleton-comparison
+
+user, hc, bu = None, None, None
+
 @pytest.fixture
 def app():
-    app = MyApplication('/api/', 'sqlite:////tmp/ngshare.db', '/tmp/ngshare/',
-                        admin=['root'], debug=True)
-    app.vngshare = True
-    return app
+    'Create Tornado application for testing'
+    application = MyApplication(
+        '/api/', 'sqlite:////tmp/ngshare.db', '/tmp/ngshare/', admin=['root'],
+        debug=True)
+    application.vngshare = True
+    return application
 
-def assert_success(url, data=None, params=None, method='GET'):
-    'Assert requesting a page is success'
+def assert_fail(url, data=None, params=None, method='GET', msg=None):
+    'Assert requesting a page is failing (with matching message)'
     global hc, bu, user
     if user is not None:
         if method == 'GET':
@@ -25,52 +36,89 @@ def assert_success(url, data=None, params=None, method='GET'):
         else:
             data = data if data is not None else {}
             data['user'] = user
-    response = yield hc.fetch(bu + url_concat(url, params))
+    actual_url = bu + url_concat(url, params)
+    if method != 'POST':
+        body = None
+    else:
+        body = urlencode(data)
+    response = yield hc.fetch(actual_url, method=method, body=body,
+                              raise_error=False)
+    assert response.code in range(400, 500)
+    resp = json.loads(response.body)
+    assert resp['message'] == msg
+    return resp
+
+def assert_success(url, data=None, params=None, method='GET'):
+    'Assert requesting a page is success'
+    global hc, bu, user
+    if user is not None:
+        if method != 'POST':
+            params = params if params is not None else {}
+            params['user'] = user
+        else:
+            data = data if data is not None else {}
+            data['user'] = user
+    actual_url = bu + url_concat(url, params)
+    if method != 'POST':
+        body = None
+    else:
+        body = urlencode(data)
+    response = yield hc.fetch(actual_url, method=method, body=body)
     assert response.code == 200
     resp = json.loads(response.body)
     assert resp['success'] == True
     return resp
 
 @pytest.mark.gen_test
-def test_hello_world(http_client, base_url):
-    global hc, bu, user
-    hc = http_client
-    bu = base_url
-    user = 'kevin'
-    assert (yield from assert_success('/api/courses'))['courses'] == ['course1']
-
-@pytest.mark.gen_test
 def test_init(http_client, base_url):
     'Clear database'
     url = '/api/initialize-Data6ase'
-    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'none',
-        'action': 'clear'}))
-    assert r.code == 200
-    assert json.loads(r.body)['message'] == 'done'
-    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'none',
-        'action': 'init'}))
-    assert r.code == 200
-    assert json.loads(r.body)['message'] == 'done'
+    global hc, bu, user
+    hc, bu = http_client, base_url
+    user = 'none'
+    assert (yield from assert_success(
+        url, params={'action': 'clear'}))['message'] == 'done'
+    assert (yield from assert_success(
+        url, params={'action': 'init'}))['message'] == 'done'
 
 @pytest.mark.gen_test
 def test_list_courses(http_client, base_url):
     'Test GET /api/courses'
     url = '/api/courses'
-    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'kevin'}))
-    assert r.code == 200
-    assert json.loads(r.body)['courses'] == ['course1']
-    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'abigail'}))
-    assert r.code == 200
-    assert json.loads(r.body)['courses'] == ['course2']
-    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'lawrence'}))
-    assert r.code == 200
-    assert json.loads(r.body)['courses'] == ['course1']
-    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'eric'}))
-    assert r.code == 200
-    assert json.loads(r.body)['courses'] == ['course2']
-    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'root'}))
-    assert r.code == 200
-    assert json.loads(r.body)['courses'] == ['course1', 'course2']
+    global hc, bu, user
+    hc, bu = http_client, base_url
+    user = 'kevin'
+    assert (yield from assert_success(url))['courses'] == ['course1']
+    user = 'abigail'
+    assert (yield from assert_success(url))['courses'] == ['course2']
+    user = 'lawrence'
+    assert (yield from assert_success(url))['courses'] == ['course1']
+    user = 'eric'
+    assert (yield from assert_success(url))['courses'] == ['course2']
+    user = 'root'
+    assert (yield from assert_success(url))['courses'] == ['course1', 'course2']
+
+@pytest.mark.gen_test
+def test_add_course(http_client, base_url):
+    'Test POST /api/course/<course_id>'
+    url = '/api/course/'
+    global hc, bu, user
+    hc, bu = http_client, base_url
+    user = 'eric'
+    yield from assert_fail(url + 'course3', method='POST',
+                msg='Permission denied (not admin)')
+    user = 'root'
+    (yield from assert_success(url + 'course3', method='POST'))
+    yield from assert_fail(url + 'course3', method='POST', 
+                msg='Course already exists')
+    # change owner to eric
+    yield from assert_success('/api/instructor/course3/eric', method='POST',
+                   data={'first_name': '', 'last_name': '', 'email': ''})
+    assert (yield from assert_success('/api/courses'))['courses'] == \
+           ['course1', 'course2', 'course3']
+    yield from assert_success('/api/instructor/course3/root', method='DELETE')
+    user = 'eric'
+    assert (yield from assert_success('/api/courses'))['courses'] == ['course2', 'course3']
 
 """
 import os
