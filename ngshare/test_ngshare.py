@@ -605,7 +605,7 @@ def test_download_submission(http_client, base_url):
     result = yield from assert_success('/api/submissions/course1/challenge/lawrence')
     timestamp = sorted(map(lambda x: x['timestamp'], result['submissions']))[0]
     result = yield from assert_success(url + 'course1/challenge/lawrence',
-                            {'timestamp': timestamp})
+                            params={'timestamp': timestamp})
     files = result['files']
     assert len(files) == 1
     file_obj = next(filter(lambda x: x['path'] == 'file3', files))
@@ -615,7 +615,7 @@ def test_download_submission(http_client, base_url):
     result = yield from assert_success('/api/submissions/course1/challenge/lawrence')
     timestamp = sorted(map(lambda x: x['timestamp'], result['submissions']))[0]
     result = yield from assert_success(url + 'course1/challenge/lawrence',
-                            {'timestamp': timestamp, 'list_only': 'true'})
+                            params={'timestamp': timestamp, 'list_only': 'true'})
     files = result['files']
     assert len(files) == 1
     file_obj = next(filter(lambda x: x['path'] == 'file3', files))
@@ -623,7 +623,7 @@ def test_download_submission(http_client, base_url):
     assert file_obj['checksum'] == hashlib.md5(b'33333').hexdigest()
     # Test timestamp not found
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f %Z')
-    yield from assert_fail(url + 'course1/challenge/lawrence', {'timestamp': timestamp},
+    yield from assert_fail(url + 'course1/challenge/lawrence', params={'timestamp': timestamp},
                 msg='Submission not found')
     # Test permission
     user = 'eric'
