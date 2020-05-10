@@ -15,11 +15,29 @@ def app():
     app.vngshare = True
     return app
 
+def assert_success(url, data=None, params=None, method='GET'):
+    'Assert requesting a page is success'
+    global hc, bu, user
+    if user is not None:
+        if method == 'GET':
+            params = params if params is not None else {}
+            params['user'] = user
+        else:
+            data = data if data is not None else {}
+            data['user'] = user
+    response = yield hc.fetch(bu + url_concat(url, params))
+    assert response.code == 200
+    resp = json.loads(response.body)
+    assert resp['success'] == True
+    return resp
+
 @pytest.mark.gen_test
 def test_hello_world(http_client, base_url):
-    response = yield http_client.fetch(base_url + '/api/courses?user=kevin')
-    print(response.code)
-    assert response.code == 200
+    global hc, bu, user
+    hc = http_client
+    bu = base_url
+    user = 'kevin'
+    assert (yield from assert_success('/api/courses'))['courses'] == ['course1']
 
 @pytest.mark.gen_test
 def test_init(http_client, base_url):
