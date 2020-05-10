@@ -781,6 +781,7 @@ class NotFoundHandler(RequestHandler):
     '404 handler'
     def get(self):
         'Disable 404 page'
+        self.set_status(404)
         self.write("<h1>404 Not Found</h1>\n")
         if not self.application.debug:
             return

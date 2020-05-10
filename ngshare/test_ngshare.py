@@ -2,6 +2,59 @@
     Tests for ngshare APIs
 '''
 
+import pytest
+import json
+from tornado.httputil import url_concat
+
+from .vngshare import MyApplication
+
+@pytest.fixture
+def app():
+    app = MyApplication('/api/', 'sqlite:////tmp/ngshare.db', '/tmp/ngshare/',
+                        admin=['root'], debug=True)
+    app.vngshare = True
+    return app
+
+@pytest.mark.gen_test
+def test_hello_world(http_client, base_url):
+    response = yield http_client.fetch(base_url + '/api/courses?user=kevin')
+    print(response.code)
+    assert response.code == 200
+
+@pytest.mark.gen_test
+def test_init(http_client, base_url):
+    'Clear database'
+    url = '/api/initialize-Data6ase'
+    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'none',
+        'action': 'clear'}))
+    assert r.code == 200
+    assert json.loads(r.body)['message'] == 'done'
+    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'none',
+        'action': 'init'}))
+    assert r.code == 200
+    assert json.loads(r.body)['message'] == 'done'
+
+@pytest.mark.gen_test
+def test_list_courses(http_client, base_url):
+    'Test GET /api/courses'
+    url = '/api/courses'
+    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'kevin'}))
+    assert r.code == 200
+    assert json.loads(r.body)['courses'] == ['course1']
+    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'abigail'}))
+    assert r.code == 200
+    assert json.loads(r.body)['courses'] == ['course2']
+    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'lawrence'}))
+    assert r.code == 200
+    assert json.loads(r.body)['courses'] == ['course1']
+    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'eric'}))
+    assert r.code == 200
+    assert json.loads(r.body)['courses'] == ['course2']
+    r = yield http_client.fetch(base_url + url_concat(url, {'user': 'root'}))
+    assert r.code == 200
+    assert json.loads(r.body)['courses'] == ['course1', 'course2']
+
+"""
 import os
 import sys
 import time
@@ -726,3 +779,4 @@ def test_stop_server():
     server_proc.kill()
     os.remove(db_file)
     shutil.rmtree(storage_path)
+"""
