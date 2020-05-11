@@ -3,9 +3,6 @@
 # Based on nbgrader.dbutil
 
 import os
-import sys
-import tempfile
-import shutil
 
 import alembic
 import alembic.command
