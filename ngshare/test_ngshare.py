@@ -6,8 +6,8 @@ import json
 import base64
 import hashlib
 import datetime
-import pytest
 from urllib.parse import urlencode
+import pytest
 from tornado.httputil import url_concat
 
 from .vngshare import MyApplication, MyHelpers
@@ -114,13 +114,13 @@ def test_add_course(http_client, base_url):
     yield from assert_success(url + 'course3', method='POST')
     assert (yield from assert_success('/api/instructors/course3'))['instructors'] == []
     yield from assert_success(url + 'course3', method='DELETE')
-    yield from assert_success(url + 'course3', params={'instructors': '["root"]'}, 
+    yield from assert_success(url + 'course3', params={'instructors': '["root"]'},
                     method='POST')
     assert (yield from assert_success('/api/instructors/course3'))['instructors'] == [{
         'username': 'root', 'first_name': None, 'last_name': None,
         'email': None,
     }]
-    yield from assert_fail(url + 'course3', method='POST', 
+    yield from assert_fail(url + 'course3', method='POST',
                 msg='Course already exists')
     # change owner to eric
     yield from assert_success('/api/instructor/course3/eric', method='POST',
@@ -595,7 +595,7 @@ def test_download_submission(http_client, base_url):
     result = yield from assert_success(url + 'course1/challenge/lawrence')
     files = result['files']
     assert len(files) == 1
-    file_obj = next(filter(lambda x: x['path'] == 'a', files))
+    file_obj = next(filter(lambda x: x['path'] == 'a', files), None)
     assert base64.b64decode(file_obj['content'].encode()) == b'jkl\n'
     assert file_obj['checksum'] == hashlib.md5(b'jkl\n').hexdigest()
     user = 'abigail'
@@ -616,7 +616,7 @@ def test_download_submission(http_client, base_url):
                             params={'timestamp': timestamp})
     files = result['files']
     assert len(files) == 1
-    file_obj = next(filter(lambda x: x['path'] == 'file3', files))
+    file_obj = next(filter(lambda x: x['path'] == 'file3', files), None)
     assert base64.b64decode(file_obj['content'].encode()) == b'33333'
     assert file_obj['checksum'] == hashlib.md5(b'33333').hexdigest()
     # Test timestamp with list_only
@@ -626,7 +626,7 @@ def test_download_submission(http_client, base_url):
                             params={'timestamp': timestamp, 'list_only': 'true'})
     files = result['files']
     assert len(files) == 1
-    file_obj = next(filter(lambda x: x['path'] == 'file3', files))
+    file_obj = next(filter(lambda x: x['path'] == 'file3', files), None)
     assert 'content' not in file_obj
     assert file_obj['checksum'] == hashlib.md5(b'33333').hexdigest()
     # Test timestamp not found
@@ -757,4 +757,3 @@ def test_remove_course(http_client, base_url):
     resp = yield from assert_success('/api/initialize-Data6ase', params={'action': 'dump'})
     # All other tables should be empty
     assert set(resp.keys()) == {'success', 'users'}
-
