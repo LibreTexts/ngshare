@@ -263,8 +263,8 @@ After changing database structure, use `pip3 install . --user --upgrade` and
  detect changes, then `python3 dbutil.py upgrade head` to upgrade database
  structures.
 
-If you want ngshare / vngshare to auto check db upgrade each time it starts up
- (e.g. for configuration convenience), you can add the `--upgrade-db` option.
- In this case, please have a good way to backup your database before running
- ngshare / vngshare.
+Ngshare / vngshare automatically checks database upgrade each time it starts up.
+ You are expected to have a good way to backup your database before running
+ ngshare / vngshare in case alembic corrupts the database. If you want to stop
+ this behavior you can use `--no-upgrade-db`.
 
