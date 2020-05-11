@@ -7,6 +7,7 @@
 - `-l`, `--last_name` : Last name of the user you are creating
 - `-e`, `--email` : Email of the user you are creating
 - `--students_csv` : csv file containing a list of students to add. See `students.csv` as an example. 
+- `--help` : See usage examples
 ---
 ### Create a course
 User creating course must be *root*.
@@ -28,7 +29,6 @@ $ python3 ngshare_management.py add_student -c math101 -s 12345 -f jane -l doe -
 first name, last name, and email are optional parameters.
 
 ### Add multiple students to a course
-
 ```
 $ python3 ngshare_management.py add_students --course_id=math101 --students_csv=math101Students.csv
 ```
