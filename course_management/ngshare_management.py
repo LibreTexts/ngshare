@@ -381,7 +381,7 @@ def execute_command(command, optlist):
     elif command == 'remove_instructor' and course_id and instructor_id:
         remove_instructor(course_id, instructor_id)
     else:
-        prRed('The command you entered was not recognized.Use the --help flag to see usage examples')
+        prRed('The command you entered was not recognized. Use the --help flag to see usage examples')
 
 
 def main(argv=None):
