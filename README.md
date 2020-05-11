@@ -266,5 +266,8 @@ After changing database structure, use `pip3 install . --user --upgrade` and
 Ngshare / vngshare automatically checks database upgrade each time it starts up.
  You are expected to have a good way to backup your database before running
  ngshare / vngshare in case alembic corrupts the database. If you want to stop
- this behavior you can use `--no-upgrade-db`.
+ this behavior you can use `--no-upgrade-db`. If you do this, you must manually
+ upgrade the database when upgrading ngshare. Only use this option if you know
+ EXACTLY what you're doing, otherwise using incompatible versions will cause
+ things to break catastrophically.
 
