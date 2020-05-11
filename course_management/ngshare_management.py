@@ -318,16 +318,20 @@ def remove_instructor(course_id, instructor_id):
 
 
 def parse_input(argv):
-    if len(argv) < 1:
+    if len(argv) < 2:
         prRed('Please enter a valid command')
         sys.exit(1)
 
     command = (argv[1]).lower()
+    if command == '--help':
+        print_usage()
+        sys.exit(0)
+
     shortopts = 'c:s:i:f:l:e:'
-    longopts = 'course_id= student_id= instructor_id= first_name= last_name= email= students_csv= jhub help'.split()
+    longopts = 'course_id= student_id= instructor_id= first_name= last_name= email= students_csv= jhub'.split()
 
     try:
-        optlist, args = getopt.getopt(argv[1:], shortopts, longopts)
+        optlist, args = getopt.getopt(argv[2:], shortopts, longopts)
     except getopt.GetoptError:
         print_usage()
 
@@ -361,9 +365,6 @@ def execute_command(command, optlist):
             students_csv = arg
         elif opt == '--jhub':
             jhub = True
-        elif opt == '--help':
-            print_usage()
-            return
 
     if command == 'create_course' and course_id:
         create_course(course_id, jhub)
