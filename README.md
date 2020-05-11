@@ -122,7 +122,9 @@ This project has 2 parts
 	 as `ngshare`. So the current version of `vserver` should conform to the API
 	 documentation at Git version
 	 [`890c4b21`](https://github.com/lxylxy123456/ngshare/blob/890c4b2187acc6f592a63b8df9db003226ce2b1e/api-specifications.md).
-	* See [/vserver](/vserver)
+	* May 9, 2020: As advised in #71, we are removing vserver from the ngshare
+	 repository. The repo for vserver is
+	 [https://github.com/lxylxy123456/ngshare-vserver](https://github.com/lxylxy123456/ngshare-vserver)
 
 The database structure is documented in [ngshare/database](ngshare/database).
 
