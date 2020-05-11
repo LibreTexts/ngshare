@@ -124,12 +124,21 @@ Used for ExchangeList.
 
 The new course will have no students. Its only instructor is the creator.
 
+##### Request (HTTP POST data)
+```
+instructors=[/*instructor username*/, ...] /* optional */
+```
+
 ##### Response
 ```javascript
 {
     "success": true
 }
 ```
+
+##### Error messages
+* 400 Instructors cannot be JSON decoded
+* 409 Course already exists
 
 #### DELETE /api/course/&lt;course_id&gt;
 *Remove a course (admins). Used for outside Exchange.*

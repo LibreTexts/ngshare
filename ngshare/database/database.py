@@ -103,10 +103,11 @@ class Course(Base):
             'id': self.id,
         }
 
-    def __init__(self, name, instructor):
+    def __init__(self, name, instructors=()):
         'Initialize with course name and teacher'
         self.id = name
-        self.instructors.append(instructor)
+        for instructor in instructors:
+            self.instructors.append(instructor)
 
     def __str__(self):
         return '<Course %s>' % self.id

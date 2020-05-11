@@ -124,6 +124,14 @@ def test_add_course():
                 msg='Permission denied (not admin)')
     user = 'root'
     assert_success(url + 'course3', method=POST)
+    assert assert_success('/api/instructors/course3')['instructors'] == []
+    assert_success(url + 'course3', method=DELETE)
+    assert_success(url + 'course3', params={'instructors': '["root"]'}, 
+                    method=POST)
+    assert assert_success('/api/instructors/course3')['instructors'] == [{
+        'username': 'root', 'first_name': None, 'last_name': None,
+        'email': None,
+    }]
     assert_fail(url + 'course3', method=POST, msg='Course already exists')
     # change owner to eric
     assert_success('/api/instructor/course3/eric', method=POST,
