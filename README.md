@@ -1,8 +1,6 @@
 # ngshare
 [nbgrader](https://github.com/jupyter/nbgrader) sharing service.
 
-**This service is under development. Use this at your own risk.**
-
 Click [here](#installation-and-setup) for installation instructions.
 
 <img src="ngshare/favicon.png" width="64px" />
@@ -196,6 +194,9 @@ c.ExchangeFactory.submit = ngshare.ExchangeSubmit
 c.ExchangeFactory.collect = ngshare.ExchangeCollect
 ```
 Afterwards, the setup should be complete.
+
+## Note about users in JupyterHub and ngshare
+In ngshare, all users (instructors and students) are identified using their username in JupyterHub. They are authenticated using the API token inside their notebook server. Be careful when reusing usernames in JupyterHub, as users with the same name will be identified as the same. We haven't added functionality to rename or delete users in ngshare, so be sure not to delete a user and create a new one with the same name. If you do, you will have to manually edit the ngshare database to remove or rename that user.
 
 ## Demo
 If you are configuring our project correctly, you should be able to run this demo.
