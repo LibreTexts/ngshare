@@ -111,7 +111,15 @@ def test_add_course(http_client, base_url):
     yield from assert_fail(url + 'course3', method='POST',
                 msg='Permission denied (not admin)')
     user = 'root'
-    (yield from assert_success(url + 'course3', method='POST'))
+    yield from assert_success(url + 'course3', method='POST')
+    assert (yield from assert_success('/api/instructors/course3'))['instructors'] == []
+    yield from assert_success(url + 'course3', method='DELETE')
+    yield from assert_success(url + 'course3', params={'instructors': '["root"]'}, 
+                    method='POST')
+    assert (yield from assert_success('/api/instructors/course3'))['instructors'] == [{
+        'username': 'root', 'first_name': None, 'last_name': None,
+        'email': None,
+    }]
     yield from assert_fail(url + 'course3', method='POST', 
                 msg='Course already exists')
     # change owner to eric

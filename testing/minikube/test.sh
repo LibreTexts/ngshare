@@ -16,14 +16,16 @@ function build_singleuser_img {
 function build_ngshare_img {
     eval $(minikube docker-env)
     cd ../..
-    docker build -f Dockerfile -t rkevin/ngshare:latest .
+    docker build -f Dockerfile -t rkevin/ngshare:0.2.0 .
     cd -
     eval $(minikube docker-env -u)
 }
 
 case $1 in
     init )
-        minikube start --memory 10g
+        # start docker if it isn't started yet, minikube depends on it
+        systemctl is-active docker --quiet || sudo systemctl start docker
+        minikube start
         helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
         helm repo update ;;
     install )
@@ -34,12 +36,10 @@ case $1 in
         minikube service list ;;
     uninstall )
         helm uninstall jhub
-        helm uninstall ngshare
-        kubectl delete pod jupyter-service-ngshare ;;
+        helm uninstall ngshare ;;
     reinstall )
         helm uninstall jhub
         helm uninstall ngshare
-        build_hub_img
         build_singleuser_img
         build_ngshare_img
         sleep 10 # sometimes PVCs arent unmounted properly, giving an error when doing helm install
@@ -47,12 +47,19 @@ case $1 in
         helm install ngshare $NGSHARE_HELM_CHART_LOC -f config_ngshare.yaml --debug
         minikube service list ;;
     upgrade )
-        build_hub_img
         build_singleuser_img
         build_ngshare_img
         helm upgrade jhub jupyterhub/jupyterhub --version=$Z2JH_HELM_CHART_LOC -f config.yaml --debug
         helm upgrade ngshare $NGSHARE_HELM_CHART_LOC -f config_ngshare.yaml --debug
         minikube service list ;;
+    pause )
+        kubectl scale --replicas=0 deployment ngshare ;;
+    resume)
+        kubectl scale --replicas=1 deployment ngshare ;;
+    copydb )
+        scp -i `minikube ssh-key` docker@`minikube ip`:/tmp/hostpath-provisioner/pvc*/ngshare.db /tmp/ngshare.db ;;
+    pastedb )
+        scp -i `minikube ssh-key` /tmp/ngshare.db docker@`minikube ip`:/tmp/ngshare.db && minikube ssh 'sudo mv /tmp/ngshare.db /tmp/hostpath-provisioner/pvc*/ngshare.db && sudo chown 65535:root /tmp/hostpath-provisioner/pvc*/ngshare.db && sudo chmod 644 /tmp/hostpath-provisioner/pvc*/ngshare.db' ;;
     delete )
         minikube delete ;;
     reboot )
@@ -67,6 +74,11 @@ case $1 in
         echo "    uninstall: Uninstalls testing setup on minikube"
         echo "    upgrade: Updates the testing environment with latest changes. This can be used for fast testing when Z2JH is already installed"
         echo "    reinstall: Does an uninstall and install, for the cases where 'upgrade' doesn't cut it due to messed up pods"
+        echo "    delete: Deletes minikube VM, so you can start fresh with init"
+        echo "    pause: Pauses ngshare temporarily by disabling the deployment and killing off the pods, allowing you to change the PVC"
+        echo "    resume: Resumes ngshare deployment"
+        echo "    copydb: Copies the ngshare database to /tmp/ngshare.db so you can modify it"
+        echo "    pastedb: Copies the ngshare database from /tmp/ngshare.db into the PVC"
         echo "    delete: Deletes minikube VM, so you can start fresh with init"
         echo "    reboot: Restarts minikube VM, which for some reason occasionally crashes" ;;
 esac

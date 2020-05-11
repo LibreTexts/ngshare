@@ -7,9 +7,9 @@ import sys
 import tempfile
 import shutil
 
-from contextlib import contextmanager
-from subprocess import check_call
-from typing import Iterator
+import alembic
+import alembic.command
+import alembic.config
 
 _here = os.path.abspath(os.path.dirname(__file__))
 
@@ -18,71 +18,33 @@ ALEMBIC_DIR = os.path.join(_here, 'alembic')
 
 DEFAULT_DB = 'sqlite:////tmp/ngshare.db'
 
-def write_alembic_ini(alembic_ini: str = 'alembic.ini', db_url: str = DEFAULT_DB) -> None:
-    """Write a complete alembic.ini from our template.
-    Parameters
-    ----------
-    alembic_ini: str
-        path to the alembic.ini file that should be written.
-    db_url: str
-        The SQLAlchemy database url, e.g. `sqlite:///ngshare.db`.
+def get_alembic_config(db_url: str = DEFAULT_DB) -> alembic.config.Config:
+    """Generate the alembic configuration from the template and populate fields.
+    db_url: str [default: 'sqlite:////tmp/ngshare.db']
+        The database url used to populate sqlalchemy.url, e.g. `sqlite:///ngshare.db`.
     """
-    with open(ALEMBIC_INI_TEMPLATE_PATH) as f:
-        alembic_ini_tpl = f.read()
 
-    with open(alembic_ini, 'w') as f:
-        f.write(
-            alembic_ini_tpl.format(
-                alembic_dir=ALEMBIC_DIR,
-                db_url=db_url,
-            )
-        )
+    config = alembic.config.Config(ALEMBIC_INI_TEMPLATE_PATH)
+    config.set_main_option("script_location", ALEMBIC_DIR)
+    config.set_main_option("sqlalchemy.url", db_url)
+    return config
 
-
-@contextmanager
-def _temp_alembic_ini(db_url: str) -> Iterator[str]:
-    """Context manager for temporary JupyterHub alembic directory
-    Temporarily write an alembic.ini file for use with alembic migration scripts.
-    Context manager yields alembic.ini path.
-    Parameters
-    ----------
-    db_url:
-        The SQLAlchemy database url, e.g. `sqlite:///gradebook.db`.
-    Returns
-    -------
-    alembic_ini:
-        The path to the temporary alembic.ini that we have created.
-        This file will be cleaned up on exit from the context manager.
-    """
-    td = tempfile.mkdtemp()
-    try:
-        alembic_ini = os.path.join(td, 'alembic.ini')
-        write_alembic_ini(alembic_ini, db_url)
-        yield alembic_ini
-    finally:
-        shutil.rmtree(td)
-
-
-def upgrade(db_url, revision='head'):
+def upgrade(db_url: str = DEFAULT_DB, revision='head'):
     """Upgrade the given database to revision.
-    db_url: str
+    db_url: str [default: 'sqlite:////tmp/ngshare.db']
         The SQLAlchemy database url, e.g. `sqlite:///ngshare.db`.
     revision: str [default: head]
         The alembic revision to upgrade to.
     """
-    with _temp_alembic_ini(db_url) as alembic_ini:
-        check_call(
-            ['alembic', '-c', alembic_ini, 'upgrade', revision]
-        )
+    alembic.command.upgrade(get_alembic_config(db_url), revision)
 
-
-def _alembic(*args):
-    """Run an alembic command with a temporary alembic.ini"""
-    with _temp_alembic_ini(DEFAULT_DB) as alembic_ini:
-        check_call(
-            ['alembic', '-c', alembic_ini] + list(args)
-        )
-
+def _alembic():
+    """Run an alembic command with the right config"""
+    cl = alembic.config.CommandLine()
+    options = cl.parser.parse_args()
+    if not hasattr(options, "cmd"):
+        cl.parser.error("too few arguments")
+    cl.run_cmd(get_alembic_config(), options)
 
 if __name__ == '__main__':
-    _alembic(*sys.argv[1:])
+    _alembic()

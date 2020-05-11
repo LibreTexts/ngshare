@@ -377,7 +377,13 @@ class AddCourse(MyRequestHandler):
         self.check_admin()
         if self.db.query(Course).filter(Course.id == course_id).one_or_none():
             self.json_error(409, 'Course already exists')
-        course = Course(course_id, self.user)
+        try :
+            instructors = []
+            for i in json.loads(self.get_argument('instructors', '[]')):
+                instructors.append(self.find_or_create_user(i))
+        except json.decoder.JSONDecodeError:
+            self.json_error(400, 'Instructors cannot be JSON decoded')
+        course = Course(course_id, instructors)
         self.db.add(course)
         self.db.commit()
         self.json_success()
