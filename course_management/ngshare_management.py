@@ -7,12 +7,11 @@ import pwd
 import grp
 import subprocess
 import json
+import argparse
 
 # https://www.geeksforgeeks.org/print-colors-python-terminal/
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
 def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
-def prYellow(skk): print("\033[93m {}\033[00m" .format(skk))
-def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
 
 
 class User:
@@ -22,35 +21,6 @@ class User:
         self.first_name = '' if first_name is None else first_name
         self.last_name = '' if last_name is None else last_name
         self.email = '' if email is None else email
-
-
-def print_usage():
-    prYellow('-----------------------------------------------------USAGE EXAMPLES-----------------------------------------------------')
-    prCyan('Create course:')
-    print('     python3 ngshare_management.py create_course --course_id=math101')
-    print('     python3 ngshare_management.py create_course -c math101')
-    prCyan('Add one student to a course:')
-    print('     python3 ngshare_management.py add_student --course_id=math101  --student_id=12345 --first_name=jane --last_name=doe --email=jdoe@mail.com')
-    print('     python3 ngshare_management.py add_student -c math101 -s 12345 -f jane -l doe -e jdoe@mail.com')
-    prRed('     first name, last name, and email are optional parameters')
-    prCyan('Add multiple students to a course:')
-    print('     python3 ngshare_management.py add_students --course_id=math101 --students_csv=math101Students.csv')
-    print('     python3 ngshare_management.py add_students -c math101 --students_csv=math101Students.csv')
-    prRed('     the csv file must have the following columns: \'student_id\', \'first_name\', \'last_name\', \'email\'')
-    prCyan('Remove student from a course:')
-    print('     python3 ngshare_management.py remove_student --course_id=math101  --student_id=12345')
-    print('     python3 ngshare_management.py remove_student -c math101  -s 12345')
-    prCyan('Add instructor to a course:')
-    print('     python3 ngshare_management.py add_instructor --course_id=math101  --instructor_id=12345 --first_name=jane --last_name=doe --email=jdoe@mail.com')
-    print('     python3 ngshare_management.py add_instructor -c math101 -i 12345 -f jane -l doe -e jdoe@mail.com')
-    prRed('     first name, last name, and email are optional parameters')
-    prCyan('Remove instructor from a course:')
-    print('     python3 ngshare_management.py remove_instructor --course_id=math101  --instructor_id=12345')
-    print('     python3 ngshare_management.py remove_instructor -c math101  -i 12345\n')
-    prGreen('You can add the --jhub flag at the end of any command to execute the same action in JupyterHub')
-    prGreen('For example running \'python3 ngshare_management.py create_course --course_id=math101 --jhub\' creates the course in JupyterHub and ngshare')
-    prYellow('------------------------------------------------------------------------------------------------------------------------')
-    sys.exit(2)
 
 
 def get_username():
@@ -318,53 +288,32 @@ def remove_instructor(course_id, instructor_id):
 
 
 def parse_input(argv):
-    if len(argv) < 2:
-        prRed('Please enter a valid command')
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description='ngshare Course Management')
+    parser.add_argument('-c', '--course_id', default=None, help="A unique name for the course")
+    parser.add_argument('-s', '--student_id', default=None, help="The ID given to a student")
+    parser.add_argument('-i', '--instructor_id', default=None, help="The ID given to an instructor")
+    parser.add_argument('-f', '--first_name', default=None, help="First name of the user you are creating")
+    parser.add_argument('-l', '--last_name', default=None, help="Last name of the user you are creating")
+    parser.add_argument('-e', '--email', default=None, help="Last name of the user you are creating")
+    parser.add_argument('--students_csv', default=None, help="csv file containing a list of students to add. See students.csv as an example.")
+    parser.add_argument('command', action='store', type=str, choices=['create_course', 'add_student', 'add_students', 'remove_student', 'add_instructor'], help='Command to execute')
+    parser.add_argument('--jhub', default=False, help="Execute the command in ngshare and in JupyterHub")
 
-    command = (argv[1]).lower()
-    if command == '--help':
-        print_usage()
-        sys.exit(0)
+    args = parser.parse_args()
 
-    shortopts = 'c:s:i:f:l:e:'
-    longopts = 'course_id= student_id= instructor_id= first_name= last_name= email= students_csv= jhub'.split()
-
-    try:
-        optlist, args = getopt.getopt(argv[2:], shortopts, longopts)
-    except getopt.GetoptError:
-        print_usage()
-
-    return command, optlist
+    return args
 
 
-def execute_command(command, optlist):
-    course_id = None
-    student_id = None
-    instructor_id = None
-    first_name = None
-    last_name = None
-    email = None
-    students_csv = None
-    jhub = False
-
-    for opt, arg in optlist:
-        if opt in ('-c', '--course_id'):
-            course_id = arg
-        elif opt in ('-s', '--student_id'):
-            student_id = arg
-        elif opt in ('-i', '--instructor_id'):
-            instructor_id = arg
-        elif opt in ('-f', '--first_name'):
-            first_name = arg
-        elif opt in ('-l', '--last_name'):
-            last_name = arg
-        elif opt in ('-e', '--email'):
-            email = arg
-        elif opt == '--students_csv':
-            students_csv = arg
-        elif opt == '--jhub':
-            jhub = True
+def execute_command(args):
+    command = args.command
+    course_id = args.course_id
+    student_id = args.student_id
+    instructor_id = args.instructor_id
+    first_name = args.first_name
+    last_name = args.last_name
+    email = args.email
+    students_csv = args.students_csv
+    jhub = args.jhub
 
     if command == 'create_course' and course_id:
         create_course(course_id, jhub)
@@ -387,8 +336,8 @@ def execute_command(command, optlist):
 def main(argv=None):
 
     argv = argv or sys.argv
-    command, optlist = parse_input(argv)
-    execute_command(command, optlist)
+    args = parse_input(argv)
+    execute_command(args)
 
 
 if __name__ == '__main__':
