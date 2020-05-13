@@ -1,6 +1,6 @@
 language: python
 python:
-  - 3.5
+#  - 3.5
   - 3.6
   - 3.7
   - nightly
@@ -19,4 +19,5 @@ script:
 #  - black -S -l 80 --check .
   - python3 -m black -S -l 80 --check testing
 after_success:
-  - echo AFTER_SUCCESS
+  - python3 -m pip install codecov
+  - codecov
