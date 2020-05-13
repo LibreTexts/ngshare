@@ -1,15 +1,14 @@
 language: python
 python:
-#  - 3.5
-#  - 3.6
+  - 3.5
+  - 3.6
   - 3.7
-#  - nightly
+  - nightly
 addons:
   apt:
     packages:
     - python3-pip
 before_install:
-  - python3 --help
   - python3 -m pip install setuptools wheel
 install:
   - python3 -m pip install .
