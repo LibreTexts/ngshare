@@ -7,10 +7,10 @@
 - `-l`, `--last_name` : Last name of the user you are creating
 - `-e`, `--email` : Email of the user you are creating
 - `--students_csv` : csv file containing a list of students to add. See `students.csv` as an example. 
-- `--help` : See usage examples
+- `--jhub` : Execute the command in ngshare and in JupyterHub
 ---
 ### Create a course
-User creating course must be *root*.
+User creating course must be *admin*.
 ```
 $ python3 ngshare_management.py create_course --course_id=math101
 ```
