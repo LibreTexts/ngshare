@@ -1,0 +1,20 @@
+language: python
+python:
+  - 3.5
+  - 3.6
+  - 3.7
+  - nightly
+addons:
+  apt:
+    packages:
+    - python3-pip
+install:
+  - sudo python3 setup.py install
+before_script:
+  - sudo pip3 install pytest pytest-tornado black
+script:
+  - pytest ngshare
+#  - black -S -l 80 --check .
+  - black -S -l 80 --check testing
+after_success:
+  - echo AFTER_SUCCESS
