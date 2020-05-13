@@ -22,6 +22,7 @@ test_storage = None
 
 from .database import *
 
+
 def clear_db(db, storage_path):
     'Remove all data from database'
     db.query(User).delete()
@@ -32,14 +33,15 @@ def clear_db(db, storage_path):
     db.query(InstructorAssociation).delete()
     db.query(StudentAssociation).delete()
     for table_name in [
-            'assignment_files_assoc_table',
-            'submission_files_assoc_table',
-            'feedback_files_assoc_table',
-        ]:
+        'assignment_files_assoc_table',
+        'submission_files_assoc_table',
+        'feedback_files_assoc_table',
+    ]:
         db.execute('DELETE FROM %s' % table_name)
     db.commit()
     if storage_path is not None:
         shutil.rmtree(storage_path, ignore_errors=True)
+
 
 def init_db(db, storage_path):
     '''
@@ -87,29 +89,37 @@ def init_db(db, storage_path):
         f.close()
     db.commit()
 
+
 def dump_db(db):
     'Dump database out'
     ans = defaultdict(list)
-    for table in (User, Course, Assignment, Submission, File,
-                  InstructorAssociation, StudentAssociation):
+    for table in (
+        User,
+        Course,
+        Assignment,
+        Submission,
+        File,
+        InstructorAssociation,
+        StudentAssociation,
+    ):
         for i in db.query(table).all():
             ans[table.__tablename__].append(i.dump())
     for table in (
-            assignment_files_assoc_table,
-            submission_files_assoc_table,
-            feedback_files_assoc_table,
-        ):
+        assignment_files_assoc_table,
+        submission_files_assoc_table,
+        feedback_files_assoc_table,
+    ):
         for i in db.query(table).all():
-            ans[table.name].append({
-                'left_id': i.left_id,
-                'right_id': i.right_id,
-            })
+            ans[table.name].append(
+                {'left_id': i.left_id, 'right_id': i.right_id,}
+            )
     return ans
+
 
 def test_legacy():
     'Some test cases created when building database structure'
     global Session
-    engine = create_engine('sqlite://') # temp database in memory
+    engine = create_engine('sqlite://')  # temp database in memory
     Base.metadata.bind = engine
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
@@ -146,6 +156,7 @@ def test_legacy():
         for j in i.submissions:
             print("One submission from", j.student, "at", j.timestamp)
 
+
 def test_init():
     'Test clearing database and fill in default test data'
     global test_storage
@@ -169,6 +180,7 @@ def test_init():
     assert len(db.query(Submission).all()) == 2
     assert len(db.query(File).all()) == 6
 
+
 def test_upload_feedback():
     'When uploading feedback, old feedbacks need to be removed'
     db = Session()
@@ -182,6 +194,7 @@ def test_upload_feedback():
     db.commit()
     assert len(db.query(File).all()) == 5
 
+
 def test_remove_assignment():
     'Test when removing assignment, submissions and files need to be removed'
     db = Session()
@@ -192,6 +205,7 @@ def test_remove_assignment():
     assert len(db.query(Assignment).all()) == 2
     assert len(db.query(Submission).all()) == 0
     assert len(db.query(File).all()) == 2
+
 
 def test_instructor_association():
     'Test instructor association table'
@@ -225,6 +239,7 @@ def test_instructor_association():
     assert association.last_name == 'Kevin.last_name'
     assert association.email == 'Kevin.email'
 
+
 def test_student_association():
     'Test student association table'
     db = Session()
@@ -256,6 +271,7 @@ def test_student_association():
     assert association.first_name == 'Lawrence.first_name'
     assert association.last_name == 'Lawrence.last_name'
     assert association.email == 'Lawrence.email'
+
 
 def test_clean():
     'Clean test space'
