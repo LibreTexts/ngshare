@@ -11,12 +11,6 @@ from collections import defaultdict
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# pylint: disable=global-statement
-# pylint: disable=invalid-name
-# pylint: disable=len-as-condition
-# pylint: disable=unused-wildcard-import
-# pylint: disable=wildcard-import
-
 Session = None
 test_storage = None
 

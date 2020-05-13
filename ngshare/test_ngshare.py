@@ -12,12 +12,6 @@ from tornado.httputil import url_concat
 
 from .vngshare import MyApplication, MyHelpers
 
-# pylint: disable=comparison-with-callable
-# pylint: disable=global-statement
-# pylint: disable=invalid-name
-# pylint: disable=len-as-condition
-# pylint: disable=singleton-comparison
-
 user, hc, bu = None, None, None
 
 

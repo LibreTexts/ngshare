@@ -2,10 +2,6 @@
     Database structure for NGShare
 '''
 
-# pylint: disable=invalid-name
-# pylint: disable=too-few-public-methods
-# pylint: disable=fixme
-
 import datetime
 import hashlib
 

@@ -3,14 +3,6 @@
     Similar to vserver; allows easy testing.
 '''
 
-# pylint: disable=abstract-method
-# pylint: disable=function-redefined
-# pylint: disable=invalid-name
-# pylint: disable=no-member
-# pylint: disable=undefined-variable
-# pylint: disable=unused-wildcard-import
-# pylint: disable=wildcard-import
-
 try:
     from .ngshare import *
 except ImportError:

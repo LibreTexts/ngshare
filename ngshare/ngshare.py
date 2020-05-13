@@ -2,15 +2,6 @@
     ngshare Tornado server
 '''
 
-# pylint: disable=abstract-method
-# pylint: disable=attribute-defined-outside-init
-# pylint: disable=invalid-name
-# pylint: disable=invalid-name
-# pylint: disable=no-member
-# pylint: disable=no-self-use
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-public-methods
-
 import os
 import uuid
 import json
