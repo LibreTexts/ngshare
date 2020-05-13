@@ -9,14 +9,15 @@ addons:
     packages:
     - python3-pip
 before_install:
-  - sudo pip3 install setuptools wheel
+  - python3 --help
+  - python3 -m pip install setuptools wheel
 install:
-  - sudo pip3 install .
+  - python3 -m pip install .
 before_script:
-  - sudo pip3 install pytest pytest-tornado black
+  - python3 -m pip install pytest pytest-tornado black
 script:
-  - pytest ngshare
+  - python3 -m pytest ngshare
 #  - black -S -l 80 --check .
-  - black -S -l 80 --check testing
+  - python3 -m black -S -l 80 --check testing
 after_success:
   - echo AFTER_SUCCESS
