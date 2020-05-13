@@ -10,12 +10,15 @@ import json
 import argparse
 
 # https://www.geeksforgeeks.org/print-colors-python-terminal/
-def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
-def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
+def prRed(skk):
+    print("\033[91m {}\033[00m".format(skk))
+
+
+def prGreen(skk):
+    print("\033[92m {}\033[00m".format(skk))
 
 
 class User:
-
     def __init__(self, id, first_name, last_name, email):
         self.id = id
         self.first_name = '' if first_name is None else first_name
@@ -56,6 +59,7 @@ def demote(user_uid, user_gid):
     def result():
         os.setgid(user_gid)
         os.setuid(user_uid)
+
     return result
 
 
@@ -80,7 +84,11 @@ def run_as_user(user_name, cwd, *args):
 
 def check_status_code(response):
     if response.status_code != requests.codes.ok:
-        prRed('ngshare returned an invalid status code {}'.format(response.status_code))
+        prRed(
+            'ngshare returned an invalid status code {}'.format(
+                response.status_code
+            )
+        )
         check_message(response)
 
 
@@ -130,10 +138,18 @@ def create_course(course_id, jhub):
     response = post(url, data)
 
     if response is None:
-        prRed('An error occurred while trying to create the course {}'.format(course_id))
+        prRed(
+            'An error occurred while trying to create the course {}'.format(
+                course_id
+            )
+        )
         return None
     else:
-        prGreen('Successfully created {} with {} as the instructor.'.format(course_id, get_username()))
+        prGreen(
+            'Successfully created {} with {} as the instructor.'.format(
+                course_id, get_username()
+            )
+        )
 
     if jhub:
         create_jh_course(course_id)
@@ -143,7 +159,7 @@ def create_jh_course(course_id):
     prGreen('Creating JupyterHub course {}'.format(course_id))
 
     # create course root directory
-    course_root_dir =  '/home/{}/{}'.format(get_username(), course_id)
+    course_root_dir = '/home/{}/{}'.format(get_username(), course_id)
     if not os.path.exists(course_root_dir):
         os.mkdir(course_root_dir)
     else:
@@ -176,12 +192,21 @@ def create_jh_course(course_id):
 def add_student(course_id, student: User, jhub):
     # add student to ngshare
     url = '{}/student/{}/{}'.format(ngshare_url(), course_id, student.id)
-    data = {'user': get_username(), 'first_name': student.first_name, 'last_name': student.last_name, 'email': student.email}
+    data = {
+        'user': get_username(),
+        'first_name': student.first_name,
+        'last_name': student.last_name,
+        'email': student.email,
+    }
 
     response = post(url, data)
 
     if response is None:
-        prRed('An error occurred while trying to add {} to {}'.format(student.id, course_id))
+        prRed(
+            'An error occurred while trying to add {} to {}'.format(
+                student.id, course_id
+            )
+        )
         return None
     else:
         prGreen('Successfully added {} to {}'.format(student.id, course_id))
@@ -192,8 +217,21 @@ def add_student(course_id, student: User, jhub):
 
 def add_jh_student(course_id, student: User):
     # add student to nbgrader database
-    ret = run_as_user(get_username(), os.getcwd(), 'nbgrader', 'db', 'student', 'add', '--first-name', student.first_name,
-                      '--last-name', student.last_name, '--email', student.email, student.id)
+    ret = run_as_user(
+        get_username(),
+        os.getcwd(),
+        'nbgrader',
+        'db',
+        'student',
+        'add',
+        '--first-name',
+        student.first_name,
+        '--last-name',
+        student.last_name,
+        '--email',
+        student.email,
+        student.id,
+    )
 
     if ret == 0:
         prGreen('Successfully added {} to nbgrader database'.format(student.id))
@@ -241,7 +279,11 @@ def add_students(course_id, students_csv, jhub):
     response = post(url, data)
 
     if response is None:
-        prRed('An error occurred while trying to add students to the course {}'.format(course_id))
+        prRed(
+            'An error occurred while trying to add students to the course {}'.format(
+                course_id
+            )
+        )
         return None
     else:
 
@@ -249,9 +291,15 @@ def add_students(course_id, students_csv, jhub):
             for s in response['status']:
                 user = s['username']
                 if s['success']:
-                    prGreen('{} was sucessfuly added to {}'.format(user, course_id))
+                    prGreen(
+                        '{} was sucessfuly added to {}'.format(user, course_id)
+                    )
                 else:
-                    prRed('There was an error adding {} to {}: {}'.format(user, course_id, s['message']))
+                    prRed(
+                        'There was an error adding {} to {}: {}'.format(
+                            user, course_id, s['message']
+                        )
+                    )
 
 
 def remove_student(course_id, student_id):
@@ -260,20 +308,37 @@ def remove_student(course_id, student_id):
     response = delete(url, data)
 
     if response is None:
-        prRed('An error occurred while trying to delete {} from {}'.format(student_id, course_id))
+        prRed(
+            'An error occurred while trying to delete {} from {}'.format(
+                student_id, course_id
+            )
+        )
     else:
         prGreen('Successfully deleted {} from {}'.format(student_id, course_id))
 
 
 def add_instructor(course_id, instructor: User):
     url = '{}/instructor/{}/{}'.format(ngshare_url(), course_id, instructor.id)
-    data = {'user': get_username(), 'first_name': instructor.first_name, 'last_name': instructor.last_name, 'email': instructor.email}
+    data = {
+        'user': get_username(),
+        'first_name': instructor.first_name,
+        'last_name': instructor.last_name,
+        'email': instructor.email,
+    }
     response = post(url, data)
 
     if response is None:
-        prRed('An error occurred while trying to add {} as an instructor to {}'.format(instructor.id, course_id))
+        prRed(
+            'An error occurred while trying to add {} as an instructor to {}'.format(
+                instructor.id, course_id
+            )
+        )
     else:
-        prGreen('Successfully added {} as an instructor to {}'.format(instructor.id, course_id))
+        prGreen(
+            'Successfully added {} as an instructor to {}'.format(
+                instructor.id, course_id
+            )
+        )
 
 
 def remove_instructor(course_id, instructor_id):
@@ -282,22 +347,75 @@ def remove_instructor(course_id, instructor_id):
     response = delete(url, data)
 
     if response is None:
-        prRed('An error occurred while trying to delete {} from {}'.format(instructor_id, course_id))
+        prRed(
+            'An error occurred while trying to delete {} from {}'.format(
+                instructor_id, course_id
+            )
+        )
     else:
-        prGreen('Successfully deleted instructor {} from {}'.format(instructor_id, course_id))
+        prGreen(
+            'Successfully deleted instructor {} from {}'.format(
+                instructor_id, course_id
+            )
+        )
 
 
 def parse_input(argv):
     parser = argparse.ArgumentParser(description='ngshare Course Management')
-    parser.add_argument('-c', '--course_id', default=None, help="A unique name for the course")
-    parser.add_argument('-s', '--student_id', default=None, help="The ID given to a student")
-    parser.add_argument('-i', '--instructor_id', default=None, help="The ID given to an instructor")
-    parser.add_argument('-f', '--first_name', default=None, help="First name of the user you are creating")
-    parser.add_argument('-l', '--last_name', default=None, help="Last name of the user you are creating")
-    parser.add_argument('-e', '--email', default=None, help="Last name of the user you are creating")
-    parser.add_argument('--students_csv', default=None, help="csv file containing a list of students to add. See students.csv as an example.")
-    parser.add_argument('command', action='store', type=str, choices=['create_course', 'add_student', 'add_students', 'remove_student', 'add_instructor'], help='Command to execute')
-    parser.add_argument('--jhub', action="store_true", default=False, help="Execute the command in ngshare and in JupyterHub")
+    parser.add_argument(
+        '-c', '--course_id', default=None, help="A unique name for the course"
+    )
+    parser.add_argument(
+        '-s', '--student_id', default=None, help="The ID given to a student"
+    )
+    parser.add_argument(
+        '-i',
+        '--instructor_id',
+        default=None,
+        help="The ID given to an instructor",
+    )
+    parser.add_argument(
+        '-f',
+        '--first_name',
+        default=None,
+        help="First name of the user you are creating",
+    )
+    parser.add_argument(
+        '-l',
+        '--last_name',
+        default=None,
+        help="Last name of the user you are creating",
+    )
+    parser.add_argument(
+        '-e',
+        '--email',
+        default=None,
+        help="Last name of the user you are creating",
+    )
+    parser.add_argument(
+        '--students_csv',
+        default=None,
+        help="csv file containing a list of students to add. See students.csv as an example.",
+    )
+    parser.add_argument(
+        'command',
+        action='store',
+        type=str,
+        choices=[
+            'create_course',
+            'add_student',
+            'add_students',
+            'remove_student',
+            'add_instructor',
+        ],
+        help='Command to execute',
+    )
+    parser.add_argument(
+        '--jhub',
+        action="store_true",
+        default=False,
+        help="Execute the command in ngshare and in JupyterHub",
+    )
 
     args = parser.parse_args()
     print(args)
@@ -331,7 +449,9 @@ def execute_command(args):
     elif command == 'remove_instructor' and course_id and instructor_id:
         remove_instructor(course_id, instructor_id)
     else:
-        prRed('The command you entered was not recognized. Use the --help flag to see usage examples')
+        prRed(
+            'The command you entered was not recognized. Use the --help flag to see usage examples'
+        )
 
 
 def main(argv=None):
