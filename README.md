@@ -1,6 +1,8 @@
 # ngshare
 [nbgrader](https://github.com/jupyter/nbgrader) sharing service.
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 **This service is under development. Use this at your own risk.**
 
 Click [here](#installation-and-setup) for installation instructions.
