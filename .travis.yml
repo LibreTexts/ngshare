@@ -1,15 +1,17 @@
 language: python
 python:
-  - 3.5
-  - 3.6
+#  - 3.5
+#  - 3.6
   - 3.7
-  - nightly
+#  - nightly
 addons:
   apt:
     packages:
     - python3-pip
+before_install:
+  - sudo pip3 install setuptools wheel
 install:
-  - sudo python3 setup.py install
+  - sudo pip3 install .
 before_script:
   - sudo pip3 install pytest pytest-tornado black
 script:
