@@ -297,9 +297,10 @@ def parse_input(argv):
     parser.add_argument('-e', '--email', default=None, help="Last name of the user you are creating")
     parser.add_argument('--students_csv', default=None, help="csv file containing a list of students to add. See students.csv as an example.")
     parser.add_argument('command', action='store', type=str, choices=['create_course', 'add_student', 'add_students', 'remove_student', 'add_instructor'], help='Command to execute')
-    parser.add_argument('--jhub', default=False, help="Execute the command in ngshare and in JupyterHub")
+    parser.add_argument('--jhub', action="store_true", default=False, help="Execute the command in ngshare and in JupyterHub")
 
     args = parser.parse_args()
+    print(args)
 
     return args
 
