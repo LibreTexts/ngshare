@@ -40,20 +40,15 @@ def main():  # pragma: no cover
     )
     parser.add_argument('--host', help='bind hostname', default='127.0.0.1')
     parser.add_argument('--port', help='bind port', type=int, default=12121)
-    parser.add_argument(
-        '--storage', help='path to store files', default='/tmp/ngshare/'
-    )
-    parser.add_argument(
-        '--admins', help='admin user ids (comma splitted)', default=''
-    )
-    parser.add_argument(
-        '--upgrade-db',
-        help='automatically upgrade database',
-        action='store_true',
-    )
+    parser.add_argument('--storage', help='path to store files',
+                        default='/tmp/ngshare/')
+    parser.add_argument('--admins', help='admin user ids (comma splitted)',
+                        default='')
+    parser.add_argument('--no-upgrade-db', action='store_true',
+                        help='do not automatically upgrade database')
     args = parser.parse_args()
 
-    if args.upgrade_db:
+    if not args.no_upgrade_db:
         dbutil.upgrade(args.database)
 
     app = MyApplication(

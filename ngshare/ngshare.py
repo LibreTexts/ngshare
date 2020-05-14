@@ -947,27 +947,19 @@ def main():  # pragma: no cover
         '--jupyterhub_api_url', help='override $JUPYTERHUB_API_URL'
     )
     parser.add_argument('--debug', action='store_true', help='enable debug')
-    parser.add_argument(
-        '--database',
-        help='database url',
-        default='sqlite:////srv/ngshare/ngshare.db',
-    )
-    parser.add_argument(
-        '--storage', help='path to store files', default='/srv/ngshare/files/'
-    )
-    parser.add_argument(
-        '--admins', help='admin user ids (comma splitted)', default=''
-    )
-    parser.add_argument(
-        '--upgrade-db',
-        help='automatically upgrade database',
-        action='store_true',
-    )
+    parser.add_argument('--database', help='database url',
+                        default='sqlite:////srv/ngshare/ngshare.db')
+    parser.add_argument('--storage', help='path to store files',
+                        default='/srv/ngshare/files/')
+    parser.add_argument('--admins', help='admin user ids (comma splitted)',
+                        default='')
+    parser.add_argument('--no-upgrade-db', action='store_true',
+                        help='do not automatically upgrade database')
     args = parser.parse_args()
     if args.jupyterhub_api_url is not None:
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
 
-    if args.upgrade_db:
+    if not args.no_upgrade_db:
         dbutil.upgrade(args.database)
 
     prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
