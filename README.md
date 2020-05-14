@@ -2,6 +2,7 @@
 [nbgrader](https://github.com/jupyter/nbgrader) sharing service.
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Build Status](https://travis-ci.org/lxylxy123456/ngshare.svg?branch=master)](https://travis-ci.org/lxylxy123456/ngshare)
 [![codecov](https://codecov.io/gh/lxylxy123456/ngshare/branch/master/graph/badge.svg)](https://codecov.io/gh/lxylxy123456/ngshare)
 
 **This service is under development. Use this at your own risk.**
