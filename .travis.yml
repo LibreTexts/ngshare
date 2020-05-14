@@ -15,7 +15,7 @@ install:
 before_script:
   - python3 -m pip install pytest pytest-tornado black
 script:
-  - python3 -m pytest ngshare
+  - python3 -m pytest ngshare --cov=./ngshare/
 #  - black -S -l 80 --check .
   - python3 -m black -S -l 80 --check testing
 after_success:
