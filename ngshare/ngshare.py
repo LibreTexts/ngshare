@@ -26,7 +26,7 @@ from sqlalchemy.orm import sessionmaker
 
 try:
     from . import dbutil
-except ImportError:
+except ImportError:  # pragma: no cover
     import dbutil
 
 try:
@@ -43,7 +43,7 @@ try:
         init_db,
         dump_db,
     )
-except ImportError:
+except ImportError:  # pragma: no cover
     from database import (
         Base,
         User,
@@ -861,10 +861,7 @@ class InitDatabase(MyRequestHandler):
                 self.json_success(**result)
             ans = []
             for key, value in result.items():
-                if value:
-                    thead = list(value[0])
-                else:
-                    thead = ['']
+                thead = list(value[0])
                 tbody = []
                 for line in value:
                     tbody.append(list(map(line.__getitem__, thead)))
@@ -941,7 +938,7 @@ class MyApplication(Application):
         self.admin = admin
 
 
-def main():
+def main():  # pragma: no cover
     'Main function'
     parser = argparse.ArgumentParser(
         description='ngshare, a REST API nbgrader exchange'
@@ -991,5 +988,5 @@ def main():
     IOLoop.current().start()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

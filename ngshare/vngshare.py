@@ -5,7 +5,7 @@
 
 try:
     from .ngshare import *
-except ImportError:
+except ImportError:  # pragma: no cover
     from ngshare import *
 
 
@@ -28,7 +28,7 @@ class MockAuth(HubAuthenticated):
 MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)
 
 
-def main():
+def main():  # pragma: no cover
     'Main function'
     parser = argparse.ArgumentParser(
         description='vngshare, Vserver-like ngshare (Notebook Grader Share)'
@@ -77,5 +77,5 @@ def main():
     IOLoop.current().start()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

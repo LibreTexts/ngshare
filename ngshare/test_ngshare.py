@@ -10,7 +10,7 @@ from urllib.parse import urlencode
 import pytest
 from tornado.httputil import url_concat
 
-from .vngshare import MyApplication, MyHelpers
+from .vngshare import MyApplication, MyHelpers, MockAuth
 
 user, hc, bu = None, None, None
 
@@ -1242,8 +1242,9 @@ def test_nodebug(http_client, base_url):
 
 
 def test_notimpl():
-    'Test NotImplementedError'
+    'Test NotImplementedError etc'
     try:
         MyHelpers().json_error(404, 'Not Found')
     except NotImplementedError:
         pass
+    assert MockAuth().get_login_url().startswith('http')
