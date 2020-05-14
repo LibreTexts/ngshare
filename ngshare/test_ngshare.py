@@ -29,8 +29,8 @@ def app():
     return application
 
 
-def assert_fail(url, data=None, params=None, method='GET', msg=None):
-    'Assert requesting a page is failing (with matching message)'
+def server_communication(url, data=None, params=None, method='GET'):
+    'Request a page'
     global hc, bu, user
     if user is not None:
         if method != 'POST':
@@ -47,6 +47,12 @@ def assert_fail(url, data=None, params=None, method='GET', msg=None):
     response = yield hc.fetch(
         actual_url, method=method, body=body, raise_error=False
     )
+    return response
+
+
+def assert_fail(url, data=None, params=None, method='GET', msg=None):
+    'Assert requesting a page is failing (with matching message)'
+    response = yield from server_communication(url, data, params, method)
     assert response.code in range(400, 500)
     resp = json.loads(response.body)
     assert resp['message'] == msg
@@ -55,24 +61,31 @@ def assert_fail(url, data=None, params=None, method='GET', msg=None):
 
 def assert_success(url, data=None, params=None, method='GET'):
     'Assert requesting a page is success'
-    global hc, bu, user
-    if user is not None:
-        if method != 'POST':
-            params = params if params is not None else {}
-            params['user'] = user
-        else:
-            data = data if data is not None else {}
-            data['user'] = user
-    actual_url = bu + url_concat(url, params)
-    if method != 'POST':
-        body = None
-    else:
-        body = urlencode(data)
-    response = yield hc.fetch(actual_url, method=method, body=body)
+    response = yield from server_communication(url, data, params, method)
     assert response.code == 200
     resp = json.loads(response.body)
     assert resp['success'] == True
     return resp
+
+
+@pytest.mark.gen_test
+def test_home(http_client, base_url):
+    'Test homepage, favicon, etc.'
+    global hc, bu, user
+    hc, bu = http_client, base_url
+    user = 'none'
+    response = yield from server_communication('/api/')
+    assert response.code == 200
+    assert response.body.decode().startswith('<!doctype html>')
+    response = yield from server_communication('/api/favicon.ico')
+    assert response.code == 200
+    assert response.body.startswith(b'\x89PNG')
+    response = yield from server_communication('/api/masonry.min.js')
+    assert response.code == 200
+    assert 'Masonry' in response.body.decode()
+    response = yield from server_communication('/api/random-page')
+    assert response.code == 404
+    assert '<h1>404 Not Found</h1>\n' in response.body.decode()
 
 
 @pytest.mark.gen_test
@@ -88,6 +101,17 @@ def test_init(http_client, base_url):
     assert (yield from assert_success(url, params={'action': 'init'}))[
         'message'
     ] == 'done'
+    yield from assert_success(url, params={'action': 'dump'})
+    yield from assert_fail(
+        url,
+        params={'action': 'walk'},
+        msg='action should be clear, init, or dump',
+    )
+    response = yield from server_communication(
+        url, params={'action': 'dump', 'human-readable': 'true'}
+    )
+    assert response.code == 200
+    assert 'masonry.min.js' in response.body.decode()
 
 
 @pytest.mark.gen_test
@@ -124,6 +148,12 @@ def test_add_course(http_client, base_url):
         'instructors'
     ] == []
     yield from assert_success(url + 'course3', method='DELETE')
+    yield from assert_fail(
+        url + 'course3',
+        params={'instructors': '"root"]'},
+        method='POST',
+        msg='Instructors cannot be JSON decoded',
+    )
     yield from assert_success(
         url + 'course3', params={'instructors': '["root"]'}, method='POST'
     )
@@ -871,6 +901,13 @@ def test_submit_assignment(http_client, base_url):
         data=data,
         msg='Content cannot be base64 decoded',
     )
+    data['files'] = 'a-random-string'
+    yield from assert_fail(
+        url + 'course1/challenge',
+        method='POST',
+        data=data,
+        msg='Files cannot be JSON decoded',
+    )
     user = 'kevin'
     result = yield from assert_success('/api/submissions/course1/challenge')
     assert len(result['submissions']) == 4  # 2 from init, 2 from this
@@ -1159,3 +1196,35 @@ def test_remove_course(http_client, base_url):
     )
     # All other tables should be empty
     assert set(resp.keys()) == {'success', 'users'}
+
+
+@pytest.mark.gen_test
+def test_corner_case(http_client, base_url):
+    'Test corner cases to increase coverage'
+    global hc, bu, user
+    hc, bu = http_client, base_url
+    init_url = '/api/initialize-Data6ase'
+    user = 'none'
+    yield from assert_success(init_url, params={'action': 'clear'})
+    yield from assert_success(init_url, params={'action': 'init'})
+    user = 'eric'
+    data = {
+        'files': json.dumps(
+            [{'path': 'a.abcdefghijklmnopqrstuvw', 'content': 'amtsCg=='}]
+        )
+    }
+    yield from assert_success(
+        '/api/submission/course2/assignment2a', method='POST', data=data,
+    )
+    user = 'abigail'
+    assert (
+        yield from assert_success('/api/submission/course2/assignment2a/eric')
+    )['files'][0]['path'] == 'a.abcdefghijklmnopqrstuvw'
+
+
+def test_notimpl():
+    'Test NotImplementedError'
+    try:
+        MyHelpers().json_error(404, 'Not Found')
+    except NotImplementedError:
+        pass
