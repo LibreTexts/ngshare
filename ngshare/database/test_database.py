@@ -153,7 +153,7 @@ def test_legacy():
 
 def test_init():
     'Test clearing database and fill in default test data'
-    global test_storage
+    global Session, test_storage
     test_storage = tempfile.mkdtemp()
     db = Session()
     clear_db(db, None)
@@ -167,16 +167,24 @@ def test_init():
     assert not db.query(File).all()
     assert not db.query(InstructorAssociation).all()
     assert not db.query(StudentAssociation).all()
+    assert not dump_db(db)
     init_db(db, test_storage)
     assert len(db.query(User).all()) == 4
     assert len(db.query(Course).all()) == 2
     assert len(db.query(Assignment).all()) == 3
     assert len(db.query(Submission).all()) == 2
     assert len(db.query(File).all()) == 6
+    dumped = dump_db(db)
+    assert len(dumped['users']) == 4
+    assert len(dumped['courses']) == 2
+    assert len(dumped['assignments']) == 3
+    assert len(dumped['submissions']) == 2
+    assert len(dumped['files']) == 6
 
 
 def test_upload_feedback():
     'When uploading feedback, old feedbacks need to be removed'
+    global Session
     db = Session()
     ts = datetime.datetime(2020, 1, 1, 0, 0, 0, 0)
     s1 = db.query(Submission).filter(Submission.timestamp == ts).one_or_none()
@@ -191,6 +199,7 @@ def test_upload_feedback():
 
 def test_remove_assignment():
     'Test when removing assignment, submissions and files need to be removed'
+    global Session
     db = Session()
     ac = db.query(Assignment).filter(Assignment.id == 'challenge').one_or_none()
     assert ac is not None
@@ -203,6 +212,7 @@ def test_remove_assignment():
 
 def test_instructor_association():
     'Test instructor association table'
+    global Session
     db = Session()
     kevin = db.query(User).filter_by(id='kevin').one_or_none()
     assert kevin.id == 'kevin'
@@ -236,6 +246,7 @@ def test_instructor_association():
 
 def test_student_association():
     'Test student association table'
+    global Session
     db = Session()
     lawrence = db.query(User).filter_by(id='lawrence').one_or_none()
     assert lawrence.id == 'lawrence'
@@ -267,7 +278,18 @@ def test_student_association():
     assert association.email == 'Lawrence.email'
 
 
+def test_notimpl():
+    'Test not implemented functions'
+    global Session
+    db = Session()
+    try:
+        db.query(User).first().delete(db)
+    except NotImplementedError:
+        pass
+
+
 def test_clean():
     'Clean test space'
+    global Session
     db = Session()
     clear_db(db, test_storage)
