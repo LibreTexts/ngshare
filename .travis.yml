@@ -8,6 +8,7 @@ addons:
   apt:
     packages:
     - python3-pip
+cache: pip
 before_install:
   - python3 -m pip install setuptools wheel
 install:
