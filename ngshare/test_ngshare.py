@@ -14,18 +14,18 @@ from .vngshare import MyApplication, MyHelpers
 
 user, hc, bu = None, None, None
 
+application = MyApplication(
+    '/api/',
+    'sqlite:////tmp/ngshare.db',
+    '/tmp/ngshare/',
+    admin=['root'],
+    debug=True,
+)
+
 
 @pytest.fixture
 def app():
     'Create Tornado application for testing'
-    application = MyApplication(
-        '/api/',
-        'sqlite:////tmp/ngshare.db',
-        '/tmp/ngshare/',
-        admin=['root'],
-        debug=True,
-    )
-    application.vngshare = True
     return application
 
 
@@ -1220,6 +1220,25 @@ def test_corner_case(http_client, base_url):
     assert (
         yield from assert_success('/api/submission/course2/assignment2a/eric')
     )['files'][0]['path'] == 'a.abcdefghijklmnopqrstuvw'
+
+
+@pytest.mark.gen_test
+def test_nodebug(http_client, base_url):
+    'Test ngshare with debug-mode off'
+    application.debug = False
+    url = '/api/initialize-Data6ase'
+    global hc, bu, user
+    hc, bu = http_client, base_url
+    user = 'none'
+    yield from assert_fail(
+        url, params={'action': 'clear'}, msg='Debug mode is off'
+    )
+    yield from assert_fail(
+        url, params={'action': 'init'}, msg='Debug mode is off'
+    )
+    response = yield from server_communication('/api/random-page')
+    assert response.code == 404
+    assert response.body.decode() == '<h1>404 Not Found</h1>\n'
 
 
 def test_notimpl():
