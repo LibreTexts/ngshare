@@ -288,6 +288,37 @@ def test_notimpl():
         pass
 
 
+def test_print():
+    'Test __str__ functions'
+    global Session
+    db = Session()
+    clear_db(db, None)
+    init_db(db, test_storage)
+    assert str(db.query(User).first()).startswith('<User')
+    assert str(db.query(Course).first()).startswith('<Course')
+    assert str(db.query(Assignment).first()).startswith('<Assignment')
+    assert str(db.query(Submission).first()).startswith('<Submission')
+    assert str(db.query(File).first()).startswith('<File')
+
+
+def test_remove_course():
+    global Session
+    db = Session()
+    for course in db.query(Course).all():
+        course.delete(db)
+    a = dump_db(db)
+    assert list(dump_db(db)) == ['users']
+
+
+def test_jhub_user():
+    global Session
+    db = Session()
+    user_model = {'name': 'eric'}
+    assert str(User.from_jupyterhub_user(user_model, db)) == '<User eric>'
+    user_model = {'name': 'new_usr'}
+    assert str(User.from_jupyterhub_user(user_model, db)) == '<User new_usr>'
+
+
 def test_clean():
     'Clean test space'
     global Session
