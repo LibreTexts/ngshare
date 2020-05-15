@@ -24,6 +24,7 @@ Database
 * `SQLAlchemy <https://www.sqlalchemy.org/>`_ - A Python SQL toolkit
 * `SQLite3 <https://www.sqlite.org/index.html>`_ - a light weight database
   engine
+* `Alembic <https://alembic.sqlalchemy.org/>`_ - SQLAlchemy migration tool
 
 Frontend
 ^^^^^^^^
@@ -45,4 +46,14 @@ Project management
 * `Travis CI <https://travis-ci.org/>`_ - Continous integration
 * `Codecov <https://codecov.io/>`_ - Code coverage
 * `Read the Docs <https://readthedocs.org/>`_ - Documentation
+
+Race Condition
+--------------
+It is possible to configure multiple ``ngshare`` instances to run at the same time, or allow one ``ngshare`` instance to run in multithread mode. This may trigger untested race condition and cause error in production.
+
+We decide to warn users about this when they try to configure ``ngshare`` in this way.
+
+Database Update
+---------------
+To make sure users do not encounter database version problems, we decide to automatically run Alembic upgrade each time ngshare / vngshare is started. There is little overhead for the version check. We assume that users are regularly backing up their database. 
 

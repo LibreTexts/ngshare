@@ -14,7 +14,9 @@ Table of Contents
    :maxdepth: 2
    :caption: User Documentation
 
-   user_guide/install.rst
+   user_guide/install_ngshare.rst
+   user_guide/install_vngshare.rst
+   user_guide/extra.rst
 
 .. toctree::
    :maxdepth: 3
@@ -30,6 +32,9 @@ Table of Contents
    contributer_guide/dev_history.rst
    contributer_guide/project_structure.rst
    contributer_guide/decisions.rst
+   contributer_guide/development.rst
+   contributer_guide/database.rst
+   contributer_guide/alembic.rst
 
 Indices and tables
 ------------------

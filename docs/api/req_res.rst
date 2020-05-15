@@ -24,9 +24,12 @@ When the client is authenticated, server will return a status code and a JSON ob
 
 * When success, the status code will be 200 and response will be
   ``{"success": true, ...}``, where ``...`` may contain extra information.
+
 * When fail, the status code will be between 400 and 499 (inclusive). The
   response will be ``{"success": false, "message": "Error Message"}``.
-  Possible ``Error Message``s are defined in each "Error messages" sections.
+  Possible values for ``Error Message`` are defined in each "Error messages"
+  sections.
+
 * When server encounters an error, it will return 500. In this case, the client
   should submit a bug report and report this to ngshare maintainers.
 
