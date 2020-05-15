@@ -12,7 +12,7 @@ ngshare
 
 .. toctree::
    :maxdepth: 2
-   :acption: Contributor Guide
+   :caption: Contributor Guide
 
    contributer_guide/decisions.rst
 
