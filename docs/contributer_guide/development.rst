@@ -28,4 +28,3 @@ Code formatting
     pip3 install black
     black -S -l 80 .
 
-
