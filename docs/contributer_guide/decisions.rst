@@ -10,8 +10,8 @@ When developing this project, we mostly followed the way ``nbgrader`` and `Jupyt
 
 Backend
 ^^^^^^^
-* `JupyterHub <https://jupyter.org/hub>`_ - A multi-user version of Jupyter
-  Notebook (indirectly used)
+* `JupyterHub <https://github.com/jupyterhub/jupyterhub>`_ - A multi-user
+  version of Jupyter Notebook (indirectly used)
 * `kubernetes <https://kubernetes.io/>`_ - Underlying container management
   system (indirectly used)
 * `minikube <https://kubernetes.io/docs/setup/learning-environment/minikube/>`_ -

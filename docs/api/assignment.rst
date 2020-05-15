@@ -1,5 +1,328 @@
 Assignment APIs
 ===============
 
-This section is under construction
+/api/assignments: Course assignments
+------------------------------------
 
+GET /api/assignments/<course_id>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*list all assignments for a course (students+instructors)*
+
+Used for the outbound part of ExchangeList.
+
+Response
+""""""""
+.. code:: javascript
+
+    {
+        "success": true,
+        "assignments":
+        [
+            /* assignment name */,
+            ...
+        ]
+    }
+
+Error messages
+""""""""""""""
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+
+/api/assignment: Fetching and releasing an assignment
+-----------------------------------------------------
+
+GET /api/assignment/<course_id>/<assignment_id>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*download a copy of an assignment (students+instructors)*
+
+If ``list_only`` is ``true``, ``files`` only contains ``path`` and ``checksum`` (does not contain ``content``).
+
+Used for ExchangeFetchAssignment.
+
+Request (HTTP GET parameter)
+""""""""""""""""""""""""""""
+.. code:: javascript
+
+    list_only=/* true or false */
+
+Response
+""""""""
+.. code:: javascript
+
+    {
+        "success": true,
+        "files": /* encoded directory tree */
+    }
+
+Error messages
+""""""""""""""
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+
+POST /api/assignment/<course_id>/<assignment_id>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*release an assignment (instructors only)*
+
+Used for ExchangeReleaseAssignment.
+
+Request (HTTP POST data)
+""""""""""""""""""""""""
+.. code:: javascript
+
+    files=/* encoded directory tree in JSON */
+
+Response
+""""""""
+.. code:: javascript
+
+    {
+        "success": true
+    }
+
+Error messages
+""""""""""""""
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 409 Assignment already exists
+* 400 Please supply files
+* 400 Illegal path
+* 400 Files cannot be JSON decoded
+* 400 Content cannot be base64 decoded
+* 500 Internal server error
+
+DELETE /api/assignment/<course_id>/<assignment_id>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*Remove an assignment (instructors only).*
+
+All submissions and files related to the assignment will disappear.
+
+Note: this may be replaced by assignment states in the future.
+
+Response
+""""""""
+.. code:: javascript
+
+    {
+        "success": true
+    }
+
+Error messages
+""""""""""""""
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+
+/api/submissions: Listing submissions
+-------------------------------------
+
+GET /api/submissions/<course_id>/<assignment_id>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*list all submissions for an assignment from all students (instructors only)*
+
+Used for the inbound part of ExchangeList.
+
+Response
+""""""""
+.. code:: javascript
+
+    {
+        "success": true,
+        "submissions":
+        [
+            {
+                "student_id": /* student ID */,
+                "timestamp": /* submission timestamp */
+            },
+            ...
+        ]
+    }
+
+Error messages
+""""""""""""""
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+
+GET /api/submissions/<course_id>/<assignment_id>/<student_id>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*list all submissions for an assignment from a particular student (instructors+students, though students are restricted to only viewing their own submissions)*
+
+Response
+""""""""
+.. code:: javascript
+
+    {
+        "success": true,
+        "submissions":
+        [
+            {
+                "student_id": /* student ID */,
+                "timestamp": /* submission timestamp */
+            },
+            ...
+        ]
+    }
+
+Error messages
+""""""""""""""
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+* 404 Student not found
+
+/api/submission: Collecting and submitting a submission
+-------------------------------------------------------
+
+POST /api/submission/<course_id>/<assignment_id>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*submit a copy of an assignment (students+instructors)*
+
+Used for ExchangeSubmit.
+
+Request (HTTP POST data)
+""""""""""""""""""""""""
+.. code:: javascript
+
+    files=/* encoded directory tree in JSON */
+
+Response
+""""""""
+.. code:: javascript
+
+    {
+        "success": true,
+        "timestamp": /* submission timestamp */
+    }
+
+Error messages
+""""""""""""""
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+* 400 Please supply files
+* 400 Illegal path
+* 400 Files cannot be JSON decoded
+* 400 Content cannot be base64 decoded
+* 500 Internal server error
+
+GET /api/submission/<course_id>/<assignment_id>/<student_id>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*download a student's submitted assignment (instructors only)*
+
+If ``list_only`` is ``true``, ``files`` only contains ``path`` and ``checksum`` (does not contain ``content``). If ``timestamp`` is not supplied, the latest submision is returned.
+
+Used for ExchangeCollect.
+
+Request (HTTP GET parameter)
+""""""""""""""""""""""""""""
+.. code:: javascript
+
+    list_only=/* true or false */&
+    timestamp=/* submission timestamp */
+
+Response
+""""""""
+.. code:: javascript
+
+    {
+        "success": true,
+        "timestamp": /* submission timestamp */,
+        "files": /* encoded directory tree */
+    }
+
+Error messages
+""""""""""""""
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+* 404 Student not found
+* 404 Submission not found
+
+/api/feedback: Fetching and releasing submission feedback
+---------------------------------------------------------
+
+POST /api/feedback/<course_id>/<assignment_id>/<student_id>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*upload feedback on a student's assignment (instructors only)*
+
+Old feedback on the same submission will be removed
+
+Used for ExchangeReleaseFeedback.
+
+Request (HTTP POST data)
+""""""""""""""""""""""""
+.. code:: javascript
+
+    timestamp=/* submission timestamp */&
+    files=/* encoded directory tree in JSON */
+
+Response
+""""""""
+.. code:: javascript
+
+    {
+        "success": true
+    }
+
+Error messages
+""""""""""""""
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+* 404 Student not found
+* 404 Submission not found
+* 400 Please supply timestamp
+* 400 Time format incorrect
+* 400 Please supply files
+* 400 Illegal path
+* 400 Files cannot be JSON decoded
+* 400 Content cannot be base64 decoded
+* 500 Internal server error
+
+GET /api/feedback/<course_id>/<assignment_id>/<student_id>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*download feedback on a student's assignment (instructors+students, though students are restricted to only viewing their own feedback)*
+
+When feedback is not available, ``files`` will be empty.
+
+If ``list_only`` is ``true``, ``files`` only contains ``path`` and ``checksum`` (does not contain ``content``).
+
+Used for ExchangeFetchFeedback.
+
+Request (HTTP GET parameter)
+""""""""""""""""""""""""""""
+.. code:: javascript
+
+    timestamp=/* submission timestamp */&
+    list_only=/* true or false */
+
+Response
+""""""""
+.. code:: javascript
+
+    {
+        "success": /* true or false*/,
+        "timestamp": /* submission timestamp */,
+        "files": /* encoded directory tree */
+    }
+
+Error messages
+""""""""""""""
+* 302 (Login required)
+* 403 Permission denied
+* 404 Course not found
+* 404 Assignment not found
+* 404 Student not found
+* 404 Submission not found
+* 400 Please supply timestamp
+* 400 Time format incorrect

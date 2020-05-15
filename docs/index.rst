@@ -15,6 +15,11 @@ Table of Contents
    :caption: User Documentation
 
    user_guide/install.rst
+
+.. toctree::
+   :maxdepth: 3
+   :caption: APIs
+
    api/index.rst
 
 .. toctree::
