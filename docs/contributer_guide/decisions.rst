@@ -25,6 +25,8 @@ Database
 * `SQLite3 <https://www.sqlite.org/index.html>`_ - a light weight database
   engine
 * `Alembic <https://alembic.sqlalchemy.org/>`_ - SQLAlchemy migration tool
+* `ERAlchemy <https://github.com/Alexis-benoist/eralchemy>`_ - Generate Entity
+  Relation Diagrams
 
 Frontend
 ^^^^^^^^
