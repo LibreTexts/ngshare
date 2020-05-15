@@ -38,7 +38,7 @@ def upgrade(db_url: str = DEFAULT_DB, revision='head'):
     alembic.command.upgrade(get_alembic_config(db_url), revision)
 
 
-def _alembic():
+def main():
     """Run an alembic command with the right config"""
     cl = alembic.config.CommandLine()
     options = cl.parser.parse_args()
@@ -48,4 +48,4 @@ def _alembic():
 
 
 if __name__ == '__main__':	# pragma: no cover
-    _alembic()
+    main()
