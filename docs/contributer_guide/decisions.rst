@@ -41,6 +41,7 @@ Progamming Language
 * `pytest-cov <https://pypi.org/project/pytest-cov/>`_ - Code coverage
 * `pytest-tornado <https://pypi.org/project/pytest-tornado/>`_ - Test Tornado
   server
+* `black <https://github.com/psf/black>`_ - a Python code formatter
 
 Project management
 ^^^^^^^^^^^^^^^^^^
