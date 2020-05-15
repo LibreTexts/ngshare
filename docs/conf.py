@@ -76,3 +76,6 @@ master_doc = 'index'
 latex_elements = {
     'preamble': r'\usepackage{tikz}',
 }
+
+tikz_proc_suite = 'GhostScript'
+
