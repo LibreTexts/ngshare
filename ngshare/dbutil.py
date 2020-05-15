@@ -47,5 +47,5 @@ def _alembic():
     cl.run_cmd(get_alembic_config(), options)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':	# pragma: no cover
     _alembic()

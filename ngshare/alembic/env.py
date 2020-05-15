@@ -19,9 +19,9 @@ try:
     from ..database.database import Base
 except ImportError:
     try:
-        from .database.database import Base
-    except ImportError:
         from database.database import Base
+    except ImportError:
+        from ngshare.database.database import Base
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

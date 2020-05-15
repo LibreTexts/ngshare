@@ -7,4 +7,4 @@ from . import dbutil
 def test_update():
 	'Test update database'
 	dbutil.upgrade('sqlite:///ngshare.db')
-
+	dbutil._alembic
