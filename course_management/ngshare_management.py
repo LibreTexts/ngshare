@@ -10,8 +10,11 @@ import json
 import argparse
 
 # https://www.geeksforgeeks.org/print-colors-python-terminal/
-def prRed(skk):
+def prRed(skk, exit=True):
     print("\033[91m {}\033[00m".format(skk))
+
+    if exit:
+        sys.exit(-1)
 
 
 def prGreen(skk):
@@ -48,46 +51,13 @@ def get_header():
         return None
 
 
-def chown_to_user(path):
-    uid = pwd.getpwnam(get_username()).pw_uid
-    gid = grp.getgrnam(get_username()).gr_gid
-    os.chown(path, uid, gid)
-
-
-# https://stackoverflow.com/questions/1770209/run-child-processes-as-different-user-from-a-long-running-python-process/6037494#6037494
-def demote(user_uid, user_gid):
-    def result():
-        os.setgid(user_gid)
-        os.setuid(user_uid)
-
-    return result
-
-
-# https://stackoverflow.com/questions/1770209/run-child-processes-as-different-user-from-a-long-running-python-process/6037494#6037494
-def run_as_user(user_name, cwd, *args):
-    pw_record = pwd.getpwnam(user_name)
-    user_name = pw_record.pw_name
-    user_home_dir = pw_record.pw_dir
-    user_uid = pw_record.pw_uid
-    user_gid = pw_record.pw_gid
-    cwd = user_home_dir if cwd == '~' else cwd
-    env = os.environ.copy()
-    env['HOME'] = user_home_dir
-    env['LOGNAME'] = user_name
-    env['PWD'] = cwd
-    env['USER'] = user_name
-    process = subprocess.Popen(
-        args, preexec_fn=demote(user_uid, user_gid), cwd=cwd, env=env
-    )
-    return process.wait()
-
-
 def check_status_code(response):
     if response.status_code != requests.codes.ok:
         prRed(
             'ngshare returned an invalid status code {}'.format(
                 response.status_code
-            )
+            ),
+            False,
         )
         check_message(response)
 
@@ -96,7 +66,6 @@ def check_message(response):
     response = response.json()
     if not response['success']:
         prRed(response['message'])
-        return None
 
     return response
 
@@ -109,10 +78,8 @@ def post(url, data):
         response.raise_for_status()
     except requests.exceptions.ConnectionError:
         prRed('Could not establish connection to ngshare server')
-        return None
     except Exception:
         check_status_code(response)
-        return None
 
     return check_message(response)
 
@@ -125,68 +92,21 @@ def delete(url, data):
         response.raise_for_status
     except Exception:
         check_status_code(response)
-        return None
 
     return check_message(response)
 
 
-def create_course(course_id, jhub):
-    prGreen('Creating ngshare course {}'.format(course_id))
+def create_course(course_id, jhub, instructor: User):
     url = '{}/course/{}'.format(ngshare_url(), course_id)
     data = {'user': get_username()}
 
     response = post(url, data)
-
-    if response is None:
-        prRed(
-            'An error occurred while trying to create the course {}'.format(
-                course_id
-            )
-        )
-        return None
-    else:
-        prGreen(
-            'Successfully created {} with {} as the instructor.'.format(
-                course_id, get_username()
-            )
-        )
+    prGreen('Successfully created {}'.format(course_id))
 
     if jhub:
         create_jh_course(course_id)
 
-
-def create_jh_course(course_id):
-    prGreen('Creating JupyterHub course {}'.format(course_id))
-
-    # create course root directory
-    course_root_dir = '/home/{}/{}'.format(get_username(), course_id)
-    if not os.path.exists(course_root_dir):
-        os.mkdir(course_root_dir)
-    else:
-        prRed('{} already exists'.format(course_root_dir))
-        return None
-
-    # change owner
-    chown_to_user(course_root_dir)
-
-    # add course config file
-    course_config_file = course_root_dir + '/nbgrader_config.py'
-    with open(course_config_file, 'w') as f:
-        f.write('c = get_config()\n')
-        f.write("c.CourseDirectory.course_id = '{}'".format(course_id))
-
-    # create .jupyter folder
-    jupyter_folder = '/home/{}/.jupyter'.format(get_username())
-    if not os.path.exists(jupyter_folder):
-        os.mkdir(jupyter_folder)
-
-    # add user config file in the .jupyter folder
-    user_config_file = '{}/nbgrader_config.py'.format(jupyter_folder)
-    with open(user_config_file, 'w') as f:
-        f.write('c = get_config()\n')
-        f.write("c.CourseDirectory.root = '{}'".format(course_root_dir))
-
-    prGreen('Successfully created JupyterHub course {}.'.format(course_id))
+    add_instructor(course_id, instructor)
 
 
 def add_student(course_id, student: User, jhub):
@@ -200,41 +120,33 @@ def add_student(course_id, student: User, jhub):
     }
 
     response = post(url, data)
-
-    if response is None:
-        prRed(
-            'An error occurred while trying to add {} to {}'.format(
-                student.id, course_id
-            )
-        )
-        return None
-    else:
-        prGreen('Successfully added {} to {}'.format(student.id, course_id))
+    prGreen('Successfully added/updated {} to {}'.format(student.id, course_id))
 
     if jhub:
         add_jh_student(course_id, student)
 
 
 def add_jh_student(course_id, student: User):
-    # add student to nbgrader database
-    ret = run_as_user(
-        get_username(),
-        os.getcwd(),
-        'nbgrader',
-        'db',
-        'student',
-        'add',
-        '--first-name',
-        student.first_name,
-        '--last-name',
-        student.last_name,
-        '--email',
-        student.email,
-        student.id,
-    )
+    # add student to nbgrader gradebook
+    command = 'nbgrader db student add '
+
+    if len(student.first_name) > 0:
+        command += '--first-name {} '.format(student.first_name)
+    if len(student.last_name) > 0:
+        command += '--last-name {} '.format(student.last_name)
+    if len(student.email) > 0:
+        command += '--email {} '.format(student.email)
+
+    command += student.id
+
+    ret = os.system(command)
 
     if ret == 0:
-        prGreen('Successfully added {} to nbgrader database'.format(student.id))
+        prGreen(
+            'Successfully added/updated {} to nbgrader gradebook'.format(
+                student.id
+            )
+        )
 
 
 def add_students(course_id, students_csv, jhub):
@@ -269,52 +181,39 @@ def add_students(course_id, students_csv, jhub):
             student_dict['last_name'] = last_name
             student_dict['email'] = email
             students.append(student_dict)
-            student = User(student_id, first_name, last_name, email)
-            if jhub:
-                add_jh_student(course_id, student)
 
     url = '{}/students/{}'.format(ngshare_url(), course_id)
     data = {'user': get_username(), 'students': json.dumps(students)}
 
     response = post(url, data)
 
-    if response is None:
-        prRed(
-            'An error occurred while trying to add students to the course {}'.format(
-                course_id
-            )
-        )
-        return None
-    else:
-
-        if response['success']:
-            for s in response['status']:
-                user = s['username']
-                if s['success']:
-                    prGreen(
-                        '{} was sucessfuly added to {}'.format(user, course_id)
-                    )
-                else:
-                    prRed(
-                        'There was an error adding {} to {}: {}'.format(
-                            user, course_id, s['message']
-                        )
-                    )
+    if response['success']:
+        for i, s in enumerate(response['status']):
+            user = s['username']
+            if s['success']:
+                prGreen('{} was sucessfuly added to {}'.format(user, course_id))
+                student = User(
+                    user,
+                    students[i]['first_name'],
+                    students[i]['last_name'],
+                    students[i]['email'],
+                )
+                if jhub:
+                    add_jh_student(course_id, student)
+            else:
+                prRed(
+                    'There was an error adding {} to {}: {}'.format(
+                        user, course_id, s['message']
+                    ),
+                    False,
+                )
 
 
 def remove_student(course_id, student_id):
     url = '{}/student/{}/{}'.format(ngshare_url(), course_id, student_id)
     data = {'user': get_username()}
     response = delete(url, data)
-
-    if response is None:
-        prRed(
-            'An error occurred while trying to delete {} from {}'.format(
-                student_id, course_id
-            )
-        )
-    else:
-        prGreen('Successfully deleted {} from {}'.format(student_id, course_id))
+    prGreen('Successfully deleted {} from {}'.format(student_id, course_id))
 
 
 def add_instructor(course_id, instructor: User):
@@ -326,38 +225,22 @@ def add_instructor(course_id, instructor: User):
         'email': instructor.email,
     }
     response = post(url, data)
-
-    if response is None:
-        prRed(
-            'An error occurred while trying to add {} as an instructor to {}'.format(
-                instructor.id, course_id
-            )
+    prGreen(
+        'Successfully added {} as an instructor to {}'.format(
+            instructor.id, course_id
         )
-    else:
-        prGreen(
-            'Successfully added {} as an instructor to {}'.format(
-                instructor.id, course_id
-            )
-        )
+    )
 
 
 def remove_instructor(course_id, instructor_id):
     url = '{}/instructor/{}/{}'.format(ngshare_url(), course_id, instructor_id)
     data = {'user': get_username()}
     response = delete(url, data)
-
-    if response is None:
-        prRed(
-            'An error occurred while trying to delete {} from {}'.format(
-                instructor_id, course_id
-            )
+    prGreen(
+        'Successfully deleted instructor {} from {}'.format(
+            instructor_id, course_id
         )
-    else:
-        prGreen(
-            'Successfully deleted instructor {} from {}'.format(
-                instructor_id, course_id
-            )
-        )
+    )
 
 
 def parse_input(argv):
@@ -407,6 +290,7 @@ def parse_input(argv):
             'add_students',
             'remove_student',
             'add_instructor',
+            'remove_instructor',
         ],
         help='Command to execute',
     )
@@ -418,7 +302,6 @@ def parse_input(argv):
     )
 
     args = parser.parse_args()
-    print(args)
 
     return args
 
@@ -434,24 +317,75 @@ def execute_command(args):
     students_csv = args.students_csv
     jhub = args.jhub
 
-    if command == 'create_course' and course_id:
-        create_course(course_id, jhub)
-    elif command == 'add_student' and course_id and student_id:
+    if command == 'create_course':
+        if not course_id:
+            prRed(
+                'Please specify the course_id for the course with -c or --course_id'
+            )
+        if not instructor_id:
+            prRed(
+                'Please specify the instructor for the course with -i or --instructor_id'
+            )
+        instructor = User(instructor_id, first_name, last_name, email)
+        create_course(course_id, jhub, instructor)
+    elif command == 'add_student':
+        if not course_id:
+            prRed(
+                'Please specify the course you want to add the student to using -c or --course_id'
+            )
+        if not student_id:
+            prRed(
+                'Please specify the student you want to add using -s or --student_id'
+            )
         student = User(student_id, first_name, last_name, email)
         add_student(course_id, student, jhub)
-    elif command == 'add_students' and course_id and students_csv:
+    elif command == 'add_students':
+        if not course_id:
+            prRed(
+                'Please specify the course you want to add the students to using -c or --course_id'
+            )
+        if not students_csv:
+            prRed(
+                'Please enter the path containing the students csv using --students_csv'
+            )
+        if not os.path.exists(students_csv):
+            prRed(
+                'The csv file you entered does not exist. Please enter a valid path using --students_csv'
+            )
         add_students(course_id, students_csv, jhub)
-    elif command == 'remove_student' and course_id and student_id:
+    elif command == 'remove_student':
+        if not course_id:
+            prRed(
+                'Please specify which course you want to remove the student from using -c or --course_id'
+            )
+        if not student_id:
+            prRed(
+                'Please specify the student you want to remove from the course using -s or --student_id'
+            )
         remove_student(course_id, student_id)
-    elif command == 'add_instructor' and course_id and instructor_id:
+    elif command == 'add_instructor':
+        if not course_id:
+            prRed(
+                'Please specify the course you want to add the instructor to using -c or --course_id'
+            )
+        if not instructor_id:
+            prRed(
+                'Please specify the instructor you want to add using -i or --instructor_student'
+            )
         instructor = User(instructor_id, first_name, last_name, email)
         add_instructor(course_id, instructor)
-    elif command == 'remove_instructor' and course_id and instructor_id:
+    elif command == 'remove_instructor':
+        if not course_id:
+            prRed(
+                'Please specify which course you want to remove the instructor from using -c or --course_id'
+            )
+        if not instructor_id:
+            prRed(
+                'Please specify the instructor you want to remove using -i or --instructor_id'
+            )
         remove_instructor(course_id, instructor_id)
-    else:
-        prRed(
-            'The command you entered was not recognized. Use the --help flag to see usage examples'
-        )
+
+    return True
 
 
 def main(argv=None):
