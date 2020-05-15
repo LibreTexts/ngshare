@@ -45,6 +45,7 @@ release = get_version('../ngshare/version.py')
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinxcontrib.tikz',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -69,3 +70,9 @@ html_theme = 'alabaster'
 html_static_path = ['_static']
 
 master_doc = 'index'
+
+# -- Options for LaTeX output -------------------------------------------------
+
+latex_elements = {
+    'preamble': r'\usepackage{tikz}',
+}

@@ -35,6 +35,7 @@ Table of Contents
    contributer_guide/development.rst
    contributer_guide/database.rst
    contributer_guide/alembic.rst
+   contributer_guide/docs.rst
 
 Indices and tables
 ------------------
