@@ -29,6 +29,7 @@ def read(rel_path):
     with codecs.open(os.path.join(here, rel_path), 'r') as fp:
         return fp.read()
 
+
 def get_version(rel_path):
     for line in read(rel_path).splitlines():
         if line.startswith('__version__'):
@@ -36,6 +37,7 @@ def get_version(rel_path):
             return line.split(delim)[1]
     else:
         raise RuntimeError("Unable to find version string.")
+
 
 release = get_version('../ngshare/version.py')
 
@@ -80,4 +82,3 @@ latex_elements = {
 }
 
 tikz_proc_suite = 'GhostScript'
-

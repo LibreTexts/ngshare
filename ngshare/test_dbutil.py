@@ -5,6 +5,7 @@
 from . import dbutil
 import os
 
+
 def test_update():
     'Test update database'
 
