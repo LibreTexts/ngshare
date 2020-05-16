@@ -13,6 +13,8 @@ services:
 cache: pip
 before_install:
 - python3 -m pip install setuptools wheel
+- curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+- helm init --client-only
 install:
 - python3 -m pip install .
 before_script:
@@ -20,6 +22,7 @@ before_script:
 script:
 - python3 -m pytest ngshare --cov=./ngshare/
 - python3 -m black -S -l 80 --check testing
+- helm lint --strict helmchart/ngshare
 after_success:
 - python3 -m pip install codecov
 - codecov
