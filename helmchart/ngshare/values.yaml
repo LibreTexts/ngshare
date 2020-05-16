@@ -3,11 +3,12 @@ nameOverride: ""
 fullnameOverride: ""
 
 # Where to pull the ngshare image
-image: 
+image:
   repository: rkevin/ngshare
   version: 0.2.0
   pullPolicy: IfNotPresent
   imagePullSecrets: []
+  tag: 'set-by-chartpress'
 
 # Configure the deployment and service
 deployment:
@@ -54,7 +55,7 @@ ngshare:
 
   # API token to talk to the hub with
   # If left empty, a random one will be generated at install time
-  hub_api_token: 
+  hub_api_token: ""
 
   # Enable debug mode. Do not turn this on in production as it dumps a lot of critical info to users.
   debug: false
@@ -78,4 +79,4 @@ pvc:
   # Additional configs if you have custom needs like specifying a storageclass
   annotations: {}
   selector: {}
-  storageClassName:
+  storageClassName: ""

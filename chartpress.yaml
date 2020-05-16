@@ -1,0 +1,11 @@
+charts:
+  - name: helmchart/ngshare
+    imagePrefix: rkevin/
+    repo:
+      git: rkevin-arch/ngshare-helm-repo
+      published: https://rkevin-arch.github.io/ngshare-helm-repo
+    images:
+      ngshare:
+        dockerfilePath: Dockerfile
+        contextPath: .
+        valuesPath: image
