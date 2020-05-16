@@ -3,6 +3,7 @@
 # Based on nbgrader.dbutil
 
 import os
+import sys
 
 import alembic
 import alembic.command
@@ -38,14 +39,14 @@ def upgrade(db_url: str = DEFAULT_DB, revision='head'):
     alembic.command.upgrade(get_alembic_config(db_url), revision)
 
 
-def _alembic():
+def main(args):
     """Run an alembic command with the right config"""
     cl = alembic.config.CommandLine()
-    options = cl.parser.parse_args()
+    options = cl.parser.parse_args(args)
     if not hasattr(options, "cmd"):
         cl.parser.error("too few arguments")
     cl.run_cmd(get_alembic_config(), options)
 
 
-if __name__ == '__main__':
-    _alembic()
+if __name__ == '__main__':  # pragma: no cover
+    main(sys.argv[1:])
