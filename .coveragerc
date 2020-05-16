@@ -1,0 +1,3 @@
+[report]
+omit =
+    ngshare/__main__.py
