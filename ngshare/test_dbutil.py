@@ -10,10 +10,11 @@ from . import dbutil
 
 def test_update():
     'Test update database'
+    # Create file name
     tempdb_path = tempfile.mktemp('.db')
     tempdb_url = 'sqlite:///' + tempdb_path
+    # Create database
     assert not os.path.exists(tempdb_path)
-
     dbutil.upgrade(tempdb_url)
     # Downgrade to init
     dbutil.main(['downgrade', 'aa00db20c10a'], tempdb_url)
