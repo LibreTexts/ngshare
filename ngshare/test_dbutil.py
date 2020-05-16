@@ -11,7 +11,7 @@ def test_update():
 
     # delete database if exist
     try:
-        os.unlink(dbutil.DEFAULT_DB)
+        os.unlink(dbutil.DEFAULT_DB_PATH)
     except FileNotFoundError:
         pass
 

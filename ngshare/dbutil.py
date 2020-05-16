@@ -14,7 +14,8 @@ _here = os.path.abspath(os.path.dirname(__file__))
 ALEMBIC_INI_TEMPLATE_PATH = os.path.join(_here, 'alembic.ini')
 ALEMBIC_DIR = os.path.join(_here, 'alembic')
 
-DEFAULT_DB = 'sqlite:////tmp/ngshare.db'
+DEFAULT_DB_PATH = '/tmp/ngshare.db'
+DEFAULT_DB = 'sqlite:///' + DEFAULT_DB_PATH
 
 
 def get_alembic_config(db_url: str = DEFAULT_DB) -> alembic.config.Config:
