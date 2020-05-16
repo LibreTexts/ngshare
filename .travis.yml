@@ -23,9 +23,13 @@ script:
 after_success:
 - python3 -m pip install codecov
 - codecov
-- docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}" && IMAGE="rkevin/ngshare:${TRAVIS_BRANCH}-`python
-  -c 'import ngshare; print(ngshare.__version__)'`-${TRAVIS_COMMIT}" && docker build
-  -t "${IMAGE}" . && docker push "${IMAGE}"
+- |-
+  test ${TRAVIS_PYTHON_VERSION} = 3.8 &&
+  echo '{"mtu": 1460}' | sudo dd of=/etc/docker/daemon.json &&
+  sudo systemctl restart docker &&
+  docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}" &&
+  openssl aes-256-cbc -K $encrypted_defe1004a0ce_key -iv $encrypted_defe1004a0ce_iv -in helmchart/ssh_key.enc -out helmchart/ssh_key -d &&
+  GIT_SSH_COMMAND="ssh -i helmchart/ssh_key" chartpress --push --publish-chart --long
 env:
   global:
     - DOCKER_USERNAME=rkevin
