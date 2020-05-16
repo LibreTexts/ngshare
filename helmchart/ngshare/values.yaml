@@ -8,7 +8,7 @@ image:
   version: 0.2.0
   pullPolicy: IfNotPresent
   imagePullSecrets: []
-  tag: '0.0.1-n372.h65bdc17'
+  tag: 'set-by-chartpress'
 
 # Configure the deployment and service
 deployment:
