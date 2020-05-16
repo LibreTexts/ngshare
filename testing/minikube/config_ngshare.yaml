@@ -1,6 +1,6 @@
 ngshare:
   # again, just for testing, don't use in prod
-  hub_api_token: a4IHeiHZuswZrmYbWxSGpLZs3x0pXVxa
+  hub_api_token: 311d1d3e5d8660ae3f4059c36da312d4
   admins:
     - admin
     - admin2
