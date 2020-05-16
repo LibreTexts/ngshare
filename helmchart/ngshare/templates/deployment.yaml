@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "ngshare.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.deployment.replicaCount }}
   selector:
     matchLabels:
       {{- include "ngshare.selectorLabels" . | nindent 6 }}
@@ -42,10 +42,27 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
-          {{- with .Values.ngshare.args }}
           args:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- if .Values.ngshare.debug }}
+            - "--debug"
+            {{- end -}}
+            {{- if .Values.ngshare.upgrade_db }}
+            - "--upgrade-db"
+            {{- end -}}
+            {{- if .Values.ngshare.admins -}}
+            {{/* First some sanity checks, make sure username doesn't contain commas */}}
+              {{- with .Values.ngshare.admins | join "" -}}
+                {{- if contains "," . -}}
+                  {{- fail "Please make sure no admin users have a comma in their name!" -}}
+                {{- end -}}
+              {{- end -}}
+            {{/* Now to specify the value in args */}}
+            - "--admins"
+            - {{ .Values.ngshare.admins | join "," | quote }}
+            {{- end -}}
+            {{- with .Values.ngshare.args -}}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
           env:
             - name: JUPYTERHUB_SERVICE_NAME
               value: {{ include "ngshare.name" . }}

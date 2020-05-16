@@ -19,10 +19,10 @@
 {% if debug %}
 <h2>Debug actions</h2>
 <p>
-  <a href="initialize-Data6ase?action=dump">dump database</a>
-  (<a href="initialize-Data6ase?action=dump&human-readable=true">human readable</a>) /
-  <a href="initialize-Data6ase?action=clear">clear database</a> /
-  <a href="initialize-Data6ase?action=init">init with test data</a>
+  <a href="initialize-Data6ase?action=dump&user=root">dump database</a>
+  (<a href="initialize-Data6ase?action=dump&human-readable=true&user=root">human readable</a>) /
+  <a href="initialize-Data6ase?action=clear&user=root">clear database</a> /
+  <a href="initialize-Data6ase?action=init&user=root">init with test data</a>
 </p>
 {% end %}
 <h2>Here are some sample uses of our APIs</h2>
@@ -33,22 +33,29 @@
   List courses
 </p>
 <form id="form0" action="course/course3" method="POST">
-  {% if vngshare %}<input type="hidden" name="user" value="eric" />{% end %}
+  {% if vngshare %}<input type="hidden" name="user" value="root" />{% end %}
+  <input type="hidden" name="instructors" value="[&quot;kevin&quot;, &quot;abigail&quot;, &quot;lawrence&quot;, &quot;eric&quot;]" />
   <p>
     POST
       <a href="" onclick="document.getElementById('form0').submit(); event.preventDefault();">/api/course/&lt;course_id&gt;</a>:
-    Create course
+    Create course (see HTML form)
   </p>
 </form>
+<p>
+  DELETE
+  <u>
+    /api/course/&lt;course_id&gt;</u>:
+  Delete course
+</p>
 <form id="form4" action="instructor/course2/kevin" method="POST">
   <input type="hidden" name="first_name" value="kevin_first_name" />
   <input type="hidden" name="last_name" value="kevin_last_name" />
   <input type="hidden" name="email" value="kevin_email" />
-  {% if vngshare %}<input type="hidden" name="user" value="abigail" />{% end %}
+  {% if vngshare %}<input type="hidden" name="user" value="root" />{% end %}
   <p>
     POST
       <a href="" onclick="document.getElementById('form4').submit(); event.preventDefault();">/api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;</a>:
-    Add course instructor
+    Add course instructor (see HTML form)
   </p>
 </form>
 <p>
@@ -77,7 +84,7 @@
   <p>
     POST
       <a href="" onclick="document.getElementById('form5').submit(); event.preventDefault();">/api/student/&lt;course_id&gt;/&lt;student_id&gt;</a>:
-    Add course student
+    Add course student (see HTML form)
   </p>
 </form>
 <p>
@@ -92,6 +99,15 @@
     /api/student/&lt;course_id&gt;/&lt;student_id&gt;</u>:
   Remove course student
 </p>
+<form id="form6" action="students/course2" method="POST">
+  <input type="hidden" name="students" value="[{&quot;username&quot;: &quot;kevin&quot;, &quot;first_name&quot;: &quot;kevin_first_name&quot;, &quot;last_name&quot;: &quot;kevin_last_name&quot;, &quot;email&quot;: &quot;kevin_email&quot;}]" />
+  {% if vngshare %}<input type="hidden" name="user" value="abigail" />{% end %}
+  <p>
+    POST
+      <a href="" onclick="document.getElementById('form6').submit(); event.preventDefault();">/api/students/&lt;course_id&gt;</a>:
+    Add multiple students to course (see HTML form)
+  </p>
+</form>
 <p>
   GET
   <a href="students/course2{% if vngshare %}?user=abigail{% end %}">

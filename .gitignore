@@ -1,4 +1,10 @@
 __pycache__
-/build/
 /dist/
-/ngshare.egg-info/
+/build/
+*.egg-info/
+.installed.cfg
+*.egg
+.coverage
+/docs/_build
+/docs/_static
+/docs/_templates

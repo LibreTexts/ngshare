@@ -27,3 +27,14 @@ Make sure you have a storage provisioner that supports that.
 We haven't tested whether sqlite will break when it's mounted multiple times,
 so you are walking into uncharted territory here. Please reconsider.
 {{- end }}
+{{- if not .Values.ngshare.admins }}
+
+WARNING: You have specified no admin users.
+Only admins can create courses, so please add an admin user to the configuration.
+{{- end }}
+{{- if .Values.ngshare.debug }}
+
+WARNING: DEBUG MODE IS NOW ON!!!!!!
+DO NOT USE THIS IN PRODUCTION. This will leak API tokens to users and
+allow people to dump the database, among other things. You have been warned.
+{{- end }}
