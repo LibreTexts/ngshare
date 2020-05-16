@@ -52,8 +52,9 @@ To generate a graph using `eralchemy <https://pypi.org/project/ERAlchemy/>`_:
 .. code:: bash
 
     pip3 install eralchemy
-    # Use vngshare to create a database at /tmp/ngshare.db
-    eralchemy -i sqlite:////tmp/ngshare.db -o er.png
+    cd ngshare
+    python3 dbutil.py upgrade head
+    eralchemy -i sqlite:////tmp/ngshare.db -o database/er.png
 
 Current Entity Relation diagram (manually maintained)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
