@@ -11,7 +11,10 @@
 # pylint: disable=unused-wildcard-import
 # pylint: disable=wildcard-import
 
-from ngshare import *
+try:
+    from .ngshare import *
+except ImportError:
+    from ngshare import *
 
 class MockAuth(HubAuthenticated):
     '''

@@ -1,0 +1,27 @@
+language: python
+python:
+  - 3.6
+  - 3.7
+  - 3.8
+  - nightly
+jobs:
+  allow_failures:
+  - python: nightly
+addons:
+  apt:
+    packages:
+    - python3-pip
+cache: pip
+before_install:
+  - python3 -m pip install setuptools wheel
+install:
+  - python3 -m pip install .
+before_script:
+  - python3 -m pip install pytest pytest-cov pytest-tornado black
+script:
+  - python3 -m pytest ngshare --cov=./ngshare/
+#  - black -S -l 80 --check .
+  - python3 -m black -S -l 80 --check testing
+after_success:
+  - python3 -m pip install codecov
+  - codecov
