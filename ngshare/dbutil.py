@@ -14,8 +14,7 @@ _here = os.path.abspath(os.path.dirname(__file__))
 ALEMBIC_INI_TEMPLATE_PATH = os.path.join(_here, 'alembic.ini')
 ALEMBIC_DIR = os.path.join(_here, 'alembic')
 
-DEFAULT_DB_PATH = '/tmp/ngshare.db'
-DEFAULT_DB = 'sqlite:///' + DEFAULT_DB_PATH
+DEFAULT_DB = 'sqlite:////tmp/ngshare.db'
 
 
 def get_alembic_config(db_url: str = DEFAULT_DB) -> alembic.config.Config:
@@ -40,13 +39,13 @@ def upgrade(db_url: str = DEFAULT_DB, revision='head'):
     alembic.command.upgrade(get_alembic_config(db_url), revision)
 
 
-def main(args):
+def main(args: list, db_url: str = DEFAULT_DB):
     """Run an alembic command with the right config"""
     cl = alembic.config.CommandLine()
     options = cl.parser.parse_args(args)
     if not hasattr(options, "cmd"):
         cl.parser.error("too few arguments")
-    cl.run_cmd(get_alembic_config(), options)
+    cl.run_cmd(get_alembic_config(db_url), options)
 
 
 if __name__ == '__main__':  # pragma: no cover
