@@ -46,8 +46,8 @@ spec:
             {{- if .Values.ngshare.debug }}
             - "--debug"
             {{- end -}}
-            {{- if .Values.ngshare.upgrade_db }}
-            - "--upgrade-db"
+            {{- if not .Values.ngshare.upgrade_db }}
+            - "--no-upgrade-db"
             {{- end -}}
             {{- if .Values.ngshare.admins -}}
             {{/* First some sanity checks, make sure username doesn't contain commas */}}
