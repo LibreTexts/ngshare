@@ -990,15 +990,15 @@ def main():  # pragma: no cover
         '--port', help='bind port (vngshare only)', type=int, default=12121
     )
     parser.add_argument(
-        '--upgrade-db',
-        help='automatically upgrade database',
+        '--no-upgrade-db',
         action='store_true',
+        help='do not automatically upgrade database',
     )
     args = parser.parse_args()
     if args.jupyterhub_api_url is not None:
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
 
-    if args.upgrade_db:
+    if not args.no_upgrade_db:
         dbutil.upgrade(args.database)
 
     prefix = args.prefix or os.environ.get('JUPYTERHUB_SERVICE_PREFIX', '/api/')
