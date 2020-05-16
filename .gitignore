@@ -5,3 +5,6 @@ __pycache__
 .installed.cfg
 *.egg
 .coverage
+/docs/_build
+/docs/_static
+/docs/_templates
