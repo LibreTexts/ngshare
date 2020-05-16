@@ -2,6 +2,8 @@
 # Server API
 Last updated 2020-04-19
 
+**Migrating to [docs](docs)**
+
 ---
 
 ## Definitions
@@ -75,7 +77,7 @@ Clients will send HTTP request to server. Possible methods are:
 The method to use is specified in each API entry point below
 
 ### Response
-When client is not authenticaed (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
+When client is not authenticated (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
 
 When client is authenticated, server will return a status code and a JSON object (specified below).
 * When success, the status code will be 200 and response will be `{"success": true, ...}`, where "`...`" contains extra information.
