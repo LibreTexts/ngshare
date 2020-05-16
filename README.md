@@ -161,3 +161,6 @@ If you want ngshare / vngshare to auto check db upgrade each time it starts up
  In this case, please have a good way to backup your database before running
  ngshare / vngshare.
 
+## Code formatting
+`black -S -l 80 ngshare`
+
