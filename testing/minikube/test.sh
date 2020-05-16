@@ -4,8 +4,8 @@
 # ModuleNotFoundError: No module named 'kubernetes'
 # File "/etc/jupyterhub/jupyterhub_config.py", line 6: from kubernetes import client
 # reverting to beta.3
-Z2JH_HELM_CHART_VER=0.9.0-beta.3
-NGSHARE_HELM_CHART_LOC=../../helmchart/ngshare
+Z2JH_HELM_CHART_VER=0.9.0
+NGSHARE_HELM_CHART_LOC="ngshare/ngshare --version=0.0.1-n295.h86c2be1"
 
 function build_singleuser_img {
     eval $(minikube docker-env)
@@ -27,10 +27,11 @@ case $1 in
         systemctl is-active docker --quiet || sudo systemctl start docker
         minikube start
         helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+        helm repo add ngshare https://rkevin-arch.github.io/ngshare-helm-repo/
         helm repo update ;;
     install )
         build_singleuser_img
-        build_ngshare_img
+        #build_ngshare_img
         helm install jhub jupyterhub/jupyterhub --version=$Z2JH_HELM_CHART_VER -f config.yaml --debug
         helm install ngshare $NGSHARE_HELM_CHART_LOC -f config_ngshare.yaml --debug
         minikube service list ;;
@@ -41,14 +42,14 @@ case $1 in
         helm uninstall jhub
         helm uninstall ngshare
         build_singleuser_img
-        build_ngshare_img
+        #build_ngshare_img
         sleep 10 # sometimes PVCs arent unmounted properly, giving an error when doing helm install
         helm install jhub jupyterhub/jupyterhub --version=$Z2JH_HELM_CHART_LOC -f config.yaml --debug
         helm install ngshare $NGSHARE_HELM_CHART_LOC -f config_ngshare.yaml --debug
         minikube service list ;;
     upgrade )
         build_singleuser_img
-        build_ngshare_img
+        #build_ngshare_img
         helm upgrade jhub jupyterhub/jupyterhub --version=$Z2JH_HELM_CHART_LOC -f config.yaml --debug
         helm upgrade ngshare $NGSHARE_HELM_CHART_LOC -f config_ngshare.yaml --debug
         minikube service list ;;
