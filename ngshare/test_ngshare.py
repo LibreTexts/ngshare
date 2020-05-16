@@ -10,7 +10,14 @@ from urllib.parse import urlencode
 import pytest
 from tornado.httputil import url_concat
 
-from .vngshare import MyApplication, MyHelpers, MockAuth
+from .ngshare import (
+    MyApplication,
+    MyHelpers,
+    MockAuth,
+    RequestHandler,
+    MyHelpers,
+    MyRequestHandler,
+)
 
 user, hc, bu = None, None, None
 
@@ -26,6 +33,8 @@ application = MyApplication(
 @pytest.fixture
 def app():
     'Create Tornado application for testing'
+    # Mock authentication using vngshare
+    MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)
     return application
 
 
