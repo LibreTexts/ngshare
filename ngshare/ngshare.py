@@ -938,62 +938,23 @@ class MyApplication(Application):
         self.admin = admin
 
 
-class MockAuth(HubAuthenticated):
-    '''
-        Mock class substituting HubAuthenticated, for vngshare
-    '''
-
-    def get_login_url(self):
-        return 'http://example.com/'
-
-    def get_current_user(self):
-        if type(self).__name__ in ('HomePage', 'Static', 'InitDatabase'):
-            user = self.get_argument('user', 'user')
-        else:
-            user = self.get_argument('user')
-        return {'name': user}
-
-
 def main():  # pragma: no cover
     'Main function'
     parser = argparse.ArgumentParser(
         description='ngshare, a REST API nbgrader exchange'
     )
     parser.add_argument(
-        '--vngshare',
-        help='Use vngshare (stand-alone mode)',
-        action='store_true',
-    )
-    parser.add_argument(
         '--jupyterhub_api_url', help='override $JUPYTERHUB_API_URL'
     )
-    parser.add_argument(
-        '--prefix',
-        help='URL prefix (default: $JUPYTERHUB_SERVICE_PREFIX or "/api/")',
-    )
     parser.add_argument('--debug', action='store_true', help='enable debug')
-    parser.add_argument(
-        '--database',
-        help='database url',
-        default='sqlite:////srv/ngshare/ngshare.db',
-    )
-    parser.add_argument(
-        '--storage', help='path to store files', default='/srv/ngshare/files/'
-    )
-    parser.add_argument(
-        '--admins', help='admin user ids (comma splitted)', default=''
-    )
-    parser.add_argument(
-        '--host', help='bind hostname (vngshare only)', default='127.0.0.1'
-    )
-    parser.add_argument(
-        '--port', help='bind port (vngshare only)', type=int, default=12121
-    )
-    parser.add_argument(
-        '--no-upgrade-db',
-        action='store_true',
-        help='do not automatically upgrade database',
-    )
+    parser.add_argument('--database', help='database url',
+                        default='sqlite:////srv/ngshare/ngshare.db')
+    parser.add_argument('--storage', help='path to store files',
+                        default='/srv/ngshare/files/')
+    parser.add_argument('--admins', help='admin user ids (comma splitted)',
+                        default='')
+    parser.add_argument('--no-upgrade-db', action='store_true',
+                        help='do not automatically upgrade database')
     args = parser.parse_args()
     if args.jupyterhub_api_url is not None:
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
@@ -1001,11 +962,7 @@ def main():  # pragma: no cover
     if not args.no_upgrade_db:
         dbutil.upgrade(args.database)
 
-    prefix = args.prefix or os.environ.get('JUPYTERHUB_SERVICE_PREFIX', '/api/')
-
-    if args.vngshare:
-        MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)
-
+    prefix = os.environ['JUPYTERHUB_SERVICE_PREFIX']
     app = MyApplication(
         prefix,
         args.database,
@@ -1015,22 +972,10 @@ def main():  # pragma: no cover
     )
 
     http_server = HTTPServer(app)
+    url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])
 
-    if args.vngshare:
-        http_server.listen(args.port, args.host)
-        app.vngshare = True
-        print()
-        print('Starting vngshare (Vserver-like Notebook Grader Share)')
-        print('DO NOT USE IN PRODUCTION')
-        print('Database file is %s' % repr(args.database))
-        print('Storage directory is %s' % repr(args.storage))
-        print('admin users are %s' % repr(app.admin))
-        print('Please go to http://%s:%d/api/' % (args.host, args.port))
-    else:
-        url = urlparse(os.environ['JUPYTERHUB_SERVICE_URL'])
-
-        # Must listen on all interfaces for proxy
-        http_server.listen(url.port, '0.0.0.0')
+    # Must listen on all interfaces for proxy
+    http_server.listen(url.port, '0.0.0.0')
 
     IOLoop.current().start()
 

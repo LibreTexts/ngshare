@@ -1,5 +1,4 @@
 FROM jupyterhub/jupyterhub:latest
-COPY . /ngshare/
-RUN pip install /ngshare
+COPY ngshare/ /ngshare/
 USER 65535:65535
-ENTRYPOINT ["python3", "-m", "ngshare"]
+ENTRYPOINT ["python3", "/ngshare/ngshare.py"]
