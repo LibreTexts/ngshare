@@ -16,11 +16,9 @@ fileConfig(config.config_file_name)
 # add your model's MetaData object here
 # for 'autogenerate' support
 try:
-    # executing from dbutil or ngshare itself
-    from database.database import Base
+    from ..database.database import Base
 except ImportError:
-    # executing from pytest
-    from ngshare.database.database import Base
+    from database.database import Base
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

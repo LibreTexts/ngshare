@@ -34,11 +34,10 @@
 </p>
 <form id="form0" action="course/course3" method="POST">
   {% if vngshare %}<input type="hidden" name="user" value="root" />{% end %}
-  <input type="hidden" name="instructors" value="[&quot;kevin&quot;, &quot;abigail&quot;, &quot;lawrence&quot;, &quot;eric&quot;]" />
   <p>
     POST
       <a href="" onclick="document.getElementById('form0').submit(); event.preventDefault();">/api/course/&lt;course_id&gt;</a>:
-    Create course (see HTML form)
+    Create course
   </p>
 </form>
 <p>
@@ -55,7 +54,7 @@
   <p>
     POST
       <a href="" onclick="document.getElementById('form4').submit(); event.preventDefault();">/api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;</a>:
-    Add course instructor (see HTML form)
+    Add course instructor
   </p>
 </form>
 <p>
@@ -84,7 +83,7 @@
   <p>
     POST
       <a href="" onclick="document.getElementById('form5').submit(); event.preventDefault();">/api/student/&lt;course_id&gt;/&lt;student_id&gt;</a>:
-    Add course student (see HTML form)
+    Add course student
   </p>
 </form>
 <p>
@@ -105,7 +104,7 @@
   <p>
     POST
       <a href="" onclick="document.getElementById('form6').submit(); event.preventDefault();">/api/students/&lt;course_id&gt;</a>:
-    Add multiple students to course (see HTML form)
+    Add multiple students to course
   </p>
 </form>
 <p>

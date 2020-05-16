@@ -2,8 +2,6 @@
 # Server API
 Last updated 2020-04-19
 
-**Migrating to [docs](docs)**
-
 ---
 
 ## Definitions
@@ -19,12 +17,6 @@ Also referred to as `course_id`, this is a unique name for a course. For example
 
 ### Notebook name
 Also referred to as `notebook_id`, this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
-
-### User name
-User name is a user in nbgrader, which is used as Instructor ID and Student ID.
- They are the same username in JupyterHub and are created automatically.
- Deletion is not supported so do not remove a user in JupyterHub and create a
- new one with the same name. 
 
 ### Instructor ID
 The ID given to an instructor. For example, "course1_instructor" or "doe_jane"
@@ -83,7 +75,7 @@ Clients will send HTTP request to server. Possible methods are:
 The method to use is specified in each API entry point below
 
 ### Response
-When client is not authenticated (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
+When client is not authenticaed (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
 
 When client is authenticated, server will return a status code and a JSON object (specified below).
 * When success, the status code will be 200 and response will be `{"success": true, ...}`, where "`...`" contains extra information.

@@ -3,7 +3,6 @@
 # Based on nbgrader.dbutil
 
 import os
-import sys
 
 import alembic
 import alembic.command
@@ -14,8 +13,7 @@ _here = os.path.abspath(os.path.dirname(__file__))
 ALEMBIC_INI_TEMPLATE_PATH = os.path.join(_here, 'alembic.ini')
 ALEMBIC_DIR = os.path.join(_here, 'alembic')
 
-DEFAULT_DB_PATH = '/tmp/ngshare.db'
-DEFAULT_DB = 'sqlite:///' + DEFAULT_DB_PATH
+DEFAULT_DB = 'sqlite:////tmp/ngshare.db'
 
 
 def get_alembic_config(db_url: str = DEFAULT_DB) -> alembic.config.Config:
@@ -40,14 +38,14 @@ def upgrade(db_url: str = DEFAULT_DB, revision='head'):
     alembic.command.upgrade(get_alembic_config(db_url), revision)
 
 
-def main(args):
+def _alembic():
     """Run an alembic command with the right config"""
     cl = alembic.config.CommandLine()
-    options = cl.parser.parse_args(args)
+    options = cl.parser.parse_args()
     if not hasattr(options, "cmd"):
         cl.parser.error("too few arguments")
     cl.run_cmd(get_alembic_config(), options)
 
 
-if __name__ == '__main__':  # pragma: no cover
-    main(sys.argv[1:])
+if __name__ == '__main__':
+    _alembic()

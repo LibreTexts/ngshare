@@ -1,6 +1,6 @@
 apiVersion: v2
 name: ngshare
-version: 0.0.1-set.by.chartpress
+version: 0.2.0
 description: Exchange service allowing nbgrader to be used on a Z2JH environment
 type: application
 home: https://github.com/lxylxy123456/ngshare/

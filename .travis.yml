@@ -1,43 +1,24 @@
 language: python
 python:
-- 3.6
-- 3.7
-# - 3.8
-# - nightly
-jobs:
-  allow_failures:
-  - python: nightly
+#  - 3.5
+  - 3.6
+  - 3.7
+  - nightly
 addons:
   apt:
     packages:
     - python3-pip
-services:
-- docker
 cache: pip
 before_install:
-- python3 -m pip install setuptools wheel
-- curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+  - python3 -m pip install setuptools wheel
 install:
-- python3 -m pip install .
+  - python3 -m pip install .
 before_script:
-- python3 -m pip install pytest pytest-cov pytest-tornado black
+  - python3 -m pip install pytest pytest-cov pytest-tornado black
 script:
-- python3 -m pytest ngshare --cov=./ngshare/
-- python3 -m black -S -l 80 --check .
-- helm lint --strict helmchart/ngshare
+  - python3 -m pytest ngshare --cov=./ngshare/
+#  - black -S -l 80 --check .
+  - python3 -m black -S -l 80 --check testing
 after_success:
-- python3 -m pip install codecov
-- codecov
-- |-
-  test ${TRAVIS_PYTHON_VERSION} = 3.8 &&
-  echo '{"mtu": 1460}' | sudo dd of=/etc/docker/daemon.json &&
-  sudo systemctl restart docker &&
-  docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}" &&
-  openssl aes-256-cbc -K $encrypted_defe1004a0ce_key -iv $encrypted_defe1004a0ce_iv -in helmchart/ssh_key.enc -out helmchart/ssh_key -d &&
-  chmod 400 helmchart/ssh_key &&
-  python3 -m pip install chartpress &&
-  GIT_SSH_COMMAND="ssh -i `pwd`/helmchart/ssh_key" chartpress --push --publish-chart --long
-env:
-  global:
-    - DOCKER_USERNAME=rkevin
-    - secure: pc5Rmu1F8h3N5s5zm1LNbr25MHXpbitvEfw0IQ+V/EmWjctpu+L9CZkjIoIwF4xQ42Gr9TfgqvrdPW2xbvPIC3EhQG7MDMZYxOfNo7yA21wydZR2CuEWnKDzukNtTVtZihs678a0hBwcoQURHRt7fxdA7D6ZizP0PA7xXc6znBqddblzQyFBEuidvwiMAygr7zifj27ZrKIUSk9IFUnXpLYZ8mH+LoQtweXsyUizc9t9kzrEBLPylg1Go87YmJlY4iYP/gS0SPrYIe/WOtdoieNHj9G1cjh4utlBY7IJ/tjFAgQOZ4ENtDEvq2DqPceyQ3ASsfy11WP+Z/5lyRd/nmA8oGU2oNDnEg9OpbM03mttTj8MfNDfOWKhs8+RSLOsIQzHje6WuHoKXy0mVMqSL8YcRhTFfEM581X4IsaEw3NX1K3z2mX5Wzhqhd5pO7KU9gIm5h1Skv7LqKEYRvWxLgUkbewD3SsHPonDdeMaJXm3OFuoHf0js8wxx1ZcE7UL0IQ02TDANJo6cIvHYLp49izeJCWRdeR6srhnmukvGarlee6QFKrIGqyAHmdYE5T4bL533lCb9hgOHiLNlAHJUFbmapRvkhUWaMklKdIpkoiWSeaSEKxJ1ONIkOw7kYpPPkjbsLRsfdg9xQZAp2yEciWaoDPZ/vnEl6ELCEdJ6gs=
+  - python3 -m pip install codecov
+  - codecov
