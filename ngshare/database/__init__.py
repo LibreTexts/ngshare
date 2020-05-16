@@ -1,5 +1,13 @@
-from .database import (Base, User, Course, Assignment, Submission,
-                       File, InstructorAssociation, StudentAssociation)
+from .database import (
+    Base,
+    User,
+    Course,
+    Assignment,
+    Submission,
+    File,
+    InstructorAssociation,
+    StudentAssociation,
+)
 from .test_database import clear_db, init_db, dump_db
 
 __all__ = [

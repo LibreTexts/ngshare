@@ -4,6 +4,9 @@ python:
 - 3.7
 - 3.8
 - nightly
+jobs:
+  allow_failures:
+  - python: nightly
 addons:
   apt:
     packages:
@@ -19,8 +22,8 @@ install:
 before_script:
 - python3 -m pip install pytest pytest-cov pytest-tornado black
 script:
-- python3 -m pytest ngshare --cov=./ngshare/
-- python3 -m black -S -l 80 --check testing
+- python3 -m pytest . --cov=.
+- python3 -m black -S -l 80 --check .
 - helm lint --strict helmchart/ngshare
 after_success:
 - python3 -m pip install codecov
