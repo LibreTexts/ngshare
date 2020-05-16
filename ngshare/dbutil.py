@@ -4,8 +4,6 @@
 
 import os
 import sys
-import tempfile
-import shutil
 
 import alembic
 import alembic.command
@@ -18,6 +16,7 @@ ALEMBIC_DIR = os.path.join(_here, 'alembic')
 
 DEFAULT_DB = 'sqlite:////tmp/ngshare.db'
 
+
 def get_alembic_config(db_url: str = DEFAULT_DB) -> alembic.config.Config:
     """Generate the alembic configuration from the template and populate fields.
     db_url: str [default: 'sqlite:////tmp/ngshare.db']
@@ -29,6 +28,7 @@ def get_alembic_config(db_url: str = DEFAULT_DB) -> alembic.config.Config:
     config.set_main_option("sqlalchemy.url", db_url)
     return config
 
+
 def upgrade(db_url: str = DEFAULT_DB, revision='head'):
     """Upgrade the given database to revision.
     db_url: str [default: 'sqlite:////tmp/ngshare.db']
@@ -38,13 +38,15 @@ def upgrade(db_url: str = DEFAULT_DB, revision='head'):
     """
     alembic.command.upgrade(get_alembic_config(db_url), revision)
 
-def _alembic():
+
+def main(args):
     """Run an alembic command with the right config"""
     cl = alembic.config.CommandLine()
-    options = cl.parser.parse_args()
+    options = cl.parser.parse_args(args)
     if not hasattr(options, "cmd"):
         cl.parser.error("too few arguments")
     cl.run_cmd(get_alembic_config(), options)
 
-if __name__ == '__main__':
-    _alembic()
+
+if __name__ == '__main__':  # pragma: no cover
+    main(sys.argv[1:])
