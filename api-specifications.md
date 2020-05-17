@@ -2,6 +2,8 @@
 # Server API
 Last updated 2020-04-19
 
+**Migrating to [docs](docs)**
+
 ---
 
 ## Definitions
@@ -30,8 +32,20 @@ The ID given to an instructor. For example, "course1_instructor" or "doe_jane"
 ### Student ID
 The ID given to a student. For example, "doe_jane".
 
+### Admin user
+Admin users have special privilege on ngshare (e.g. create / delete courses).
+ The list of admin users can be set by `--admins=` argument in ngshare or
+ vngshare.
+
 ### Timestamp
 A timestamp of when a user initiates the assignment submission process. It follows the [format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) `"%Y-%m-%d %H:%M:%S.%f %Z"`. For example, "2020-01-30 10:30:47.524219 UTC".
+
+### Note on Removals
+Currently removing something will remove relevant objects and relations in
+ database, but the actual files are not removed from the file system.
+
+If storage space is a problem, the administrators can dump the database and
+ remove files from the file system that are not referenced by the database.
 
 ---
 
@@ -69,7 +83,7 @@ Clients will send HTTP request to server. Possible methods are:
 The method to use is specified in each API entry point below
 
 ### Response
-When client is not authenticaed (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
+When client is not authenticated (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
 
 When client is authenticated, server will return a status code and a JSON object (specified below).
 * When success, the status code will be 200 and response will be `{"success": true, ...}`, where "`...`" contains extra information.
@@ -90,7 +104,9 @@ Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyt
 ### /api/courses: Courses
 
 #### GET /api/courses
-*List all available courses taking or teaching (students+instructors).*
+*List all available courses taking or teaching. (students+instructors)*
+
+*List all courses in ngshare. (admins)*
 
 Used for ExchangeList.
 
@@ -112,9 +128,28 @@ Used for ExchangeList.
 ### /api/course: Course
 
 #### POST /api/course/&lt;course_id&gt;
-*Create a course (anyone logged in). Used for outside Exchange.*
+*Create a course (admins). Used for outside Exchange.*
 
 The new course will have no students. Its only instructor is the creator.
+
+##### Request (HTTP POST data)
+```
+instructors=[/*instructor username*/, ...] /* optional */
+```
+
+##### Response
+```javascript
+{
+    "success": true
+}
+```
+
+##### Error messages
+* 400 Instructors cannot be JSON decoded
+* 409 Course already exists
+
+#### DELETE /api/course/&lt;course_id&gt;
+*Remove a course (admins). Used for outside Exchange.*
 
 ##### Response
 ```javascript
@@ -125,12 +160,15 @@ The new course will have no students. Its only instructor is the creator.
 
 ##### Error messages
 * 302 (Login required)
-* 409 Course already exists
+* 403 Permission denied
+* 404 Course not found
 
 ### /api/instructor: Course instructor management
 
 #### POST /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Add or update a course instructor. (instructors only)*
+*Add or update a course instructor. (admins)*
+
+*Update self full name or email. (instructors)*
 
 If the user is already a student of the course, the student-relationship
  will be removed.
@@ -180,9 +218,9 @@ When first name, last name, or email not set, the field is null
 * 404 Instructor not found
 
 #### DELETE /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Remove a course instructor (instructors only)*
+*Remove a course instructor (admins)*
 
-Submissions of the instructor are not removed (visible to other instructors).
+Submissions of the instructor are not removed.
 
 ##### Response
 ```javascript
@@ -196,7 +234,6 @@ Submissions of the instructor are not removed (visible to other instructors).
 * 403 Permission denied
 * 404 Course not found
 * 404 Instructor not found
-* 409 Cannot remove last instructor
 
 ### /api/instructors: List course instructors
 
@@ -232,8 +269,7 @@ When first name, last name, or email not set, the field is null
 #### POST /api/student/&lt;course_id&gt;/&lt;student_id&gt;
 *Add or update a student. (instructors only)*
 
-If the user is an instructor of the course, the instructor-relation will be
- removed.
+Fails if the user is an instructor of the course
 
 ##### Request (HTTP POST data)
 ```
@@ -253,7 +289,7 @@ email=/*student email*/
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
-* 409 Cannot remove last instructor
+* 409 Cannot add instructor as student
 * 400 Please supply first name
 * 400 Please supply last name
 * 400 Please supply email
@@ -303,9 +339,12 @@ Submissions of the student are not removed (visible to instructors).
 #### POST /api/students/&lt;course_id&gt;
 *Add or update students. (instructors only)*
 
+If the request syntax is correct, will return 200 and report whether each
+ student is added correctly.
+
 ##### Request (HTTP POST data)
 ```
-data = [/* JSON object */
+students=[/* JSON object */
     {
         "username": "/* student 1 ID */",
         "first_name": "/* student 1 first name */",
@@ -345,6 +384,8 @@ data = [/* JSON object */
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
+* 400 Please supply students
+* 400 Students cannot be JSON decoded
 * 400 Incorrect request format
 
 #### GET /api/students/&lt;course_id&gt;

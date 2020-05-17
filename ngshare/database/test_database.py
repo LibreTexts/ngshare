@@ -11,19 +11,11 @@ from collections import defaultdict
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# pylint: disable=global-statement
-# pylint: disable=invalid-name
-# pylint: disable=len-as-condition
-# pylint: disable=unused-wildcard-import
-# pylint: disable=wildcard-import
-
 Session = None
 test_storage = None
 
-try:
-    from .database import *
-except ImportError:
-    from database import *
+from .database import *
+
 
 def clear_db(db, storage_path):
     'Remove all data from database'
@@ -35,14 +27,15 @@ def clear_db(db, storage_path):
     db.query(InstructorAssociation).delete()
     db.query(StudentAssociation).delete()
     for table_name in [
-            'assignment_files_assoc_table',
-            'submission_files_assoc_table',
-            'feedback_files_assoc_table',
-        ]:
+        'assignment_files_assoc_table',
+        'submission_files_assoc_table',
+        'feedback_files_assoc_table',
+    ]:
         db.execute('DELETE FROM %s' % table_name)
     db.commit()
     if storage_path is not None:
         shutil.rmtree(storage_path, ignore_errors=True)
+
 
 def init_db(db, storage_path):
     '''
@@ -60,8 +53,8 @@ def init_db(db, storage_path):
     ua = User('abigail')
     ul = User('lawrence')
     ue = User('eric')
-    course1 = Course('course1', uk)
-    course2 = Course('course2', ua)
+    course1 = Course('course1', [uk])
+    course2 = Course('course2', [ua])
     db.add(course1)
     db.add(course2)
     course1.students.append(ul)
@@ -90,29 +83,37 @@ def init_db(db, storage_path):
         f.close()
     db.commit()
 
+
 def dump_db(db):
     'Dump database out'
     ans = defaultdict(list)
-    for table in (User, Course, Assignment, Submission, File,
-                  InstructorAssociation, StudentAssociation):
+    for table in (
+        User,
+        Course,
+        Assignment,
+        Submission,
+        File,
+        InstructorAssociation,
+        StudentAssociation,
+    ):
         for i in db.query(table).all():
             ans[table.__tablename__].append(i.dump())
     for table in (
-            assignment_files_assoc_table,
-            submission_files_assoc_table,
-            feedback_files_assoc_table,
-        ):
+        assignment_files_assoc_table,
+        submission_files_assoc_table,
+        feedback_files_assoc_table,
+    ):
         for i in db.query(table).all():
-            ans[table.name].append({
-                'left_id': i.left_id,
-                'right_id': i.right_id,
-            })
+            ans[table.name].append(
+                {'left_id': i.left_id, 'right_id': i.right_id,}
+            )
     return ans
+
 
 def test_legacy():
     'Some test cases created when building database structure'
     global Session
-    engine = create_engine('sqlite://') # temp database in memory
+    engine = create_engine('sqlite://')  # temp database in memory
     Base.metadata.bind = engine
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
@@ -123,7 +124,7 @@ def test_legacy():
     student = User("rk-test")
     db.add(instructor)
     db.add(student)
-    course = Course("ecs189m", instructor)
+    course = Course("ecs189m", [instructor])
     assignment = Assignment("ps1", course)
     submission = Submission(student, assignment)
     db.add(course)
@@ -149,9 +150,10 @@ def test_legacy():
         for j in i.submissions:
             print("One submission from", j.student, "at", j.timestamp)
 
+
 def test_init():
     'Test clearing database and fill in default test data'
-    global test_storage
+    global Session, test_storage
     test_storage = tempfile.mkdtemp()
     db = Session()
     clear_db(db, None)
@@ -165,15 +167,24 @@ def test_init():
     assert not db.query(File).all()
     assert not db.query(InstructorAssociation).all()
     assert not db.query(StudentAssociation).all()
+    assert not dump_db(db)
     init_db(db, test_storage)
     assert len(db.query(User).all()) == 4
     assert len(db.query(Course).all()) == 2
     assert len(db.query(Assignment).all()) == 3
     assert len(db.query(Submission).all()) == 2
     assert len(db.query(File).all()) == 6
+    dumped = dump_db(db)
+    assert len(dumped['users']) == 4
+    assert len(dumped['courses']) == 2
+    assert len(dumped['assignments']) == 3
+    assert len(dumped['submissions']) == 2
+    assert len(dumped['files']) == 6
+
 
 def test_upload_feedback():
     'When uploading feedback, old feedbacks need to be removed'
+    global Session
     db = Session()
     ts = datetime.datetime(2020, 1, 1, 0, 0, 0, 0)
     s1 = db.query(Submission).filter(Submission.timestamp == ts).one_or_none()
@@ -185,8 +196,10 @@ def test_upload_feedback():
     db.commit()
     assert len(db.query(File).all()) == 5
 
+
 def test_remove_assignment():
     'Test when removing assignment, submissions and files need to be removed'
+    global Session
     db = Session()
     ac = db.query(Assignment).filter(Assignment.id == 'challenge').one_or_none()
     assert ac is not None
@@ -196,8 +209,10 @@ def test_remove_assignment():
     assert len(db.query(Submission).all()) == 0
     assert len(db.query(File).all()) == 2
 
+
 def test_instructor_association():
     'Test instructor association table'
+    global Session
     db = Session()
     kevin = db.query(User).filter_by(id='kevin').one_or_none()
     assert kevin.id == 'kevin'
@@ -228,8 +243,10 @@ def test_instructor_association():
     assert association.last_name == 'Kevin.last_name'
     assert association.email == 'Kevin.email'
 
+
 def test_student_association():
     'Test student association table'
+    global Session
     db = Session()
     lawrence = db.query(User).filter_by(id='lawrence').one_or_none()
     assert lawrence.id == 'lawrence'
@@ -260,7 +277,50 @@ def test_student_association():
     assert association.last_name == 'Lawrence.last_name'
     assert association.email == 'Lawrence.email'
 
+
+def test_notimpl():
+    'Test not implemented functions'
+    global Session
+    db = Session()
+    try:
+        db.query(User).first().delete(db)
+    except NotImplementedError:
+        pass
+
+
+def test_print():
+    'Test __str__ functions'
+    global Session
+    db = Session()
+    clear_db(db, None)
+    init_db(db, test_storage)
+    assert str(db.query(User).first()).startswith('<User')
+    assert str(db.query(Course).first()).startswith('<Course')
+    assert str(db.query(Assignment).first()).startswith('<Assignment')
+    assert str(db.query(Submission).first()).startswith('<Submission')
+    assert str(db.query(File).first()).startswith('<File')
+
+
+def test_remove_course():
+    global Session
+    db = Session()
+    for course in db.query(Course).all():
+        course.delete(db)
+    a = dump_db(db)
+    assert list(dump_db(db)) == ['users']
+
+
+def test_jhub_user():
+    global Session
+    db = Session()
+    user_model = {'name': 'eric'}
+    assert str(User.from_jupyterhub_user(user_model, db)) == '<User eric>'
+    user_model = {'name': 'new_usr'}
+    assert str(User.from_jupyterhub_user(user_model, db)) == '<User new_usr>'
+
+
 def test_clean():
     'Clean test space'
+    global Session
     db = Session()
     clear_db(db, test_storage)
