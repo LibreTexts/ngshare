@@ -1282,10 +1282,8 @@ def test_api_prefix():
 
 def test_notimpl():
     'Test NotImplementedError etc'
-    try:
+    with pytest.raises(NotImplementedError):
         MyHelpers().json_error(404, 'Not Found')
-    except NotImplementedError:
-        pass
     assert MockAuth().get_login_url().startswith('http')
 
 
