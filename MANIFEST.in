@@ -2,3 +2,6 @@ include ngshare/dump.html
 include ngshare/favicon.ico
 include ngshare/home.html
 include ngshare/masonry.min.js
+include ngshare/alembic.ini
+include ngshare/alembic/env.py
+include ngshare/alembic/versions/*.py
