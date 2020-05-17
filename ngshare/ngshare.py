@@ -887,10 +887,10 @@ class NotFoundHandler(RequestHandler):
 
 
 class HealthCheckHandler(RequestHandler):
-    'Health check handler on /healthz, for k8s'
+    '/healthz'
 
     def get(self):
-        "Returns a 200 to indicate we're alive"
+        "Health check endpoint for k8s. Returns a 200 to indicate we're alive"
         self.write(json.dumps({'success': True}))
         return
 
