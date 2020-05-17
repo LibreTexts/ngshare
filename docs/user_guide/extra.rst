@@ -39,3 +39,8 @@ Initialize with test data
 
 Initialize database with some pre-defined test data. Only available when debug mode is on. 
 
+Health endpoint
+-------------
+``GET /healthz``
+
+This always returns a single JSON object with `{"success": true}`. It can be used as a liveness probe to ensure ngshare is up and running.

@@ -78,6 +78,21 @@ def assert_success(url, data=None, params=None, method='GET'):
 
 
 @pytest.mark.gen_test
+def test_health(http_client, base_url):
+    'Test /healthz endpoint'
+    response = yield http_client.fetch(base_url + '/healthz')
+    assert response.code == 200
+    assert json.loads(response.body)['success']
+
+
+@pytest.mark.gen_test
+def test_api_endpoint_conflict(http_client, base_url):
+    'Test throwing an error if the API prefix starts with /healthz/'
+    with pytest.raises(ValueError):
+        MyApplication("/healthz/", 'sqlite:////tmp/ngshare.db', '/tmp/ngshare/')
+
+
+@pytest.mark.gen_test
 def test_home(http_client, base_url):
     'Test homepage, favicon, etc.'
     global hc, bu, user
