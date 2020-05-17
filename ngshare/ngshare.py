@@ -885,6 +885,13 @@ class NotFoundHandler(RequestHandler):
         self.write(json.dumps(dict(os.environ), indent=1, sort_keys=True))
         self.write('\n' + self.request.uri + '\n' + self.request.path + '\n')
 
+class HealthCheckHandler(RequestHandler):
+    'Health check handler on /healthz, for k8s'
+
+    def get(self):
+        "Returns a 200 to indicate we're alive"
+        self.write(json.dumps({'success': True}))
+        return
 
 class MyApplication(Application):
     'Custom application for ngshare'
@@ -898,6 +905,10 @@ class MyApplication(Application):
         admin=(),
         autoreload=True,
     ):
+
+        if prefix.startswith('/healthz/'):
+            raise ValueError("API prefix may not start with /healthz/")
+
         handlers = [
             (prefix, HomePage),
             (prefix + r'(favicon\.ico)', Static),
@@ -922,6 +933,7 @@ class MyApplication(Application):
                 UploadDownloadFeedback,
             ),
             (prefix + 'initialize-Data6ase', InitDatabase),
+            ('/healthz', HealthCheckHandler),
         ]
         handlers.append((r'.*', NotFoundHandler))
         super(MyApplication, self).__init__(
