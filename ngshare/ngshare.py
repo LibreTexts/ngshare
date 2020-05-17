@@ -3,6 +3,7 @@
 '''
 
 import os
+import sys
 import uuid
 import json
 import argparse
@@ -907,10 +908,6 @@ class MyApplication(Application):
         admin=(),
         autoreload=True,
     ):
-
-        if prefix.startswith('/healthz/'):
-            raise ValueError("API prefix may not start with /healthz/")
-
         handlers = [
             (prefix, HomePage),
             (prefix + r'(favicon\.ico)', Static),
@@ -968,7 +965,7 @@ class MockAuth(HubAuthenticated):
         return {'name': user}
 
 
-def main():  # pragma: no cover
+def main(argv):  # pragma: no cover
     'Main function'
     parser = argparse.ArgumentParser(
         description='ngshare, a REST API nbgrader exchange'
@@ -1008,14 +1005,20 @@ def main():  # pragma: no cover
         action='store_true',
         help='do not automatically upgrade database',
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     if args.jupyterhub_api_url is not None:
         os.environ['JUPYTERHUB_API_URL'] = args.jupyterhub_api_url
 
+    prefix = args.prefix or os.environ.get('JUPYTERHUB_SERVICE_PREFIX', '/api/')
+
+    if not prefix.startswith('/') or not prefix.endswith('/'):
+        raise ValueError('API prefix should start and end with /')
+
+    if prefix.startswith('/healthz/'):
+        raise ValueError("API prefix may not start with /healthz/")
+
     if not args.no_upgrade_db:
         dbutil.upgrade(args.database)
-
-    prefix = args.prefix or os.environ.get('JUPYTERHUB_SERVICE_PREFIX', '/api/')
 
     if args.vngshare:
         MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)
@@ -1050,4 +1053,4 @@ def main():  # pragma: no cover
 
 
 if __name__ == '__main__':  # pragma: no cover
-    main()
+    main(sys.argv[1:])

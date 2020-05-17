@@ -17,6 +17,7 @@ from .ngshare import (
     RequestHandler,
     MyHelpers,
     MyRequestHandler,
+    main,
 )
 
 user, hc, bu = None, None, None
@@ -83,13 +84,6 @@ def test_health(http_client, base_url):
     response = yield http_client.fetch(base_url + '/healthz')
     assert response.code == 200
     assert json.loads(response.body)['success']
-
-
-@pytest.mark.gen_test
-def test_api_endpoint_conflict(http_client, base_url):
-    'Test throwing an error if the API prefix starts with /healthz/'
-    with pytest.raises(ValueError):
-        MyApplication("/healthz/", 'sqlite:////tmp/ngshare.db', '/tmp/ngshare/')
 
 
 @pytest.mark.gen_test
@@ -1263,6 +1257,19 @@ def test_nodebug(http_client, base_url):
     response = yield from server_communication('/api/random-page')
     assert response.code == 404
     assert response.body.decode() == '<h1>404 Not Found</h1>\n'
+
+
+def test_api_prefix():
+    'Test throwing an error when API prefix is illegal'
+    # does not start with '/'
+    with pytest.raises(ValueError):
+        main(['--prefix', 'api/'])
+    # does not end with '/'
+    with pytest.raises(ValueError):
+        main(['--prefix', '/api'])
+    # starts with /healthz/'
+    with pytest.raises(ValueError):
+        main(['--prefix', '/healthz/'])
 
 
 def test_notimpl():
