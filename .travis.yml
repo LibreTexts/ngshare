@@ -33,10 +33,10 @@ after_success:
   echo '{"mtu": 1460}' | sudo dd of=/etc/docker/daemon.json &&
   sudo systemctl restart docker &&
   docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}" &&
-  openssl aes-256-cbc -K $encrypted_defe1004a0ce_key -iv $encrypted_defe1004a0ce_iv -in helmchart/ssh_key.enc -out helmchart/ssh_key -d &&
-  chmod 400 helmchart/ssh_key &&
+  openssl aes-256-cbc -K $encrypted_defe1004a0ce_key -iv $encrypted_defe1004a0ce_iv -in helmchart/ssh_key.enc -out /tmp/ssh_key -d &&
+  chmod 400 /tmp/ssh_key &&
   python3 -m pip install chartpress &&
-  GIT_SSH_COMMAND="ssh -i `pwd`/helmchart/ssh_key" chartpress --push --publish-chart --long
+  GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --long
 env:
   global:
     - DOCKER_USERNAME=rkevin
