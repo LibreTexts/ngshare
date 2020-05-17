@@ -59,10 +59,14 @@ def check_status_code(response):
             ),
             False,
         )
+        if response.status_code >= 500:
+            prRed('ngshare encountered an error. Please contact the maintainers')
+
         check_message(response)
 
 
 def check_message(response):
+
     response = response.json()
     if not response['success']:
         prRed(response['message'])
@@ -96,20 +100,15 @@ def delete(url, data):
     return check_message(response)
 
 
-def create_course(course_id, jhub, instructor: User):
+def create_course(course_id):
     url = '{}/course/{}'.format(ngshare_url(), course_id)
     data = {'user': get_username()}
 
     response = post(url, data)
     prGreen('Successfully created {}'.format(course_id))
 
-    if jhub:
-        create_jh_course(course_id)
 
-    add_instructor(course_id, instructor)
-
-
-def add_student(course_id, student: User, jhub):
+def add_student(course_id, student: User, gb):
     # add student to ngshare
     url = '{}/student/{}/{}'.format(ngshare_url(), course_id, student.id)
     data = {
@@ -120,13 +119,13 @@ def add_student(course_id, student: User, jhub):
     }
 
     response = post(url, data)
-    prGreen('Successfully added/updated {} to {}'.format(student.id, course_id))
+    prGreen('Successfully added/updated {} on {}'.format(student.id, course_id))
 
-    if jhub:
+    if gb:
         add_jh_student(course_id, student)
 
 
-def add_jh_student(course_id, student: User):
+def add_jh_student(student: User):
     # add student to nbgrader gradebook
     command = 'nbgrader db student add '
 
@@ -138,18 +137,10 @@ def add_jh_student(course_id, student: User):
         command += '--email {} '.format(student.email)
 
     command += student.id
-
-    ret = os.system(command)
-
-    if ret == 0:
-        prGreen(
-            'Successfully added/updated {} to nbgrader gradebook'.format(
-                student.id
-            )
-        )
+    os.system(command)
 
 
-def add_students(course_id, students_csv, jhub):
+def add_students(course_id, students_csv, gb):
     students = []
     with open(students_csv, 'r') as f:
         csv_reader = csv.reader(f, delimiter=',')
@@ -198,7 +189,7 @@ def add_students(course_id, students_csv, jhub):
                     students[i]['last_name'],
                     students[i]['email'],
                 )
-                if jhub:
+                if gb:
                     add_jh_student(course_id, student)
             else:
                 prRed(
@@ -208,12 +199,19 @@ def add_students(course_id, students_csv, jhub):
                     False,
                 )
 
+def remove_jh_student(student_id):
+    # remove a student from nbgrader gradebook
+    command = 'nbgrader db student remove {}'.format(student_id)
+    os.system(command)    
 
-def remove_student(course_id, student_id):
+def remove_student(course_id, student_id, gb):
     url = '{}/student/{}/{}'.format(ngshare_url(), course_id, student_id)
     data = {'user': get_username()}
     response = delete(url, data)
     prGreen('Successfully deleted {} from {}'.format(student_id, course_id))
+
+    if gb:
+        remove_jh_student(student_id)
 
 
 def add_instructor(course_id, instructor: User):
@@ -295,10 +293,10 @@ def parse_input(argv):
         help='Command to execute',
     )
     parser.add_argument(
-        '--jhub',
+        '--gb',
         action="store_true",
         default=False,
-        help="Execute the command in ngshare and in JupyterHub",
+        help="Add student to nbgrader gradebook",
     )
 
     args = parser.parse_args()
@@ -315,7 +313,7 @@ def execute_command(args):
     last_name = args.last_name
     email = args.email
     students_csv = args.students_csv
-    jhub = args.jhub
+    gb = args.gb
 
     if command == 'create_course':
         if not course_id:
@@ -327,7 +325,8 @@ def execute_command(args):
                 'Please specify the instructor for the course with -i or --instructor_id'
             )
         instructor = User(instructor_id, first_name, last_name, email)
-        create_course(course_id, jhub, instructor)
+        create_course(course_id)
+        add_instructor(course_id, instructor)
     elif command == 'add_student':
         if not course_id:
             prRed(
@@ -338,7 +337,7 @@ def execute_command(args):
                 'Please specify the student you want to add using -s or --student_id'
             )
         student = User(student_id, first_name, last_name, email)
-        add_student(course_id, student, jhub)
+        add_student(course_id, student, gb)
     elif command == 'add_students':
         if not course_id:
             prRed(
@@ -352,7 +351,7 @@ def execute_command(args):
             prRed(
                 'The csv file you entered does not exist. Please enter a valid path using --students_csv'
             )
-        add_students(course_id, students_csv, jhub)
+        add_students(course_id, students_csv, gb)
     elif command == 'remove_student':
         if not course_id:
             prRed(
@@ -362,7 +361,7 @@ def execute_command(args):
             prRed(
                 'Please specify the student you want to remove from the course using -s or --student_id'
             )
-        remove_student(course_id, student_id)
+        remove_student(course_id, student_id, gb)
     elif command == 'add_instructor':
         if not course_id:
             prRed(

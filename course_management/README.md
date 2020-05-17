@@ -7,18 +7,34 @@
 - `-l`, `--last_name` : Last name of the user you are creating
 - `-e`, `--email` : Email of the user you are creating
 - `--students_csv` : csv file containing a list of students to add. See `students.csv` as an example. 
-- `--jhub` : Execute the command in ngshare and in JupyterHub
+- `--gb` : add/update the student to the nbgrader gradebook
 ---
 ### Create a course
 User creating course must be *admin*.
+admin must specify the instructor of the course.
+
 ```
-$ python3 ngshare_management.py create_course --course_id=math101
+$ python3 ngshare_management.py create_course --course_id=math101 --instructor_id=123
 ```
 ```
-$ python3 ngshare_management.py create_course -c math101
+$ python3 ngshare_management.py create_course -c math101 -i
 ```
 
-### Add one student to a course:
+Remember to add the `nbgrader_config.py` on the course root directory e.g. `/home/username/math101`
+Example course configuration file:
+```python
+c = get_config()
+c.CourseDirectory.course_id = 'math101'
+```
+
+Also, remember to add the `nbgrader_config.py` on the instructor's `/home/username/.jupyter` folder.
+Example user configuration file:
+```python
+c = get_config()
+c.CourseDirectory.root = '/home/username/math101'
+```
+
+### Add/update one student
 ```
 $ python3 ngshare_management.py add_student --course_id=math101 --student_id=12345 --first_name=jane --last_name=doe --email=jdoe@mail.com 
 ```
@@ -28,7 +44,7 @@ $ python3 ngshare_management.py add_student -c math101 -s 12345 -f jane -l doe -
 
 first name, last name, and email are optional parameters.
 
-### Add multiple students to a course
+### Add/update multiple students
 ```
 $ python3 ngshare_management.py add_students --course_id=math101 --students_csv=math101Students.csv
 ```
@@ -63,10 +79,14 @@ $ python3 ngshare_management.py remove_instructor --course_id=math101 --instruct
 $ python3 ngshare_management.py remove_instructor -c math101 -i 12345
 ```
 ---
-You can add the `--jhub` flag at the end of any command to execute the same action in JupyterHub.
+You can add the `--gb` flag at the end of `add_student`, `add_students`, or `remove_student` to add or remove the students from the nbgrader gradebook **and** ngshare
 
 For example running:
 ```
- $ python3 ngshare_management.py create_course --course_id=math101 --jhub
+ $ python3 ngshare_management.py add_student -c math101 -s 12345 -f jane -l doe -e jdoe@mail.com --gb
  ```
-  creates the course in JupyterHub **and** ngshare
+
+Adding the --gb flag runs:
+```
+ $ nbgrader db student add --first-name jane --last-name doe --email jdoe@mail.com 12345
+```
