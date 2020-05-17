@@ -13,7 +13,7 @@ spec:
   selector:
     {{- .Values.pvc.selector | toYaml | trimSuffix "\n" | nindent 4 }}
   {{- end }}
-  {{- if typeIs "string" .Values.pvc.storageClassName }}
+  {{- if .Values.pvc.storageClassName }}
   storageClassName: {{ .Values.pvc.storageClassName | quote }}
   {{- end }}
   accessModes:

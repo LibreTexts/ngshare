@@ -23,7 +23,7 @@ spec:
         fsGroup: {{ .Values.deployment.fsGroup }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.version }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - name: ngshare-pvc
