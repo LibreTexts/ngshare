@@ -4,4 +4,7 @@ __pycache__
 *.egg-info/
 .installed.cfg
 *.egg
-
+.coverage
+/docs/_build
+/docs/_static
+/docs/_templates

@@ -2,6 +2,8 @@
 # Server API
 Last updated 2020-04-19
 
+**Migrating to [docs](docs)**
+
 ---
 
 ## Definitions
@@ -30,8 +32,10 @@ The ID given to an instructor. For example, "course1_instructor" or "doe_jane"
 ### Student ID
 The ID given to a student. For example, "doe_jane".
 
-### Root user
-Root user have special privilege on ngshare (e.g. create / delete courses)
+### Admin user
+Admin users have special privilege on ngshare (e.g. create / delete courses).
+ The list of admin users can be set by `--admins=` argument in ngshare or
+ vngshare.
 
 ### Timestamp
 A timestamp of when a user initiates the assignment submission process. It follows the [format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) `"%Y-%m-%d %H:%M:%S.%f %Z"`. For example, "2020-01-30 10:30:47.524219 UTC".
@@ -79,7 +83,7 @@ Clients will send HTTP request to server. Possible methods are:
 The method to use is specified in each API entry point below
 
 ### Response
-When client is not authenticaed (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
+When client is not authenticated (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
 
 When client is authenticated, server will return a status code and a JSON object (specified below).
 * When success, the status code will be 200 and response will be `{"success": true, ...}`, where "`...`" contains extra information.
@@ -102,7 +106,7 @@ Adapted from [the proposed JupyterHub exchange service](https://github.com/jupyt
 #### GET /api/courses
 *List all available courses taking or teaching. (students+instructors)*
 
-*List all courses in ngshare. (root)*
+*List all courses in ngshare. (admins)*
 
 Used for ExchangeList.
 
@@ -124,9 +128,14 @@ Used for ExchangeList.
 ### /api/course: Course
 
 #### POST /api/course/&lt;course_id&gt;
-*Create a course (root). Used for outside Exchange.*
+*Create a course (admins). Used for outside Exchange.*
 
 The new course will have no students. Its only instructor is the creator.
+
+##### Request (HTTP POST data)
+```
+instructors=[/*instructor username*/, ...] /* optional */
+```
 
 ##### Response
 ```javascript
@@ -135,8 +144,12 @@ The new course will have no students. Its only instructor is the creator.
 }
 ```
 
+##### Error messages
+* 400 Instructors cannot be JSON decoded
+* 409 Course already exists
+
 #### DELETE /api/course/&lt;course_id&gt;
-*Remove a course (root). Used for outside Exchange.*
+*Remove a course (admins). Used for outside Exchange.*
 
 ##### Response
 ```javascript
@@ -153,7 +166,7 @@ The new course will have no students. Its only instructor is the creator.
 ### /api/instructor: Course instructor management
 
 #### POST /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Add or update a course instructor. (root)*
+*Add or update a course instructor. (admins)*
 
 *Update self full name or email. (instructors)*
 
@@ -205,7 +218,7 @@ When first name, last name, or email not set, the field is null
 * 404 Instructor not found
 
 #### DELETE /api/instructor/&lt;course_id&gt;/&lt;instructor_id&gt;
-*Remove a course instructor (root)*
+*Remove a course instructor (admins)*
 
 Submissions of the instructor are not removed.
 
@@ -334,15 +347,15 @@ If the request syntax is correct, will return 200 and report whether each
 students=[/* JSON object */
     {
         "username": "/* student 1 ID */",
-        "first_name": "/*student 1 first name*/",
-        "last_name": "/*student 1 last name",
-        "email": "/*student 1 email*/"
+        "first_name": "/* student 1 first name */",
+        "last_name": "/* student 1 last name */",
+        "email": "/* student 1 email */"
     },
     {
         "username": "/* student 2 ID */",
-        "first_name": "/*student 2 first name*/",
-        "last_name": "/*student 2 last name",
-        "email": "/*student 2 email*/"
+        "first_name": "/* student 2 first name */",
+        "last_name": "/* student 2 last name */",
+        "email": "/* student 2 email */"
     },
     ...
 ]

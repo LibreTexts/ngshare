@@ -3,11 +3,11 @@ nameOverride: ""
 fullnameOverride: ""
 
 # Where to pull the ngshare image
-image: 
+image:
   repository: rkevin/ngshare
-  version: latest
   pullPolicy: IfNotPresent
   imagePullSecrets: []
+  tag: 'set-by-chartpress'
 
 # Configure the deployment and service
 deployment:
@@ -40,6 +40,11 @@ deployment:
 
 # Configure environment / cmdline passed to ngshare
 ngshare:
+  # List of users that have elevated permissions on ngshare. Please use their username for JupyterHub.
+  # Only these users can create, delete, and manage instructors for courses.
+  # They also have full access to every course. Keep this in mind when assigning admins.
+  admins: []
+
   # JupyterHub API url, without the trailing slash
   # If you didn't modify the Z2JH helm chart, this value should be right
   hub_api_url: http://hub:8081/hub/api
@@ -49,12 +54,20 @@ ngshare:
 
   # API token to talk to the hub with
   # If left empty, a random one will be generated at install time
-  hub_api_token: 
+  hub_api_token: ""
+
+  # Enable debug mode. Do not turn this on in production as it dumps a lot of critical info to users.
+  debug: false
+
+  # Automatically upgrade database using alembic on start
+  # If disabled, manual intervention might be required when upgrading ngshare
+  # Please leave this on unless you know what you're doing.
+  upgrade_db: true
 
   # Additional environment variables
   env: {}
 
-  # Additional cmdline arguments
+  # Additional cmdline arguments for advanced configuration
   args: []
 
 # PVC Storage to allocate to ngshare
@@ -65,4 +78,4 @@ pvc:
   # Additional configs if you have custom needs like specifying a storageclass
   annotations: {}
   selector: {}
-  storageClassName:
+  storageClassName: ""
