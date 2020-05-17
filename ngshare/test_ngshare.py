@@ -2,10 +2,13 @@
     Tests for ngshare APIs
 '''
 
+import os
 import json
 import base64
 import hashlib
 import datetime
+import tempfile
+import shutil
 from urllib.parse import urlencode
 import pytest
 from tornado.httputil import url_concat
@@ -19,20 +22,25 @@ from .ngshare import (
     MyRequestHandler,
 )
 
+application, db_name, storage_name = None, None, None
 user, hc, bu = None, None, None
-
-application = MyApplication(
-    '/api/',
-    'sqlite:////tmp/ngshare.db',
-    '/tmp/ngshare/',
-    admin=['root'],
-    debug=True,
-)
 
 
 @pytest.fixture
 def app():
     'Create Tornado application for testing'
+    global application, db_name, storage_name
+    # Create temporary location for db and storage
+    if db_name is None:
+        db_name = tempfile.mktemp('.db')
+        storage_name = tempfile.mktemp('-ngshare-test-dir')
+    application = MyApplication(
+        '/api/',
+        'sqlite:///' + db_name,
+        storage_name,
+        admin=['root'],
+        debug=True,
+    )
     # Mock authentication using vngshare
     MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)
     return application
@@ -1272,3 +1280,10 @@ def test_notimpl():
     except NotImplementedError:
         pass
     assert MockAuth().get_login_url().startswith('http')
+
+
+def test_clean():
+    'Clean temporary files'
+    global db_name, storage_name
+    os.remove(db_name)
+    shutil.rmtree(storage_name)
