@@ -42,7 +42,7 @@ deploy:
   user: "__token__"
   password:
     secure: "u7WSkm5la8xD0ykTqcVvTe+NsAwaDFZ6cLhJzOIJYLrCMEnN8Vnv8lmhu+3+YHSd/y72go7FPY8p6DOAjQdaoCDN0WF8WVeBzTzsAieT7OZTX7P3N9XfvbL8UNJs6cXFK8BVEKEz7dq4iCoIrVnrLgma1OebKEou+0M+ZZz4nGlYU8kA2TJqUgEHugSuZQVha6R1EW8X6wStuHj03j8tS5Q/615R3c9oq9ngNLR9LhzluZfPOVkQIVGBGAcmdrh11UWhOzO8bss67bz1IxZ/UGQhdCDGufj0yq04k5BnC9292XGVKgtOj5X91J1bFB70KifeIvJt2iJzKKjlcJDyLHlOfQjU6hhK2YfDuyH4Z4OSeOWNCn3+ZkWVLsF2i8o838NTTQ5Wo4yAUE9nLt9P+iwdSiThrPuSDj5AsvkwCU+lLTUWzaf2U5SgN/M9i6h4tL+cx45hagJSV7XJRXMD5+nRk12YmXHKSkDnIZbqng4O8Hzz4UpglUVFh+ji8BzH8goF9W1UOSDXuG3IyYAXKTnUJIKG39KMWD8QYGTKXNHy7LJfyKCqLUhsDvxuoBfZ9bwqznLhuzGatj1GH/icw3NgR7RHGjyKewIkYXrR7rl8uMTzkhSdpKknHleZ5YxVI8p5NsZDIvbhS5IhzklstDU3B69TuimmJpy1Ni9uB3k="
-  server: https://test.pypi.org/index
+  server: https://test.pypi.org/
   on:
     branch: test-pypi
 env:
