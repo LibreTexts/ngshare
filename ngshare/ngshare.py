@@ -885,6 +885,7 @@ class NotFoundHandler(RequestHandler):
         self.write(json.dumps(dict(os.environ), indent=1, sort_keys=True))
         self.write('\n' + self.request.uri + '\n' + self.request.path + '\n')
 
+
 class HealthCheckHandler(RequestHandler):
     'Health check handler on /healthz, for k8s'
 
@@ -892,6 +893,7 @@ class HealthCheckHandler(RequestHandler):
         "Returns a 200 to indicate we're alive"
         self.write(json.dumps({'success': True}))
         return
+
 
 class MyApplication(Application):
     'Custom application for ngshare'
