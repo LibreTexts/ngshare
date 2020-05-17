@@ -43,4 +43,4 @@ Health endpoint
 -------------
 ``GET /healthz``
 
-This always returns a single JSON object with `{"success": true}`. It can be used as a liveness probe to ensure ngshare is up and running.
+This always returns a single JSON object with ``{"success": true}``. It can be used as a liveness probe to ensure ngshare is up and running.
