@@ -36,4 +36,5 @@ Table of Contents
    contributer_guide/database.rst
    contributer_guide/alembic.rst
    contributer_guide/docs.rst
+   contributer_guide/deploy.rst
 
