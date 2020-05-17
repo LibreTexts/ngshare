@@ -3,15 +3,16 @@
     Similar to vserver; allows easy testing.
 '''
 
-import os
 import sys
 
+try:
+    from .ngshare import main
+except ImportError:
+    from ngshare import main
+
 if __name__ == '__main__':  # pragma: no cover
-    os.execvp(
-        'python3',
+    main(
         [
-            'python3',
-            'ngshare.py',
             '--vngshare',
             '--database',
             'sqlite:////tmp/ngshare.db',
@@ -19,5 +20,5 @@ if __name__ == '__main__':  # pragma: no cover
             '/tmp/ngshare',
             '--debug',
         ]
-        + sys.argv[1:],
+        + sys.argv[1:]
     )
