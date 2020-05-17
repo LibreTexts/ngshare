@@ -8,6 +8,7 @@
 - `-e`, `--email` : Email of the user you are creating
 - `--students_csv` : csv file containing a list of students to add. See `students.csv` as an example. 
 - `--gb` : add/update the student to the nbgrader gradebook
+- `--force` : use to force an nbgrader gradebook command
 ---
 ### Create a course
 User creating course must be *admin*.

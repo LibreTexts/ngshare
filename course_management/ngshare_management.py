@@ -11,7 +11,7 @@ import argparse
 
 # https://www.geeksforgeeks.org/print-colors-python-terminal/
 def prRed(skk, exit=True):
-    print("\033[91m {}\033[00m".format(skk))
+    print("\033[91m ngshare: {}\033[00m".format(skk))
 
     if exit:
         sys.exit(-1)
@@ -124,7 +124,7 @@ def add_student(course_id, student: User, gb):
     prGreen('Successfully added/updated {} on {}'.format(student.id, course_id))
 
     if gb:
-        add_jh_student(course_id, student)
+        add_jh_student(student)
 
 
 def add_jh_student(student: User):
@@ -146,7 +146,12 @@ def add_students(course_id, students_csv, gb):
     students = []
     with open(students_csv, 'r') as f:
         csv_reader = csv.reader(f, delimiter=',')
-        header = next(csv_reader)
+        rows = list(csv_reader)
+
+        if len(rows) == 0:
+            prRed('The csv file you entered is empty')
+
+        header = rows[0]
 
         required_cols = ['student_id', 'first_name', 'last_name', 'email']
 
@@ -157,9 +162,8 @@ def add_students(course_id, students_csv, gb):
         for col in required_cols:
             if col not in cols_dict:
                 prRed('Missing column {} in {}.'.format(col, students_csv))
-                sys.exit(1)
 
-        for i, row in enumerate(csv_reader):
+        for i, row in enumerate(rows[1:]):
             student_dict = {}
             student_id = row[cols_dict['student_id']]
             if len(student_id.replace(' ', '')) == 0:
@@ -192,7 +196,7 @@ def add_students(course_id, students_csv, gb):
                     students[i]['email'],
                 )
                 if gb:
-                    add_jh_student(course_id, student)
+                    add_jh_student(student)
             else:
                 prRed(
                     'There was an error adding {} to {}: {}'.format(
@@ -202,20 +206,22 @@ def add_students(course_id, students_csv, gb):
                 )
 
 
-def remove_jh_student(student_id):
+def remove_jh_student(student_id, force):
     # remove a student from nbgrader gradebook
-    command = 'nbgrader db student remove {}'.format(student_id)
+    command = 'nbgrader db student remove {} '.format(student_id)
+    if force:
+        command += '--force'
     os.system(command)
 
 
-def remove_student(course_id, student_id, gb):
+def remove_student(course_id, student_id, gb, force):
+    if gb:
+        remove_jh_student(student_id, force)
+
     url = '{}/student/{}/{}'.format(ngshare_url(), course_id, student_id)
     data = {'user': get_username()}
     response = delete(url, data)
     prGreen('Successfully deleted {} from {}'.format(student_id, course_id))
-
-    if gb:
-        remove_jh_student(student_id)
 
 
 def add_instructor(course_id, instructor: User):
@@ -282,6 +288,7 @@ def parse_input(argv):
         default=None,
         help="csv file containing a list of students to add. See students.csv as an example.",
     )
+
     parser.add_argument(
         'command',
         action='store',
@@ -303,6 +310,13 @@ def parse_input(argv):
         help="Add student to nbgrader gradebook",
     )
 
+    parser.add_argument(
+        '--force',
+        action="store_true",
+        default=False,
+        help="Force gradebook action",
+    )
+
     args = parser.parse_args()
 
     return args
@@ -318,6 +332,7 @@ def execute_command(args):
     email = args.email
     students_csv = args.students_csv
     gb = args.gb
+    force = args.force
 
     if command == 'create_course':
         if not course_id:
@@ -365,7 +380,7 @@ def execute_command(args):
             prRed(
                 'Please specify the student you want to remove from the course using -s or --student_id'
             )
-        remove_student(course_id, student_id, gb)
+        remove_student(course_id, student_id, gb, force)
     elif command == 'add_instructor':
         if not course_id:
             prRed(
