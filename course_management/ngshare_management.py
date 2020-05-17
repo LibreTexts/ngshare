@@ -60,7 +60,9 @@ def check_status_code(response):
             False,
         )
         if response.status_code >= 500:
-            prRed('ngshare encountered an error. Please contact the maintainers')
+            prRed(
+                'ngshare encountered an error. Please contact the maintainers'
+            )
 
         check_message(response)
 
@@ -199,10 +201,12 @@ def add_students(course_id, students_csv, gb):
                     False,
                 )
 
+
 def remove_jh_student(student_id):
     # remove a student from nbgrader gradebook
     command = 'nbgrader db student remove {}'.format(student_id)
-    os.system(command)    
+    os.system(command)
+
 
 def remove_student(course_id, student_id, gb):
     url = '{}/student/{}/{}'.format(ngshare_url(), course_id, student_id)
