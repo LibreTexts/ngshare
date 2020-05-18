@@ -37,11 +37,11 @@ POST Example
 
 Response
 --------
-When the client is not authenticated (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
+When the client is not authenticated (e.g. not logged in), server will return HTTP 301 and redirect user to login page.
 
-When the client tries to access an invalid entrypoint, server will return HTTP 404 Not Found
+When the client tries to access an invalid entrypoint, server will return HTTP 404 Not Found.
 
-When the client performs a request with an invalid method, server will return HTTP 405 Method Not Allowed
+When the client performs a request with an invalid method, server will return HTTP 405 Method Not Allowed.
 
 When the client is authenticated, server will return a status code and a JSON object (specified below).
 
