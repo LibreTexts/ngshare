@@ -6,11 +6,9 @@ Course APIs
 
 GET /api/courses
 ^^^^^^^^^^^^^^^^
-List all available courses taking or teaching. (students+instructors)
+*List all available courses taking or teaching. (students+instructors)*
 
-List all courses in ngshare. (admins)
-
-Used for ExchangeList.
+*List all courses in ngshare. (admins)*
 
 Response
 """"""""
@@ -35,7 +33,7 @@ Error messages
 
 POST /api/course/<course_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-*Create a course (admins). Used for outside Exchange.*
+*Create a course (admins).*
 
 The new course will have no students. It has no instructors unless specified in request. 
 
@@ -60,7 +58,7 @@ Error messages
 
 DELETE /api/course/<course_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-*Remove a course (admins). Used for outside Exchange.*
+*Remove a course (admins).*
 
 Response
 """"""""
@@ -83,9 +81,9 @@ POST /api/instructor/<course_id>/<instructor_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Add or update a course instructor. (admins)*
 
-*Update self full name or email. (instructors)*
+*Update own full name or email. (instructors)*
 
-If the user is already a student of the course, the student-relationship will be removed.
+If the user is already a student of the course, the student relationship will be removed.
 
 Request (HTTP POST data)
 """"""""""""""""""""""""
@@ -116,7 +114,7 @@ GET /api/instructor/<course_id>/<instructor_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Get information about a course instructor. (instructors+students)*
 
-When first name, last name, or email not set, the field is null
+When first name, last name, or email not set, the field is null.
 
 Response
 """"""""
@@ -165,7 +163,7 @@ GET /api/instructors/<course_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Get information about all course instructors. (instructors+students)*
 
-When first name, last name, or email not set, the field is null
+When first name, last name, or email not set, the field is null.
 
 Response
 """"""""
@@ -198,7 +196,7 @@ POST /api/student/<course_id>/<student_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Add or update a student. (instructors only)*
 
-Fails if the user is an instructor of the course
+Fails if the user is an instructor of the course.
 
 Request (HTTP POST data)
 """"""""""""""""""""""""
@@ -230,7 +228,7 @@ GET /api/student/<course_id>/<student_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Get information about a student. (instructors+student with same student_id)*
 
-When first name, last name, or email not set, the field is null
+When first name, last name, or email not set, the field is null.
 
 Response
 """"""""
@@ -285,21 +283,18 @@ Request (HTTP POST data)
 """"""""""""""""""""""""
 .. code:: javascript
 
-    students=[/* JSON object */
-        {
-            "username": "/* student 1 ID */",
-            "first_name": "/* student 1 first name */",
-            "last_name": "/* student 1 last name */",
-            "email": "/* student 1 email */"
-        },
-        {
-            "username": "/* student 2 ID */",
-            "first_name": "/* student 2 first name */",
-            "last_name": "/* student 2 last name */",
-            "email": "/* student 2 email */"
-        },
-        ...
-    ]
+    {
+        "students":
+        [
+            {
+                "username": /* student ID */,
+                "first_name": /* student first name */,
+                "last_name": /* student last name */,
+                "email": /* student email */
+            },
+            ...
+        ]
+    }
 
 Response
 """"""""
@@ -307,15 +302,16 @@ Response
 
     {
         "success": true
-        "status": [
+        "status":
+        [
             {
-                "username": "/* student 1 ID */",
+                "username": /* student ID */,
                 "success": true
             },
             {
-                "username": "/* student 2 ID */",
+                "username": /* student ID */,
                 "success": false,
-                "message": "Cannot add instructor as student"
+                "message": /* error message */
             },
             ...
         ]
@@ -334,7 +330,7 @@ GET /api/students/<course_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Get information about all course students. (instructors only)*
 
-When first name, last name, or email not set, the field is null
+When first name, last name, or email not set, the field is null.
 
 Response
 """"""""
