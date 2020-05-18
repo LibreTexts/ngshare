@@ -12,7 +12,7 @@ For ``ngshare``, use JupyterHub authentication.
 vngshare authentication
 -----------------------
 
-For ``vngshare``, use GET param or POST data ``user``.
+For ``vngshare``, supply the username to the GET param or POST data ``user``.
 
 GET example
 ^^^^^^^^^^^
