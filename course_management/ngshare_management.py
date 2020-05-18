@@ -11,7 +11,7 @@ import argparse
 
 # https://www.geeksforgeeks.org/print-colors-python-terminal/
 def prRed(skk, exit=True):
-    print("\033[91m ngshare: {}\033[00m".format(skk))
+    print("\033[91m {}\033[00m".format(skk))
 
     if exit:
         sys.exit(-1)
@@ -102,9 +102,10 @@ def delete(url, data):
     return check_message(response)
 
 
-def create_course(course_id):
+def create_course(course_id, instructors):
+    print(instructors)
     url = '{}/course/{}'.format(ngshare_url(), course_id)
-    data = {'user': get_username()}
+    data = {'user': get_username(), 'instructors': json.dumps(instructors)}
 
     response = post(url, data)
     prGreen('Successfully created {}'.format(course_id))
@@ -147,7 +148,6 @@ def add_students(course_id, students_csv, gb):
     with open(students_csv, 'r') as f:
         csv_reader = csv.reader(f, delimiter=',')
         rows = list(csv_reader)
-
         if len(rows) == 0:
             prRed('The csv file you entered is empty')
 
@@ -290,6 +290,13 @@ def parse_input(argv):
     )
 
     parser.add_argument(
+        '--instructors',
+        nargs="*",
+        default=[],
+        help="List of course instructors",
+    )
+
+    parser.add_argument(
         'command',
         action='store',
         type=str,
@@ -327,6 +334,7 @@ def execute_command(args):
     course_id = args.course_id
     student_id = args.student_id
     instructor_id = args.instructor_id
+    instructors = args.instructors
     first_name = args.first_name
     last_name = args.last_name
     email = args.email
@@ -339,13 +347,7 @@ def execute_command(args):
             prRed(
                 'Please specify the course_id for the course with -c or --course_id'
             )
-        if not instructor_id:
-            prRed(
-                'Please specify the instructor for the course with -i or --instructor_id'
-            )
-        instructor = User(instructor_id, first_name, last_name, email)
-        create_course(course_id)
-        add_instructor(course_id, instructor)
+        create_course(course_id, instructors)
     elif command == 'add_student':
         if not course_id:
             prRed(
@@ -409,8 +411,8 @@ def execute_command(args):
 def main(argv=None):
 
     argv = argv or sys.argv
-    args = parse_input(argv)
-    execute_command(args)
+    parsed_args = parse_input(argv)
+    execute_command(parsed_args)
 
 
 if __name__ == '__main__':
