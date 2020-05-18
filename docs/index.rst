@@ -37,9 +37,3 @@ Table of Contents
    contributer_guide/alembic.rst
    contributer_guide/docs.rst
 
-Indices and tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
