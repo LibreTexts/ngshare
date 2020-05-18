@@ -8,8 +8,6 @@ GET /api/assignments/<course_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *list all assignments for a course (students+instructors)*
 
-Used for the outbound part of ExchangeList.
-
 Response
 """"""""
 .. code:: javascript
@@ -38,8 +36,6 @@ GET /api/assignment/<course_id>/<assignment_id>
 
 If ``list_only`` is ``true``, ``files`` only contains ``path`` and ``checksum`` (does not contain ``content``).
 
-Used for ExchangeFetchAssignment.
-
 Request (HTTP GET parameter)
 """"""""""""""""""""""""""""
 .. code:: javascript
@@ -65,8 +61,6 @@ Error messages
 POST /api/assignment/<course_id>/<assignment_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *release an assignment (instructors only)*
-
-Used for ExchangeReleaseAssignment.
 
 Request (HTTP POST data)
 """"""""""""""""""""""""
@@ -123,8 +117,6 @@ Error messages
 GET /api/submissions/<course_id>/<assignment_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *list all submissions for an assignment from all students (instructors only)*
-
-Used for the inbound part of ExchangeList.
 
 Response
 """"""""
@@ -184,8 +176,6 @@ POST /api/submission/<course_id>/<assignment_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *submit a copy of an assignment (students+instructors)*
 
-Used for ExchangeSubmit.
-
 Request (HTTP POST data)
 """"""""""""""""""""""""
 .. code:: javascript
@@ -218,8 +208,6 @@ GET /api/submission/<course_id>/<assignment_id>/<student_id>
 *download a student's submitted assignment (instructors only)*
 
 If ``list_only`` is ``true``, ``files`` only contains ``path`` and ``checksum`` (does not contain ``content``). If ``timestamp`` is not supplied, the latest submision is returned.
-
-Used for ExchangeCollect.
 
 Request (HTTP GET parameter)
 """"""""""""""""""""""""""""
@@ -254,9 +242,7 @@ POST /api/feedback/<course_id>/<assignment_id>/<student_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *upload feedback on a student's assignment (instructors only)*
 
-Old feedback on the same submission will be removed
-
-Used for ExchangeReleaseFeedback.
+Old feedback on the same submission will be removed.
 
 Request (HTTP POST data)
 """"""""""""""""""""""""
@@ -296,8 +282,6 @@ GET /api/feedback/<course_id>/<assignment_id>/<student_id>
 When feedback is not available, ``files`` will be empty.
 
 If ``list_only`` is ``true``, ``files`` only contains ``path`` and ``checksum`` (does not contain ``content``).
-
-Used for ExchangeFetchFeedback.
 
 Request (HTTP GET parameter)
 """"""""""""""""""""""""""""
