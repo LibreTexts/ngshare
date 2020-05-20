@@ -11,14 +11,14 @@ import argparse
 
 # https://www.geeksforgeeks.org/print-colors-python-terminal/
 def prRed(skk, exit=True):
-    print("\033[91m {}\033[00m".format(skk))
+    print('\033[91m {}\033[00m'.format(skk))
 
     if exit:
         sys.exit(-1)
 
 
 def prGreen(skk):
-    print("\033[92m {}\033[00m".format(skk))
+    print('\033[92m {}\033[00m'.format(skk))
 
 
 class User:
@@ -38,7 +38,7 @@ def get_username():
 
 def ngshare_url():
     if 'PROXY_PUBLIC_SERVICE_HOST' in os.environ:
-        return "http://proxy-public/services/ngshare"
+        return 'http://proxy-public/services/ngshare'
     else:
         # replace this with correct URL if you are not using a kubernetes set up
         return 'http://127.0.0.1:12121/api'
@@ -103,7 +103,6 @@ def delete(url, data):
 
 
 def create_course(course_id, instructors):
-    print(instructors)
     url = '{}/course/{}'.format(ngshare_url(), course_id)
     data = {'user': get_username(), 'instructors': json.dumps(instructors)}
 
@@ -232,6 +231,7 @@ def add_instructor(course_id, instructor: User):
         'last_name': instructor.last_name,
         'email': instructor.email,
     }
+    print(data)
     response = post(url, data)
     prGreen(
         'Successfully added {} as an instructor to {}'.format(
@@ -254,46 +254,46 @@ def remove_instructor(course_id, instructor_id):
 def parse_input(argv):
     parser = argparse.ArgumentParser(description='ngshare Course Management')
     parser.add_argument(
-        '-c', '--course_id', default=None, help="A unique name for the course"
+        '-c', '--course_id', default=None, help='A unique name for the course'
     )
     parser.add_argument(
-        '-s', '--student_id', default=None, help="The ID given to a student"
+        '-s', '--student_id', default=None, help='The ID given to a student'
     )
     parser.add_argument(
         '-i',
         '--instructor_id',
         default=None,
-        help="The ID given to an instructor",
+        help='The ID given to an instructor',
     )
     parser.add_argument(
         '-f',
         '--first_name',
         default=None,
-        help="First name of the user you are creating",
+        help='First name of the user you are creating',
     )
     parser.add_argument(
         '-l',
         '--last_name',
         default=None,
-        help="Last name of the user you are creating",
+        help='Last name of the user you are creating',
     )
     parser.add_argument(
         '-e',
         '--email',
         default=None,
-        help="Last name of the user you are creating",
+        help='Last name of the user you are creating',
     )
     parser.add_argument(
         '--students_csv',
         default=None,
-        help="csv file containing a list of students to add. See students.csv as an example.",
+        help='csv file containing a list of students to add. See students.csv as an example.',
     )
 
     parser.add_argument(
         '--instructors',
-        nargs="*",
+        nargs='*',
         default=[],
-        help="List of course instructors",
+        help='List of course instructors',
     )
 
     parser.add_argument(
@@ -312,16 +312,16 @@ def parse_input(argv):
     )
     parser.add_argument(
         '--gb',
-        action="store_true",
+        action='store_true',
         default=False,
-        help="Add student to nbgrader gradebook",
+        help='Add student to nbgrader gradebook',
     )
 
     parser.add_argument(
         '--force',
-        action="store_true",
+        action='store_true',
         default=False,
-        help="Force gradebook action",
+        help='Force gradebook action',
     )
 
     args = parser.parse_args()

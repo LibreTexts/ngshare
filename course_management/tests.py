@@ -10,8 +10,8 @@ import requests_mock as rq_mock
 from requests_mock import Mocker
 import urllib
 import tempfile
-
 import ngshare_management as nm
+from io import StringIO
 
 
 class Command:
@@ -30,14 +30,19 @@ def parse_body(body: str):
     return dict(urllib.parse.parse_qsl(body))
 
 
-NGSHARE_URL = "http://127.0.0.1:12121/api"
+NGSHARE_URL = 'http://127.0.0.1:12121/api'
 
 
 class TestCourseManagement:
     course_id = 'math101'
-    instructor = os.environ['USER']
+    instructor = (
+        os.environ['JUPYTERHUB_USER']
+        if 'JUPYTERHUB_USER' in os.environ
+        else os.environ['USER']
+    )
     instructors = ['mi1', 'mi2']
     student_id = 'ms'
+    instructor_id = 'mi1'
 
     course_created = False
 
@@ -78,12 +83,12 @@ class TestCourseManagement:
 
     def _mock_all(self, request: PreparedRequest, content):
         getLogger().fatal(
-            'The request "%s" has not been mocked yet.', request.url
+            'The request \'%s\' has not been mocked yet.', request.url
         )
         content.status_code = 404
         return ''
 
-    def _get_student_info(self, request: PreparedRequest, context):
+    def _get_user_info(self, request: PreparedRequest, context):
         request = parse_body(request.body)
         if 'first_name' not in request:
             return {'success': False, 'message': 'Please supply first name'}
@@ -98,50 +103,79 @@ class TestCourseManagement:
 
     def _get_students_info(self, request: PreparedRequest, context):
         request = parse_body(request.body)
-        return {
-            "success": True,
-            "status": [
-                {"username": "sid1", "success": True},
-                {"username": "sid2", "success": True},
-            ],
-        }
+        students = eval(request['students'])
 
-    def _mock_add_instructor_successful(self):
-        url = '{}/instructor/{}/{}'.format(
-            NGSHARE_URL, self.course_id, self.instructor
-        )
-        response = {"success": True}
-        self.requests_mocker.post(url, json=response)
+        if (
+            'sid1' == students[0]['username']
+            and 'sid2' == students[1]['username']
+        ):
+            return {
+                'success': True,
+                'status': [
+                    {'username': 'sid1', 'success': True},
+                    {'username': 'sid2', 'success': True},
+                ],
+            }
+        else:
+            return {'success': False, 'message': 'wrong students passed in'}
 
-    def _mock_create_course_successful(self):
-        url = '{}/course/{}'.format(NGSHARE_URL, self.course_id)
-        response = {"success": True}
-        self.requests_mocker.post(url, json=response)
+    def _get_user(self, request: PreparedRequest, context):
+        request = parse_body(request.body)
+        response = {'success': False, 'message': 'Permission denied'}
+        if self.instructor in request['user']:
+            response = {'success': True}
+        return response
 
-    def _mock_create_course(self):
-        url = '{}/course/{}'.format(NGSHARE_URL, self.course_id)
-
+    def _get_instructors_info(self, request: PreparedRequest, context):
+        request = parse_body(request.body)
+        response = {'success': False, 'message': 'Some error occurred'}
         if not self.course_created:
-            response = {"success": True}
+            if 'instructors' in request:
+                instructors = eval(request['instructors'])
+                if (
+                    self.instructors[0] == instructors[0]
+                    and self.instructors[1] == instructors[1]
+                ):
+                    response = {'success': True}
+                    self.course_created = True
         else:
             response = {'success': False, 'message': 'Course already exists'}
 
-        self.requests_mocker.post(url, json=response)
+        return response
 
-        if not self.course_created:
-            self.course_created = True
+    def _mock_create_course(self):
+        url = '{}/course/{}'.format(NGSHARE_URL, self.course_id)
+        self.requests_mocker.post(url, json=self._get_instructors_info)
 
     def _mock_add_student(self):
         url = '{}/student/{}/{}'.format(
             NGSHARE_URL, self.course_id, self.student_id
         )
-        self.requests_mocker.post(url, json=self._get_student_info)
+        self.requests_mocker.post(url, json=self._get_user_info)
 
     def _mock_add_students(self):
         url = '{}/students/{}'.format(
             NGSHARE_URL, self.course_id, self.student_id
         )
         self.requests_mocker.post(url, json=self._get_students_info)
+
+    def _mock_add_instructor(self):
+        url = '{}/instructor/{}/{}'.format(
+            NGSHARE_URL, self.course_id, self.instructor_id
+        )
+        self.requests_mocker.post(url, json=self._get_user_info)
+
+    def _mock_remove_student(self):
+        url = '{}/student/{}/{}'.format(
+            NGSHARE_URL, self.course_id, self.student_id
+        )
+        self.requests_mocker.delete(url, json=self._get_user)
+
+    def _mock_remove_instructor(self):
+        url = '{}/instructor/{}/{}'.format(
+            NGSHARE_URL, self.course_id, self.instructor_id
+        )
+        self.requests_mocker.delete(url, json=self._get_user)
 
     def test_crete_course(self, capsys):
         self._mock_create_course()
@@ -153,7 +187,7 @@ class TestCourseManagement:
         nm.execute_command(cmd)
         out, err = capsys.readouterr()
         out = remove_color(out)
-        assert " Successfully created {}\n".format(self.course_id) in out
+        assert ' Successfully created {}\n'.format(self.course_id) in out
 
         # test missing course id
         with pytest.raises(SystemExit) as se:
@@ -198,7 +232,7 @@ class TestCourseManagement:
         )
         nm.execute_command(cmd)
         out, err = capsys.readouterr()
-        assert "Successfully added/updated {}".format(self.student_id) in out
+        assert 'Successfully added/updated {}'.format(self.student_id) in out
 
     def test_add_students(self, capsys, tmp_path):
         self._mock_add_students()
@@ -222,6 +256,7 @@ class TestCourseManagement:
                 'add_students', course_id=self.course_id, students_csv='dne'
             )
             nm.execute_command(cmd)
+
         assert se.type == SystemExit
         assert se.value.code == -1
         out, err = capsys.readouterr()
@@ -236,3 +271,138 @@ class TestCourseManagement:
         out, err = capsys.readouterr()
         assert 'sid1 was sucessfuly added to math101' in out
         assert 'sid2 was sucessfuly added to math101' in out
+
+    def test_add_instructor(self, capsys):
+        self._mock_add_instructor()
+
+        # test no course id
+        with pytest.raises(SystemExit) as se:
+            cmd = self.form_command('add_instructor')
+            nm.execute_command(cmd)
+        assert se.type == SystemExit
+        assert se.value.code == -1
+
+        # test no instructor id
+        with pytest.raises(SystemExit) as se:
+            cmd = self.form_command('add_instructor', course_id=self.course_id)
+            nm.execute_command(cmd)
+        assert se.type == SystemExit
+        assert se.value.code == -1
+
+        # test valid
+        cmd = self.form_command(
+            'add_instructor',
+            course_id=self.course_id,
+            instructor_id=self.instructor_id,
+            first_name='john',
+            last_name='doe',
+            email='jd@mail.com',
+        )
+        nm.execute_command(cmd)
+        out, err = capsys.readouterr()
+        assert (
+            'Successfully added {} as an instructor to {}'.format(
+                self.instructor_id, self.course_id
+            )
+            in out
+        )
+
+    def test_remove_student(self, capsys):
+        self._mock_remove_student()
+
+        # test missing course id
+        with pytest.raises(SystemExit) as se:
+            cmd = self.form_command('remove_student')
+            nm.execute_command(cmd)
+        assert se.type == SystemExit
+        assert se.value.code == -1
+
+        # test missing student id
+        with pytest.raises(SystemExit) as se:
+            cmd = self.form_command('remove_student', course_id=self.course_id)
+            nm.execute_command(cmd)
+        assert se.type == SystemExit
+        assert se.value.code == -1
+
+        # test valid
+        cmd = self.form_command(
+            'remove_student',
+            course_id=self.course_id,
+            student_id=self.student_id,
+        )
+        nm.execute_command(cmd)
+        out, err = capsys.readouterr()
+        assert (
+            'Successfully deleted {} from {}'.format(
+                self.student_id, self.course_id
+            )
+            in out
+        )
+
+    def test_remove_instructor(self, capsys):
+        self._mock_remove_instructor()
+
+        # test missing course id
+        with pytest.raises(SystemExit) as se:
+            cmd = self.form_command('remove_instructor')
+            nm.execute_command(cmd)
+        assert se.type == SystemExit
+        assert se.value.code == -1
+
+        # test missing student id
+        with pytest.raises(SystemExit) as se:
+            cmd = self.form_command(
+                'remove_instructor', course_id=self.course_id
+            )
+            nm.execute_command(cmd)
+        assert se.type == SystemExit
+        assert se.value.code == -1
+
+        # test valid
+        cmd = self.form_command(
+            'remove_instructor',
+            course_id=self.course_id,
+            instructor_id=self.instructor_id,
+        )
+        nm.execute_command(cmd)
+        out, err = capsys.readouterr()
+        assert (
+            'Successfully deleted instructor {} from {}'.format(
+                self.instructor_id, self.course_id
+            )
+            in out
+        )
+
+    def test_add_students_parsing(self, capsys):
+        # test empty file
+        new_file, filename = tempfile.mkstemp()
+        with pytest.raises(SystemExit) as se:
+            nm.add_students(self.course_id, filename, False)
+        assert se.type == SystemExit
+        assert se.value.code == -1
+        out, err = capsys.readouterr()
+        assert 'The csv file you entered is empty' in out
+
+        # test missing a column
+        new_file2, filename2 = tempfile.mkstemp()
+        with open(filename2, 'w') as f:
+            f.write('first_name,last_name,email')
+
+        with pytest.raises(SystemExit) as se:
+            nm.add_students(self.course_id, filename2, False)
+        assert se.type == SystemExit
+        assert se.value.code == -1
+        out, err = capsys.readouterr()
+        assert 'Missing column {} in {}.'.format('student_id', filename2) in out
+
+        new_file3, filename3 = tempfile.mkstemp()
+        with open(filename3, 'w') as f:
+            f.write('student_id,first_name,last_name,email\n')
+            f.write(',jane,doe,jd@mail.com')
+
+        with pytest.raises(SystemExit) as se:
+            nm.add_students(self.course_id, filename3, False)
+        assert se.type == SystemExit
+        assert se.value.code == -1
+        out, err = capsys.readouterr()
+        assert 'Student ID cannot be empty (row 1)' in out
