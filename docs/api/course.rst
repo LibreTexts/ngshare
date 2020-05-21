@@ -139,7 +139,7 @@ DELETE /api/instructor/<course_id>/<instructor_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Remove a course instructor (admins)*
 
-Submissions of the instructor are not removed.
+Submissions of the instructor are not removed from the course's assignments.
 
 Response
 """"""""
@@ -253,7 +253,7 @@ DELETE /api/student/<course_id>/<student_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Remove a student (instructors only)*
 
-Submissions of the student are not removed (visible to instructors).
+Submissions of the student are not removed from the course's assignments (visible to instructors).
 
 Response
 """"""""

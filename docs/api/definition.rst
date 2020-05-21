@@ -1,5 +1,5 @@
-API Definitions
-===============
+Definitions
+===========
 
 Admin User
 ----------

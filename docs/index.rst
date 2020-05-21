@@ -19,10 +19,15 @@ Table of Contents
    user_guide/extra.rst
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: APIs
 
    api/index.rst
+   api/definition.rst
+   api/req_res.rst
+   api/authentication.rst
+   api/course.rst
+   api/assignment.rst
 
 .. toctree::
    :maxdepth: 2
