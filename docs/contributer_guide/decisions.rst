@@ -3,10 +3,10 @@ Decisions
 
 This section is under construction
 
-Technologies employed
+Technologies Employed
 ---------------------
 
-When developing this project, we mostly followed the way ``nbgrader`` and `JupyterHub <https://github.com/jupyterhub/jupyterhub>`_ is designed so that our project is most likely to be accepted by the Jupyter community.
+When developing this project, we mostly followed the way ``nbgrader`` and `JupyterHub <https://github.com/jupyterhub/jupyterhub>`_ is designed so that our project is consistent with other Jupyter projects.
 
 Backend
 ^^^^^^^
@@ -25,13 +25,8 @@ Database
 * `SQLite3 <https://www.sqlite.org/index.html>`_ - a light weight database
   engine
 * `Alembic <https://alembic.sqlalchemy.org/>`_ - SQLAlchemy migration tool
-* `ERAlchemy <https://github.com/Alexis-benoist/eralchemy>`_ - Generate Entity
-  Relation Diagrams
-
-Frontend
-^^^^^^^^
-* `JupyterLab <https://github.com/jupyterlab/jupyterlab>`_ - A new interface for
-  Jupyter Notebook (next steps)
+* `ERAlchemy <https://github.com/Alexis-benoist/eralchemy>`_ - Generate entity
+  relation diagrams
 
 Progamming Language
 ^^^^^^^^^^^^^^^^^^^
@@ -43,7 +38,7 @@ Progamming Language
   server
 * `black <https://github.com/psf/black>`_ - a Python code formatter
 
-Project management
+Project Management
 ^^^^^^^^^^^^^^^^^^
 * `GitHub <https://github.com/>`_ - a git repository management website
 * `Travis CI <https://travis-ci.org/>`_ - Continous integration
@@ -52,11 +47,11 @@ Project management
 
 Race Condition
 --------------
-It is possible to configure multiple ``ngshare`` instances to run at the same time, or allow one ``ngshare`` instance to run in multithread mode. This may trigger untested race condition and cause error in production.
+It is possible to configure multiple ``ngshare`` instances to run at the same time, or allow one ``ngshare`` instance to run in multithread mode. This may trigger an untested race condition and cause an error in production.
 
-We decide to warn users about this when they try to configure ``ngshare`` in this way.
+We decided to warn users about this when they try to configure ``ngshare`` in this way.
 
 Database Update
 ---------------
-To make sure users do not encounter database version problems, we decide to automatically run Alembic upgrade each time ngshare / vngshare is started. There is little overhead for the version check. We assume that users are regularly backing up their database. 
+To make sure users do not encounter database version problems, we decided to automatically run Alembic upgrade each time ngshare / vngshare is started. There is little overhead for the version check. We assume that users are regularly backing up their database.
 

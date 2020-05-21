@@ -1,7 +1,11 @@
 API Definitions
 ===============
 
-Assignment name
+Admin User
+----------
+Admin users have special privilege on ngshare (e.g. create / delete courses). The list of admin users can be set by ``--admins=`` argument in ngshare or vngshare.
+
+Assignment Name
 ---------------
 Also referred to as ``assignment_id``, this is a unique name for an assignment within a course. For example, "Assignment 1".
 
@@ -9,37 +13,11 @@ Checksum
 --------
 The md5 checksum of a file.
 
-Course name
+Course Name
 -----------
 Also referred to as ``course_id``, this is a unique name for a course. For example, "NBG 101".
 
-Notebook name
--------------
-Also referred to as ``notebook_id``, this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
-
-Instructor ID
--------------
-The ID given to an instructor. For example, "course1_instructor" or "doe_jane"
-
-Student ID
-----------
-The ID given to a student. For example, "doe_jane".
-
-Admin user
-----------
-Admin users have special privilege on ngshare (e.g. create / delete courses). The list of admin users can be set by ``--admins=`` argument in ngshare or vngshare.
-
-Timestamp
----------
-A timestamp of when a user initiates the assignment submission process. It follows the [format](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) ``"%Y-%m-%d %H:%M:%S.%f %Z"``. For example, ``2020-01-30 10:30:47.524219 UTC``.
-
-Removing
---------
-Removing something will remove relevant objects and relations in database, but the actual files are not removed from the file system.
-
-If storage space is a problem, the administrators can dump the database and remove files from the file system that are not referenced by the database.
-
-Directory tree
+Directory Tree
 --------------
 Assignments consist of a directory, notebook files in the root, and optional supplementary files in the root and/or subdirectories. In order to send an entire assignment in one request, a JSON file has a list of maps for each file. The following structure will be referred to as "encoded directory tree."
 
@@ -55,4 +33,26 @@ Assignments consist of a directory, notebook files in the root, and optional sup
         },
         ...
     ]
+
+Instructor ID
+-------------
+The ID given to an instructor. For example, "course1_instructor" or "doe_jane".
+
+Notebook Name
+-------------
+Also referred to as ``notebook_id``, this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
+
+Removing Semantics
+------------------
+Removing something will remove relevant objects and relations in database, but the actual files are not removed from the file system.
+
+If storage space is a problem, the administrators can dump the database and remove files from the file system that are not referenced by the database.
+
+Student ID
+----------
+The ID given to a student. For example, "doe_jane".
+
+Timestamp
+---------
+A timestamp of when a user initiates the assignment submission process. It follows the `format <https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes>`_ ``"%Y-%m-%d %H:%M:%S.%f %Z"``. For example, ``2020-01-30 10:30:47.524219 UTC``.
 

@@ -22,11 +22,11 @@ install:
 before_script:
 - python3 -m pip install pytest pytest-cov pytest-tornado black
 script:
-- python3 -m pytest . --cov=.
+- python3 -m pytest ./ngshare/ --cov=./ngshare/
 - python3 -m black -S -l 80 --check .
 - helm lint --strict helmchart/ngshare
 after_success:
-- python3 -m pip install codecov
+- python3 -m pip install "codecov>=2.1.0"
 - codecov
 - |-
   test ${TRAVIS_PYTHON_VERSION} = 3.8 &&
@@ -37,6 +37,14 @@ after_success:
   chmod 400 /tmp/ssh_key &&
   python3 -m pip install chartpress &&
   GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --long
+deploy:
+  provider: pypi
+  user: "__token__"
+  password:
+    secure: "CnzfP5f78cuucJXf9Abgu2c9CC88/e/bo/b4lFGlcqZrjay5w0xG0arhGdIDWb8LtxmaX74l5Pm+QZi63uP+h5qUJiBh6pux1uhoyvtg3FMlpbHedqpPHYOYgqATeJ/UXeCTwFU37XZJQEJYB1YriwATYgdhpb0qbe105dVsBzhVuz+JNqyLXXPdaBXYlRYzr+77yHonh2Rq1tkzhGS3WrKByQT6y+PD+Eff0ADg390myXI9gpj1EMfc/gtfKjFWQFzY1E3stmt927BbMU/lPE+Ftz6JkwbnB0QK4u49vpdCZqBqJbdai9oS7hpa8ViZnY11w7fwZKCZHQ9uFRXiPyZAhMpv7mtv62ugoQTMfoMru19DuHAktd9RJ3cLKWfXI7ViJ1d1ZLIshYpB2wIRcXbcB6/iZ3HjhauL5Ez0hs0rTIcMQZda5OTQZqfh7cg81S/TJcu9nxAAsho71YLgxt0p9NdVUFc//DIBwW2Cv4oDo1HX8LsCDx9sG8zc0KIhz4gpAh2nQfi1JOvEPQ4X7eRHJGtFjWGzcmdIHnnVRyOsXfaNAROcAMyIpJEoCsM8nguARhJCJ9/Ga4BlsWSdxqUPNKN35Fz0Jb8cICiyKjD8Opvz1dknYVi0abzDJqLi0pZUkzSt69j9vtcKkrq1UtfzFkMk/ypKmrWA6oi/8HU="
+  on:
+    branch: stable
+    python: "3.8"
 env:
   global:
     - DOCKER_USERNAME=rkevin

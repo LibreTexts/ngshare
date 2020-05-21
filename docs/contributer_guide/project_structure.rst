@@ -1,7 +1,7 @@
 Project Structure
 =================
 
-System architecture overview
+System Architecture Overview
 ----------------------------
 
 This section is under construction
@@ -53,7 +53,7 @@ This section is under construction
 	\DrawLine{->}{purple} (\nx-2, \ny) -- (\hx+2, \hy)
 							node[pos=0.5, above]{Authenticate};
 
-Database structure
+Database Structure
 ------------------
 The database structure is documented in :doc:`database`.
 

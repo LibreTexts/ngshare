@@ -1,77 +1,102 @@
 Why ngshare?
 ============
 
+The Problem
+-----------
+
+This section is under construction
+
+Alternative Solutions
+---------------------
+
 We brainstormed a few possible solutions before starting the ngshare project:
 
-* hubshare
+hubshare
+^^^^^^^^
 
-  * `hubshare <https://github.com/jupyterhub/hubshare>`_ is a directory sharing
-    service for JupyterHub. 
+`hubshare <https://github.com/jupyterhub/hubshare>`_ is a directory sharing
+service for JupyterHub.
 
-  * Pros
+Pros
+""""
 
-    * Universal solution that can be integrated with nbgrader.
+* Universal solution which can be integrated with nbgrader.
 
-    * Similar service desired by nbgrader developer 
-      (see
-      `jupyter/nbgrader#659 <https://github.com/jupyter/nbgrader/issues/659>`_)
+* Considered for a similar service desired by the primary nbgrader developer
+  (see
+  `jupyter/nbgrader#659 <https://github.com/jupyter/nbgrader/issues/659>`_).
 
-  * Cons
+Cons
+""""
 
-    * Lots of work to implement HubShare. 
+* Lots of work to implement HubShare.
 
-    * nbgrader exchange mechanism need to be reworked.
+* The nbgrader exchange needs to be reworked.
 
-    * Too generic, does not have permission control specific to classes &
-      assignment. (see
-      `this comment <https://github.com/jupyter/nbgrader/issues/659#issuecomment-431762792>`_)
+* Too generic, as it does not have permission control specific to courses and
+  assignments (see
+  `this comment <https://github.com/jupyter/nbgrader/issues/659#issuecomment-431762792>`_).
 
-* NFS
+NFS
+^^^
 
-  * Another solution is to let every container access a shared file system
-    through NFS (Network File System).
+Another solution is to let every container access a shared file system
+through NFS (Network File System).
 
-  * Pros
+Pros
+""""
 
-    * Very doable. Does not "require" input from the Jupyter community.
+* Simple and doable.
 
-  * Cons
+* Requires minimal changes and additions to the Jupyter project.
 
-    * Not a universal solution.
+Cons
+""""
 
-* Kubernetes Persistent Volume Claim
+* Not a universal solution. NFS setups will vary across deployments.
 
-  * `Kubernetes Persistent Volume Claim
-    <https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims>`_
-    allows containers to request shared file systems.
+Kubernetes Persistent Volume Claim
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  * Pros
+`Kubernetes Persistent Volume Claim
+<https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims>`_
+allows containers to request shared file systems.
 
-    * More universal than the NFS solution. Does not "require" input from
-      the Jupyter community.
+Pros
+""""
 
-  * Cons
+* More universal than the NFS solution.
 
-    * Difficult to work around limitations regarding multiple writers per
-      volume. Need to find a way to have correct permissions for students and
-      instructors.
+* Requires minimal changes and additions to the Jupyter project.
 
-The best solution we think is the first one, but the generic problem still need to be solved. So we decided to find a fourth solution, which is creating a service similar to hubshare but more specialized for nbgrader.
+Cons
+""""
 
-* ngshare
+* Difficult to work around limitations regarding multiple writers per
+  volume. Need to find a way to have correct permissions for students and
+  instructors.
 
-  * ngshare implements a set of :doc:`REST APIs </api/index>` designed
-    for nbgrader exchange mechanism.
+* Does not work with `some volume plugins <https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes>`_.
 
-  * Pros
+We think the best of these solutions is hubshare, but it is too general. We decided to create our own solution, which is a service similar to hubshare but more specialized for nbgrader. We call it ngshare, short for **n**\ b\ **g**\ rader **share**.
 
-    * Universal solution that can be integrated with nbgrader.
+ngshare
+-------
 
-    * **Fully controlled APIs by this project.**
+ngshare implements a set of :doc:`REST APIs </api/index>` designed
+for the nbgrader exchange mechanism.
 
-  * Cons
+Pros
+^^^^
 
-    * Work needs to be done to implement ngshare.
+* Universal solution which can be integrated with nbgrader.
 
-    * nbgrader exchange mechanism needs to be reworked. 
+* **Full control over APIs in this project.**
+
+Cons
+^^^^
+
+* Work needs to be done to implement ngshare.
+
+* The nbgrader exchange needs to be reworked.
 

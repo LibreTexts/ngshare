@@ -1,3 +1,4 @@
 [report]
 omit =
     ngshare/__main__.py
+    ngshare/vngshare.py

@@ -4,6 +4,7 @@
 
 import os
 import tempfile
+import pytest
 
 from . import dbutil
 
@@ -25,9 +26,7 @@ def test_update():
     # Upgrade to head
     dbutil.main(['upgrade', 'head'], tempdb_url)
     # Invalid argument error
-    try:
+    with pytest.raises(SystemExit):
         dbutil.main([])
-    except SystemExit:
-        pass
     # Remove tempdb
     os.remove(tempdb_path)
