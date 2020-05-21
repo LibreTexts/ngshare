@@ -167,7 +167,10 @@ class MyHelpers:
                 except FileExistsError:
                     pass
             if f is None:
-                raise self.json_error(500, 'Internal server error')
+                msg = 'Internal server error'
+                if self.application.debug:
+                    msg += ' (filename conflict)'
+                raise self.json_error(500, msg)
             f.write(content)
             f.close()
             file_obj.actual_name = actual_name

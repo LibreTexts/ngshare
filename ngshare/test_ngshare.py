@@ -1233,19 +1233,43 @@ def test_corner_case(http_client, base_url):
     user = 'none'
     yield from assert_success(init_url, params={'action': 'clear'})
     yield from assert_success(init_url, params={'action': 'init'})
+    # Long file extension
     user = 'eric'
     data = {
         'files': json.dumps(
             [{'path': 'a.abcdefghijklmnopqrstuvw', 'content': 'amtsCg=='}]
         )
     }
-    yield from assert_success(
-        '/api/submission/course2/assignment2a', method='POST', data=data,
-    )
+    url = '/api/submission/course2/assignment2a'
+    yield from assert_success(url, method='POST', data=data)
     user = 'abigail'
-    assert (
-        yield from assert_success('/api/submission/course2/assignment2a/eric')
-    )['files'][0]['path'] == 'a.abcdefghijklmnopqrstuvw'
+    assert (yield from assert_success(url + '/eric'))['files'][0][
+        'path'
+    ] == 'a.abcdefghijklmnopqrstuvw'
+    # File name conflict
+    ori_filename_create = MyHelpers.filename_create
+    counter = 0
+
+    def mock_filename_create(self, filename):
+        nonlocal counter
+        counter += 1
+        return str(counter ** 2 % 10) + '.tmp'
+
+    MyHelpers.filename_create = mock_filename_create
+    for i in range(100):
+        # There must be a conflict within 10 tries
+        assert i <= 10
+        params = {'user': 'eric'}
+        response = yield from server_communication(url, data, params, 'POST')
+        resp = json.loads(response.body)
+        if response.code == 200:
+            assert resp['success'] == True
+            continue
+        assert resp['success'] == False
+        assert resp['message'] == 'Internal server error (filename conflict)'
+        assert i > 2
+        break
+    MyHelpers.filename_create = ori_filename_create
 
 
 @pytest.mark.gen_test
