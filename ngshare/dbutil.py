@@ -8,6 +8,7 @@ import sys
 import alembic
 import alembic.command
 import alembic.config
+import argparse
 
 _here = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,26 +18,28 @@ ALEMBIC_DIR = os.path.join(_here, 'alembic')
 DEFAULT_DB = 'sqlite:////tmp/ngshare.db'
 
 
-def get_alembic_config(db_url: str = DEFAULT_DB) -> alembic.config.Config:
+def get_alembic_config(
+    db_url: str = DEFAULT_DB, cmd_opts: dict = None
+) -> alembic.config.Config:
     """Generate the alembic configuration from the template and populate fields.
     db_url: str [default: 'sqlite:////tmp/ngshare.db']
         The database url used to populate sqlalchemy.url, e.g. `sqlite:///ngshare.db`.
     """
 
-    config = alembic.config.Config(ALEMBIC_INI_TEMPLATE_PATH)
+    config = alembic.config.Config(ALEMBIC_INI_TEMPLATE_PATH, cmd_opts=cmd_opts)
     config.set_main_option("script_location", ALEMBIC_DIR)
     config.set_main_option("sqlalchemy.url", db_url)
     return config
 
 
-def upgrade(db_url: str = DEFAULT_DB, revision='head'):
+def upgrade(db_url: str = DEFAULT_DB, revision='head', cmd_opts=None):
     """Upgrade the given database to revision.
     db_url: str [default: 'sqlite:////tmp/ngshare.db']
         The SQLAlchemy database url, e.g. `sqlite:///ngshare.db`.
     revision: str [default: head]
         The alembic revision to upgrade to.
     """
-    alembic.command.upgrade(get_alembic_config(db_url), revision)
+    alembic.command.upgrade(get_alembic_config(db_url, cmd_opts), revision)
 
 
 def main(args: list, db_url: str = DEFAULT_DB):
@@ -45,7 +48,7 @@ def main(args: list, db_url: str = DEFAULT_DB):
     options = cl.parser.parse_args(args)
     if not hasattr(options, "cmd"):
         cl.parser.error("too few arguments")
-    cl.run_cmd(get_alembic_config(db_url), options)
+    cl.run_cmd(get_alembic_config(db_url, options), options)
 
 
 if __name__ == '__main__':  # pragma: no cover
