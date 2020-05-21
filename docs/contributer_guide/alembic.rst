@@ -38,3 +38,9 @@ Reference
 * `https://alembic.sqlalchemy.org/en/latest/autogenerate.html
   <https://alembic.sqlalchemy.org/en/latest/autogenerate.html>`_
 
+Update History
+--------------
+* ``aa00db20c10a_init.py``: initialize database
+* ``1921a169739b_add_file_size.py``: add file size column in ``File`` table.
+  If file not found during data migration, ``File.size`` will be ``None``.
+

@@ -5,7 +5,7 @@ Revises: aa00db20c10a
 Create Date: 2020-04-30 14:39:41.662130
 
 """
-import os
+import os, sys
 
 from alembic import op, context
 import sqlalchemy as sa
@@ -39,12 +39,17 @@ def upgrade():
     # http://ominian.com/2019/07/11/data-migration-with-sqlalchemy-and-alembic/
     if context.get_x_argument(as_dictionary=True).get('data', None):
         # Perform data migrations
-        storage_path = context.get_x_argument(as_dictionary=True)['storage']
+        storage = context.get_x_argument(as_dictionary=True)['storage']
         session = orm.Session(bind=op.get_bind())
         for i in session.query(File):
-            i.size = os.path.getsize(os.path.join(storage_path, i.actual_name))
-            # Raises FileNotFoundError when file does not exist
-            # ngshare will refuse to start
+            pathname = os.path.join(storage, i.actual_name)
+            try:
+                i.size = os.path.getsize(pathname)
+            except FileNotFoundError:
+                print(
+                    'WARNING: File %s not found' % repr(pathname),
+                    file=sys.stderr,
+                )
         session.commit()
     # ### end Alembic commands ###
 

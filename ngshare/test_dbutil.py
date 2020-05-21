@@ -89,10 +89,15 @@ def test_add_file_size():
     db.close()
     # Downgrade
     dbutil.main(['downgrade', '1921a169739b-1'], tempdb_url)
-    # Remove file, test FileNotFoundError
+    # Test when file not found
     os.unlink(os.path.join(tempdir, 'abcdef.txt'))
-    with pytest.raises(FileNotFoundError):
-        dbutil.main(args + ['upgrade', '1921a169739b'], tempdb_url)
+    dbutil.main(args + ['upgrade', '1921a169739b'], tempdb_url)
+    # Check data
+    db = sessionmaker(bind=create_engine(tempdb_url))()
+    assert dict(
+        map(lambda x: (x.filename, x.size), db.query(File_new).all())
+    ) == {'myfile.txt': None, 'dev-null.img': 0}
+    db.close()
     # Remove tempdb
     os.remove(tempdb_path)
     for i in os.listdir(tempdir):
