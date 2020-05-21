@@ -14,6 +14,7 @@ def test_update():
     # Create file name
     tempdb_path = tempfile.mktemp('.db')
     tempdb_url = 'sqlite:///' + tempdb_path
+    tempdir = tempfile.mkdtemp()
     # Create database
     assert not os.path.exists(tempdb_path)
     dbutil.upgrade(tempdb_url)
@@ -24,9 +25,15 @@ def test_update():
     # Offline mode
     dbutil.main(['upgrade', 'head', '--sql'], tempdb_url)
     # Upgrade to head
-    dbutil.main(['upgrade', 'head'], tempdb_url)
+    dbutil.main(
+        ['-x', 'data=true', '-x', 'storage=' + tempdir, 'upgrade', 'head'],
+        tempdb_url,
+    )
     # Invalid argument error
     with pytest.raises(SystemExit):
         dbutil.main([])
     # Remove tempdb
     os.remove(tempdb_path)
+
+# TODO: add test cases for data migration
+
