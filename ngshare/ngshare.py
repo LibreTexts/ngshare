@@ -10,6 +10,7 @@ import argparse
 import base64
 import binascii
 import datetime
+from collections import namedtuple
 from urllib.parse import urlparse
 
 from tornado.httpserver import HTTPServer
@@ -1018,7 +1019,9 @@ def main(argv):  # pragma: no cover
         raise ValueError("API prefix may not start with /healthz/")
 
     if not args.no_upgrade_db:
-        dbutil.upgrade(args.database)
+        CmdOpts = namedtuple('CmdOpts', ['x'])
+        cmd_opts = CmdOpts(['data=true', 'storage=' + args.storage])
+        dbutil.upgrade(args.database, cmd_opts=cmd_opts)
 
     if args.vngshare:
         MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)

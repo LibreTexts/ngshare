@@ -4,6 +4,7 @@
 
 import os
 import tempfile
+from collections import namedtuple
 import pytest
 
 from sqlalchemy import create_engine, Column, INTEGER, TEXT
@@ -21,7 +22,9 @@ def test_update():
     tempdir = tempfile.mkdtemp()
     # Create database
     assert not os.path.exists(tempdb_path)
-    dbutil.upgrade(tempdb_url)
+    CmdOpts = namedtuple('CmdOpts', ['x'])
+    cmd_opts = CmdOpts(['data=true', 'storage=' + tempdir])
+    dbutil.upgrade(tempdb_url, cmd_opts=cmd_opts)
     # Downgrade to init
     dbutil.main(['downgrade', 'aa00db20c10a'], tempdb_url)
     # Downgrade to nothing
