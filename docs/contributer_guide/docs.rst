@@ -11,3 +11,7 @@ run the following.
     cd docs
     make html
 
+You may need to install other LaTeX packages to make TikZ images work properly. For example, on Arch Linux, you need to use ``pacman -S texlive-core texlive-latexextra texlive-pictures``.
+
+See `https://sphinxcontrib-tikz.readthedocs.io/en/latest/#prerequisites-and-configuration <https://sphinxcontrib-tikz.readthedocs.io/en/latest/#prerequisites-and-configuration>`_ for details.
+
