@@ -28,6 +28,8 @@ POST Example
     Content-Length: 189
     Authorization: token ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
+    instructors=%5B%22eric%22%5D
+
 vngshare Authentication
 -----------------------
 

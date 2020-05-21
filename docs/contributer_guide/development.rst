@@ -3,6 +3,8 @@ Development
 
 Testing
 -------
+We use `pytest <https://pypi.org/project/pytest/>`_ for unit tests. The `pytest-tornado <https://pypi.org/project/pytest-tornado/>`_ plugin allows us to test a Tornado server.
+
 .. code:: bash
 
     pip3 install pytest pytest-cov pytest-tornado
@@ -11,11 +13,13 @@ Testing
 
 Coverage
 ^^^^^^^^
+We use `pytest-cov <https://pypi.org/project/pytest-cov/>`_ to gather code coverage. To collect coverage, use:
+
 .. code:: bash
 
     pytest --cov=.
 
-Show uncovered lines
+To show uncovered lines, use:
 
 .. code:: bash
 
@@ -23,6 +27,8 @@ Show uncovered lines
 
 Code Formatting
 ---------------
+We use `black <https://github.com/psf/black>`_ to format our code.
+
 .. code:: bash
 
     pip3 install black

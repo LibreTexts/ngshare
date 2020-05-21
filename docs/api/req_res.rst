@@ -58,7 +58,7 @@ When the client is authenticated, server will return a status code and a JSON ob
 * When server encounters an error, it will return 500. In this case, the client
   should submit a bug report and report this to ngshare maintainers.
 
-Success example
+Success Example
 ^^^^^^^^^^^^^^^
 
 .. code::
@@ -71,8 +71,8 @@ Success example
 
     {"success": true, "files": [{"path": "file2", "checksum": "3d2172418ce305c7d16d4b05597c6a59"}]}
 
-Error example
-^^^^^^^^^^^^^^^
+Error Example
+^^^^^^^^^^^^^
 
 .. code::
 
