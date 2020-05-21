@@ -6,11 +6,9 @@ Course APIs
 
 GET /api/courses
 ^^^^^^^^^^^^^^^^
-List all available courses taking or teaching. (students+instructors)
+*List all available courses taking or teaching. (students+instructors)*
 
-List all courses in ngshare. (admins)
-
-Used for ExchangeList.
+*List all courses in ngshare. (admins)*
 
 Response
 """"""""
@@ -26,7 +24,7 @@ Response
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 
@@ -35,7 +33,7 @@ Error messages
 
 POST /api/course/<course_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-*Create a course (admins). Used for outside Exchange.*
+*Create a course (admins).*
 
 The new course will have no students. It has no instructors unless specified in request. 
 
@@ -53,14 +51,14 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 400 Instructors cannot be JSON decoded
 * 409 Course already exists
 
 DELETE /api/course/<course_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-*Remove a course (admins). Used for outside Exchange.*
+*Remove a course (admins).*
 
 Response
 """"""""
@@ -70,22 +68,22 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
 
-/api/instructor: Course instructor management
+/api/instructor: Course Instructor Management
 ---------------------------------------------
 
 POST /api/instructor/<course_id>/<instructor_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Add or update a course instructor. (admins)*
 
-*Update self full name or email. (instructors)*
+*Update own full name or email. (instructors)*
 
-If the user is already a student of the course, the student-relationship will be removed.
+If the user is already a student of the course, the student relationship will be removed.
 
 Request (HTTP POST data)
 """"""""""""""""""""""""
@@ -103,7 +101,7 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -116,7 +114,7 @@ GET /api/instructor/<course_id>/<instructor_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Get information about a course instructor. (instructors+students)*
 
-When first name, last name, or email not set, the field is null
+When first name, last name, or email not set, the field is null.
 
 Response
 """"""""
@@ -130,7 +128,7 @@ Response
         "email": /* instructor email*/
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -151,21 +149,21 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
 * 404 Instructor not found
 
-/api/instructors: List course instructors
+/api/instructors: List Course Instructors
 -----------------------------------------
 
 GET /api/instructors/<course_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Get information about all course instructors. (instructors+students)*
 
-When first name, last name, or email not set, the field is null
+When first name, last name, or email not set, the field is null.
 
 Response
 """"""""
@@ -185,20 +183,20 @@ Response
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
 
-/api/student: Student management
+/api/student: Student Management
 --------------------------------
 
 POST /api/student/<course_id>/<student_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Add or update a student. (instructors only)*
 
-Fails if the user is an instructor of the course
+Fails if the user is an instructor of the course.
 
 Request (HTTP POST data)
 """"""""""""""""""""""""
@@ -216,7 +214,7 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -230,7 +228,7 @@ GET /api/student/<course_id>/<student_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Get information about a student. (instructors+student with same student_id)*
 
-When first name, last name, or email not set, the field is null
+When first name, last name, or email not set, the field is null.
 
 Response
 """"""""
@@ -244,7 +242,7 @@ Response
         "email": /* student email */
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -265,14 +263,14 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
 * 404 Student not found
 
-/api/students: List course students
+/api/students: List Course Students
 -----------------------------------
 
 POST /api/students/<course_id>
@@ -285,21 +283,18 @@ Request (HTTP POST data)
 """"""""""""""""""""""""
 .. code:: javascript
 
-    students=[/* JSON object */
-        {
-            "username": "/* student 1 ID */",
-            "first_name": "/* student 1 first name */",
-            "last_name": "/* student 1 last name */",
-            "email": "/* student 1 email */"
-        },
-        {
-            "username": "/* student 2 ID */",
-            "first_name": "/* student 2 first name */",
-            "last_name": "/* student 2 last name */",
-            "email": "/* student 2 email */"
-        },
-        ...
-    ]
+    {
+        "students":
+        [
+            {
+                "username": /* student ID */,
+                "first_name": /* student first name */,
+                "last_name": /* student last name */,
+                "email": /* student email */
+            },
+            ...
+        ]
+    }
 
 Response
 """"""""
@@ -307,21 +302,22 @@ Response
 
     {
         "success": true
-        "status": [
+        "status":
+        [
             {
-                "username": "/* student 1 ID */",
+                "username": /* student ID */,
                 "success": true
             },
             {
-                "username": "/* student 2 ID */",
+                "username": /* student ID */,
                 "success": false,
-                "message": "Cannot add instructor as student"
+                "message": /* error message */
             },
             ...
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -334,7 +330,7 @@ GET /api/students/<course_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Get information about all course students. (instructors only)*
 
-When first name, last name, or email not set, the field is null
+When first name, last name, or email not set, the field is null.
 
 Response
 """"""""
@@ -354,7 +350,7 @@ Response
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied

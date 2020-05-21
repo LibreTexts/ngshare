@@ -29,7 +29,7 @@ The development of ``ngshare`` (backend) requires collaborating with frontend de
 
 Currently we are at stage 5. 
 
-Historical project structure
+Historical Project Structure
 ----------------------------
 
 This project used to has 2 parts

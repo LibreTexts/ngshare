@@ -15,16 +15,17 @@ The client may need to supply GET parameters or POST data.
 
 GET Example
 ^^^^^^^^^^^
-(Authentication is not shown here; see :doc:`authentication`)
+(For authentication for vngshare, see :doc:`authentication`)
 
 .. code::
 
     GET /api/assignment/course1/challenge?list_only=true HTTP/1.1
     Host: my-ngshare-host
+    Authorization: token ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 POST Example
 ^^^^^^^^^^^^
-(Authentication is not shown here; see :doc:`authentication`)
+(For authentication for vngshare, see :doc:`authentication`)
 
 .. code::
 
@@ -32,16 +33,17 @@ POST Example
     Host: my-ngshare-host
     Content-Type: application/x-www-form-urlencoded
     Content-Length: 189
+    Authorization: token ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
     students=%5B%7B%22username%22%3A+%22kevin%22%2C+%22first_name%22%3A+%22kevin_first_name%22%2C+%22last_name%22%3A+%22kevin_last_name%22%2C+%22email%22%3A+%22kevin_email%22%7D%5D
 
 Response
 --------
-When the client is not authenticated (e.g. not logged in), server will return HTTP 301 and redirect user to log in page
+When the client is not authenticated (e.g. not logged in), server will return HTTP 301 and redirect user to login page.
 
-When the client tries to access an invalid entrypoint, server will return HTTP 404 Not Found
+When the client tries to access an invalid entrypoint, server will return HTTP 404 Not Found.
 
-When the client performs a request with an invalid method, server will return HTTP 405 Method Not Allowed
+When the client performs a request with an invalid method, server will return HTTP 405 Method Not Allowed.
 
 When the client is authenticated, server will return a status code and a JSON object (specified below).
 
@@ -56,7 +58,7 @@ When the client is authenticated, server will return a status code and a JSON ob
 * When server encounters an error, it will return 500. In this case, the client
   should submit a bug report and report this to ngshare maintainers.
 
-Success example
+Success Example
 ^^^^^^^^^^^^^^^
 
 .. code::
@@ -69,8 +71,8 @@ Success example
 
     {"success": true, "files": [{"path": "file2", "checksum": "3d2172418ce305c7d16d4b05597c6a59"}]}
 
-Error example
-^^^^^^^^^^^^^^^
+Error Example
+^^^^^^^^^^^^^
 
 .. code::
 

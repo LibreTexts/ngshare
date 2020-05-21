@@ -1,20 +1,41 @@
 Authentication
 ==============
 
-ngshare authentication
+ngshare Authentication
 ----------------------
 
 This section is under construction
 
-For ``ngshare``, use JupyterHub authentication.
+For ``ngshare``, use JupyterHub authentication token.
 
+GET Example
+^^^^^^^^^^^
 
-vngshare authentication
+.. code::
+
+    GET /api/assignment/course1/challenge?list_only=true HTTP/1.1
+    Host: my-ngshare-host
+    Authorization: token ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+POST Example
+^^^^^^^^^^^^
+
+.. code::
+
+    POST /api/students/course2 HTTP/1.1
+    Host: my-ngshare-host
+    Content-Type: application/x-www-form-urlencoded
+    Content-Length: 189
+    Authorization: token ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+    instructors=%5B%22eric%22%5D
+
+vngshare Authentication
 -----------------------
 
-For ``vngshare``, use GET param or POST data ``user``.
+For ``vngshare``, supply the username to the GET param or POST data ``user``.
 
-GET example
+GET Example
 ^^^^^^^^^^^
 
 .. code::
@@ -22,7 +43,7 @@ GET example
     GET /api/assignment/course1/challenge?user=lawrence&list_only=true HTTP/1.1
     Host: 127.0.0.1:12121
 
-Post example
+Post Example
 ^^^^^^^^^^^^
 
 .. code::
