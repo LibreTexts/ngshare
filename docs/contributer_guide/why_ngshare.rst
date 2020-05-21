@@ -1,12 +1,12 @@
 Why ngshare?
 ============
 
-The problem
+The Problem
 -----------
 
 This section is under construction
 
-Alternative solutions
+Alternative Solutions
 ---------------------
 
 We brainstormed a few possible solutions before starting the ngshare project:

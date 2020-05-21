@@ -1,11 +1,11 @@
 API Definitions
 ===============
 
-Admin user
+Admin User
 ----------
 Admin users have special privilege on ngshare (e.g. create / delete courses). The list of admin users can be set by ``--admins=`` argument in ngshare or vngshare.
 
-Assignment name
+Assignment Name
 ---------------
 Also referred to as ``assignment_id``, this is a unique name for an assignment within a course. For example, "Assignment 1".
 
@@ -13,11 +13,11 @@ Checksum
 --------
 The md5 checksum of a file.
 
-Course name
+Course Name
 -----------
 Also referred to as ``course_id``, this is a unique name for a course. For example, "NBG 101".
 
-Directory tree
+Directory Tree
 --------------
 Assignments consist of a directory, notebook files in the root, and optional supplementary files in the root and/or subdirectories. In order to send an entire assignment in one request, a JSON file has a list of maps for each file. The following structure will be referred to as "encoded directory tree."
 
@@ -38,12 +38,12 @@ Instructor ID
 -------------
 The ID given to an instructor. For example, "course1_instructor" or "doe_jane".
 
-Notebook name
+Notebook Name
 -------------
 Also referred to as ``notebook_id``, this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
 
-Removing
---------
+Removing Semantics
+------------------
 Removing something will remove relevant objects and relations in database, but the actual files are not removed from the file system.
 
 If storage space is a problem, the administrators can dump the database and remove files from the file system that are not referenced by the database.

@@ -21,7 +21,7 @@ Show uncovered lines
 
     pytest --cov-report term-missing --cov=. .
 
-Code formatting
+Code Formatting
 ---------------
 .. code:: bash
 

@@ -15,3 +15,8 @@ You may need to install other LaTeX packages to make TikZ images work properly. 
 
 See `https://sphinxcontrib-tikz.readthedocs.io/en/latest/#prerequisites-and-configuration <https://sphinxcontrib-tikz.readthedocs.io/en/latest/#prerequisites-and-configuration>`_ for details.
 
+Documentation Formatting
+------------------------
+
+For titles, use title case (e.g. "Documentation Formatting"), but do not capitalize things like "ngshare", "a", "the", etc.
+

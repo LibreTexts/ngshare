@@ -24,7 +24,7 @@ Response
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 
@@ -51,7 +51,7 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 400 Instructors cannot be JSON decoded
 * 409 Course already exists
@@ -68,13 +68,13 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
 
-/api/instructor: Course instructor management
+/api/instructor: Course Instructor Management
 ---------------------------------------------
 
 POST /api/instructor/<course_id>/<instructor_id>
@@ -101,7 +101,7 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -128,7 +128,7 @@ Response
         "email": /* instructor email*/
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -149,14 +149,14 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
 * 404 Instructor not found
 
-/api/instructors: List course instructors
+/api/instructors: List Course Instructors
 -----------------------------------------
 
 GET /api/instructors/<course_id>
@@ -183,13 +183,13 @@ Response
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
 
-/api/student: Student management
+/api/student: Student Management
 --------------------------------
 
 POST /api/student/<course_id>/<student_id>
@@ -214,7 +214,7 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -242,7 +242,7 @@ Response
         "email": /* student email */
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -263,14 +263,14 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
 * 404 Student not found
 
-/api/students: List course students
+/api/students: List Course Students
 -----------------------------------
 
 POST /api/students/<course_id>
@@ -317,7 +317,7 @@ Response
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -350,7 +350,7 @@ Response
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied

@@ -1,7 +1,7 @@
 Assignment APIs
 ===============
 
-/api/assignments: Course assignments
+/api/assignments: Course Assignments
 ------------------------------------
 
 GET /api/assignments/<course_id>
@@ -21,13 +21,13 @@ Response
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
 
-/api/assignment: Fetching and releasing an assignment
+/api/assignment: Fetching and Releasing an Assignment
 -----------------------------------------------------
 
 GET /api/assignment/<course_id>/<assignment_id>
@@ -51,7 +51,7 @@ Response
         "files": /* encoded directory tree */
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -76,7 +76,7 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -104,14 +104,14 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
 * 404 Assignment not found
 
-/api/submissions: Listing submissions
+/api/submissions: Listing Submissions
 -------------------------------------
 
 GET /api/submissions/<course_id>/<assignment_id>
@@ -134,7 +134,7 @@ Response
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -161,7 +161,7 @@ Response
         ]
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -169,7 +169,7 @@ Error messages
 * 404 Assignment not found
 * 404 Student not found
 
-/api/submission: Collecting and submitting a submission
+/api/submission: Collecting and Submitting a Submission
 -------------------------------------------------------
 
 POST /api/submission/<course_id>/<assignment_id>
@@ -191,7 +191,7 @@ Response
         "timestamp": /* submission timestamp */
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -226,7 +226,7 @@ Response
         "files": /* encoded directory tree */
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -235,7 +235,7 @@ Error messages
 * 404 Student not found
 * 404 Submission not found
 
-/api/feedback: Fetching and releasing submission feedback
+/api/feedback: Fetching and Releasing Submission Feedback
 ---------------------------------------------------------
 
 POST /api/feedback/<course_id>/<assignment_id>/<student_id>
@@ -259,7 +259,7 @@ Response
         "success": true
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied
@@ -300,7 +300,7 @@ Response
         "files": /* encoded directory tree */
     }
 
-Error messages
+Error Messages
 """"""""""""""
 * 302 (Login required)
 * 403 Permission denied

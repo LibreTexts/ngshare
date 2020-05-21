@@ -3,7 +3,7 @@ Decisions
 
 This section is under construction
 
-Technologies employed
+Technologies Employed
 ---------------------
 
 When developing this project, we mostly followed the way ``nbgrader`` and `JupyterHub <https://github.com/jupyterhub/jupyterhub>`_ is designed so that our project is consistent with other Jupyter projects.
@@ -38,7 +38,7 @@ Progamming Language
   server
 * `black <https://github.com/psf/black>`_ - a Python code formatter
 
-Project management
+Project Management
 ^^^^^^^^^^^^^^^^^^
 * `GitHub <https://github.com/>`_ - a git repository management website
 * `Travis CI <https://travis-ci.org/>`_ - Continous integration

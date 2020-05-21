@@ -3,7 +3,7 @@ Migration with Alembic
 
 Whenever the database structure is changed, developers should update migration instructions for the database using alembic. The default ngshare configuration automatically upgrades the database when starting.
 
-Upgrade database
+Upgrade Database
 ----------------
 This is automatically done in vanilla ngshare and vngshare implementations.
 
@@ -12,7 +12,7 @@ This is automatically done in vanilla ngshare and vngshare implementations.
     cd ngshare
     python3 dbutil.py upgrade head
 
-Create new version
+Create New Version
 ------------------
 After a change is made in ``ngshare/database/database.py``, use the following command to generate a migration script.
 

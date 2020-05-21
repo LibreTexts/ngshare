@@ -15,16 +15,17 @@ The client may need to supply GET parameters or POST data.
 
 GET Example
 ^^^^^^^^^^^
-(Authentication is not shown here; see :doc:`authentication`)
+(For authentication for vngshare, see :doc:`authentication`)
 
 .. code::
 
     GET /api/assignment/course1/challenge?list_only=true HTTP/1.1
     Host: my-ngshare-host
+    Authorization: token ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 POST Example
 ^^^^^^^^^^^^
-(Authentication is not shown here; see :doc:`authentication`)
+(For authentication for vngshare, see :doc:`authentication`)
 
 .. code::
 
@@ -32,6 +33,7 @@ POST Example
     Host: my-ngshare-host
     Content-Type: application/x-www-form-urlencoded
     Content-Length: 189
+    Authorization: token ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
     students=%5B%7B%22username%22%3A+%22kevin%22%2C+%22first_name%22%3A+%22kevin_first_name%22%2C+%22last_name%22%3A+%22kevin_last_name%22%2C+%22email%22%3A+%22kevin_email%22%7D%5D
 
