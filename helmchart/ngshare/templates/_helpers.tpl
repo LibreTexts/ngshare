@@ -51,14 +51,13 @@ app.kubernetes.io/name: {{ include "ngshare.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
-{{- $_ := set . "ngshare_random_token" (randAlphaNum 32) -}}
+{{- $_ := set .Values.ngshare "hub_api_token_is_random" false -}}
 {{- define "ngshare.getToken" -}}
 {{- if .Values.ngshare.hub_api_token -}}
 {{- .Values.ngshare.hub_api_token -}}
-{{- else if (get . "ngshare_random_token") -}}
-{{- get . "ngshare_random_token" -}}
 {{- else -}}
-{{- $_ := set . "ngshare_random_token" (randAlphaNum 32) -}}
-{{- get . "ngshare_random_token" -}}
+{{- $_ := set .Values.ngshare "hub_api_token" (randAlphaNum 32) -}}
+{{- $_ := set .Values.ngshare "hub_api_token_is_random" true -}}
+{{- .Values.ngshare.hub_api_token -}}
 {{- end -}}
 {{- end -}}
