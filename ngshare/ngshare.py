@@ -969,7 +969,7 @@ class MockAuth(HubAuthenticated):
         return {'name': user}
 
 
-def main(argv):  # pragma: no cover
+def main(argv=None):  # pragma: no cover
     'Main function'
     parser = argparse.ArgumentParser(
         description='ngshare, a REST API nbgrader exchange'
