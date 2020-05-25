@@ -16,6 +16,7 @@ Table of Contents
 
    user_guide/install.rst
    user_guide/extra.rst
+   user_guide/notes.rst
 
 .. toctree::
    :maxdepth: 2
