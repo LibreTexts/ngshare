@@ -19,7 +19,7 @@ Run Installed ngshare
 
 Run ngshare without Installation
 --------------------------------
-The first line installs pip dependencies
+The first line installs pip dependencies.
 
 .. code:: bash
 
@@ -53,4 +53,3 @@ Run vngshare without Installation
     python3 vngshare.py [arguments]
     # OR
     python3 ngshare.py --vngshare --debug ... [arguments]
-
