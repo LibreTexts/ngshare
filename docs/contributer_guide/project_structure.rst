@@ -45,7 +45,7 @@ Continuous Integration
 
 Documentation
 -------------
-``docs/`` directory contains source code for documentations. See :doc:`docs`.
+``docs/`` directory contains source code for documentation. See :doc:`docs`.
 
 Deployment
 ----------
