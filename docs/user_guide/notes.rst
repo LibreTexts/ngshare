@@ -4,7 +4,7 @@ Make sure to completely read and understand the following before putting ``ngsha
 
 Race Condition
 --------------
-ngshare should NOT run concurrently, or there may be race conditions and data may be corrupted. For example, do not create multiple ngshare instances that share a same underlying database.
+ngshare should NOT be run concurrently, or there may be race conditions and data may be corrupted. For example, do not create multiple ngshare instances that share the same underlying database.
 
 Database Upgrade
 ----------------
