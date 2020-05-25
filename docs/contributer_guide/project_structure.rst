@@ -37,7 +37,7 @@ Alembic
 
 Version Number
 --------------
-``ngshare/version.py`` defines current version. It follows `"Single-sourcing the package version" <https://packaging.python.org/guides/single-sourcing-package-version/>`_
+``ngshare/version.py`` defines the current version. It follows `"Single-sourcing the package version" <https://packaging.python.org/guides/single-sourcing-package-version/>`_
 
 Continuous Integration
 ----------------------
