@@ -1,7 +1,7 @@
 System Architecture Overview
 ============================
 
-``ngshare`` is intended to run as a Kubernetes pod and service outside JupyterHub. It will still be proxied by JupyterHub's proxy service, and can be accessed from any JupyterHub user pod. It uses the Hub for authentication.
+``ngshare`` is intended to run as a Kubernetes pod and service outside JupyterHub. In a Kubernetes setup, ngshare is proxied by JupyterHub's proxy service and can be accessed from any JupyterHub user pod. It uses the Hub for authentication.
 
 .. tikz::
 
@@ -49,4 +49,3 @@ System Architecture Overview
 
 	\DrawLine{->}{purple} (\nx-2, \ny) -- (\hx+2, \hy)
 							node[pos=0.5, above]{Authenticate};
-
