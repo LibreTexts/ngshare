@@ -20,8 +20,8 @@ You can use ngshare if you
  homework submissions and feedbacks, etc.
 * Want to learn Flask, SQLAlchemy, or Tornado Web Server. 
 
-## Documentations
-The API specifications and documentations for `ngshare` are in
+## Documentation
+The API specifications and documentation for `ngshare` are in
  [Read the Docs](https://ngshare.readthedocs.io/en/latest/).
 
 ## Installation and setup
@@ -168,4 +168,3 @@ Ngshare / vngshare automatically checks database upgrade each time it starts up.
 
 ## Code formatting
 `black -S -l 80 ngshare`
-
