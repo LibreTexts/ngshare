@@ -1,6 +1,19 @@
 ngshare
 =======
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+
+.. image:: https://travis-ci.org/lxylxy123456/ngshare.svg?branch=master
+    :target: https://travis-ci.org/lxylxy123456/ngshare
+
+.. image:: https://codecov.io/gh/lxylxy123456/ngshare/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/lxylxy123456/ngshare
+
+.. image:: https://readthedocs.org/projects/ngshare/badge/?version=latest
+    :target: https://ngshare.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 ``ngshare`` is a backend server for `nbgrader <https://github.com/jupyter/nbgrader>`_'s exchange service.
 
 `nbgrader <https://github.com/jupyter/nbgrader>`_ is a Jupyter notebooks extension for grading running on JupyterHub, but it does not work well in distributed setup of JupyterHub like in Kubernetes, because the file systems exchange uses are not connected between containers. 
