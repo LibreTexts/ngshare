@@ -24,3 +24,11 @@ Removing something (e.g. assignment, course) in ngshare will remove relevant obj
 
 If storage space is a problem, the administrators can dump the database and remove files from the file system that are not referenced by the database.
 
+Internal Server Error
+---------------------
+Users may receive 500 Internal Server Error in some extreme cases, for example:
+
+* Database or storage path has incorrect permission, or disk is full.
+* There are too many files (probably more than :math:`10^{18}`) created and
+  causes Version 4 UUID collision in ``json_files_unpack()``.
+
