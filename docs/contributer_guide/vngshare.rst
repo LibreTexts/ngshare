@@ -15,7 +15,6 @@ For detailed instructions, see :doc:`install`.
 Default Behavior
 ----------------
 
-vngshare by default enables debug (e.g. verbose error output). It allows developers to view and reset database content easily. Users can be authenticated by just passing the username in GET / POST requests (see :doc:`/api/authentication`).
+vngshare by default enables debug (e.g. verbose error output). It allows developers to view and reset database content easily. Users can be authenticated by simply passing in their username in GET / POST requests (see :doc:`/api/authentication`).
 
 vngshare will create a database at ``/tmp/ngshare.db`` and store uploaded files in ``/tmp/ngshare/``. Though there is no file system APIs like in vserver, unauthorized users can easily corrupt your data. So do not use in production.
-
