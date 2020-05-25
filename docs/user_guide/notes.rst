@@ -8,7 +8,7 @@ ngshare should NOT be run concurrently, or there may be race conditions and data
 
 Database Upgrade
 ----------------
-ngshare checks database version every time it starts up. If database version is older than ngshare version, it performs schema and data migration. Normally, this may only happen after ngshare is updated.
+ngshare checks the database version every time it starts up. If the database version is older than the ngshare version, it performs schema and data migration. Normally, this may only happen after ngshare is updated.
 
 The check can be disabled using ``--no-upgrade-db`` but do not disable it unless you have a good reason and know the possible consequences. 
 
