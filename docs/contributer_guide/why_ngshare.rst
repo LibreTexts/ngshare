@@ -4,7 +4,7 @@ Why ngshare?
 The Problem
 -----------
 
-nbgrader can be used in JupyterHub for creating and grading assignments, but there are issues when JupyterHub is deployed as a Kubernetes cluster. nbgrader is unable to automatically distribute and collect assignments since there isn't a shared filesystem (used by the exchange directory). 
+nbgrader can be used in JupyterHub for creating and grading assignments, but there are issues when JupyterHub is deployed as a Kubernetes cluster. nbgrader distributes and collects assignments via a shared directory between instructors and students called the exchange directory. nbgrader does not work on a Kubernetes setup because there isn't a shared filesystem in which to place the exchange directory. 
 
 .. tikz::
 
@@ -141,4 +141,3 @@ Cons
 * Work needs to be done to implement ngshare.
 
 * The nbgrader exchange needs to be reworked.
-
