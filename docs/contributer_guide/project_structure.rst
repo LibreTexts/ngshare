@@ -21,7 +21,7 @@ Unit tests
 
 HTML and JS
 ^^^^^^^^^^^
-``dump.html``, ``home.html``, and ``masonry.min.js`` are for welcome page and database dump page.
+``dump.html``, ``home.html``, and ``masonry.min.js`` are for the welcome page and database dump page.
 
 Favicon
 ^^^^^^^
