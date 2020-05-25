@@ -139,7 +139,7 @@ DELETE /api/instructor/<course_id>/<instructor_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Remove a course instructor (admins)*
 
-Submissions of the instructor are not removed from the course's assignments.
+Submissions of the instructor are not removed from the course.
 
 Response
 """"""""
