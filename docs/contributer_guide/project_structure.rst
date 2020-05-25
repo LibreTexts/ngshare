@@ -9,7 +9,7 @@ Python scripts
 ^^^^^^^^^^^^^^
 ``ngshare.py`` is the Tornado web server code for ngshare.
 
-``vngshare.py`` is Python script for starting ``vngshare``. See :doc:`vngshare`.
+``vngshare.py`` is a Python script for starting ``vngshare``. See :doc:`vngshare`.
 
 Unit tests
 ^^^^^^^^^^
@@ -56,4 +56,3 @@ Testing
 ``testing/`` is for installing ``ngshare`` in a Kubernetes setup.
 
 This section is under construction
-
