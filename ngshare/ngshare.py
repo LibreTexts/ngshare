@@ -10,6 +10,7 @@ import argparse
 import base64
 import binascii
 import datetime
+from collections import namedtuple
 from urllib.parse import urlparse
 
 from tornado.httpserver import HTTPServer
@@ -166,7 +167,10 @@ class MyHelpers:
                 except FileExistsError:
                     pass
             if f is None:
-                raise self.json_error(500, 'Internal server error')
+                msg = 'Internal server error'
+                if self.application.debug:
+                    msg += ' (filename conflict)'
+                raise self.json_error(500, msg)
             f.write(content)
             f.close()
             file_obj.actual_name = actual_name
@@ -965,7 +969,7 @@ class MockAuth(HubAuthenticated):
         return {'name': user}
 
 
-def main(argv):  # pragma: no cover
+def main(argv=None):  # pragma: no cover
     'Main function'
     parser = argparse.ArgumentParser(
         description='ngshare, a REST API nbgrader exchange'
@@ -1018,7 +1022,9 @@ def main(argv):  # pragma: no cover
         raise ValueError("API prefix may not start with /healthz/")
 
     if not args.no_upgrade_db:
-        dbutil.upgrade(args.database)
+        CmdOpts = namedtuple('CmdOpts', ['x'])
+        cmd_opts = CmdOpts(['data=true', 'storage=' + args.storage])
+        dbutil.upgrade(args.database, cmd_opts=cmd_opts)
 
     if args.vngshare:
         MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)

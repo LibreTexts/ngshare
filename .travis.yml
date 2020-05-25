@@ -16,6 +16,7 @@ services:
 cache: pip
 before_install:
 - python3 -m pip install setuptools wheel
+- curl -L https://git.io/get_helm.sh | bash && sudo mv `which helm` `which helm`2
 - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 install:
 - python3 -m pip install .
@@ -24,6 +25,7 @@ before_script:
 script:
 - python3 -m pytest ./ngshare/ --cov=./ngshare/
 - python3 -m black -S -l 80 --check .
+- helm2 lint --strict helmchart/ngshare
 - helm lint --strict helmchart/ngshare
 after_success:
 - python3 -m pip install "codecov>=2.1.0"

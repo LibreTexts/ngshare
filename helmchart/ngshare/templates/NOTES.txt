@@ -13,7 +13,7 @@ Afterwards, tell nbgrader to use ngshare as the exchange. For a sample of how to
 https://github.com/lxylxy123456/ngshare/blob/master/README.md#installation-and-setup
 
 Please let us know on Github if you encounter any issues, thanks!
-{{- if not (typeIs "string" .Values.ngshare.hub_api_token) }}
+{{- if .Values.ngshare.hub_api_token_is_random }}
 
 WARNING: You didn't specify an API token, and one is generated automatically for you.
 This will change every time you do a helm install or upgrade on ngshare,

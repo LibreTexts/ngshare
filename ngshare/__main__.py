@@ -1,3 +1,4 @@
+import sys
 from .ngshare import main
 
-main()
+main(sys.argv[1:])

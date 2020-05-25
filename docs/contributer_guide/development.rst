@@ -12,7 +12,6 @@ We use `pytest <https://pypi.org/project/pytest/>`_ for unit tests. The `pytest-
 .. code:: bash
 
     pip3 install pytest pytest-cov pytest-tornado
-    cd ngshare
     pytest
 
 Coverage
@@ -21,13 +20,13 @@ We use `pytest-cov <https://pypi.org/project/pytest-cov/>`_ to gather code cover
 
 .. code:: bash
 
-    pytest --cov=.
+    pytest --cov=./ngshare/
 
 To show uncovered lines, use:
 
 .. code:: bash
 
-    pytest --cov-report term-missing --cov=. .
+    pytest --cov-report term-missing --cov=./ngshare/ ./ngshare/
 
 Code Formatting
 ---------------
