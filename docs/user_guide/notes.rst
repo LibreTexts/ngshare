@@ -16,7 +16,7 @@ The database update history can be found in :doc:`/contributer_guide/alembic`.
 
 Database Backup
 ---------------
-ngshare users should regularly backup the database. Especially the database should be backed up before updating ngshare. Because after the update, the schema and data migration may corrupt the database.
+ngshare users should regularly backup the database. The database should be backed up before updating ngshare because the schema and data migration may corrupt the database.
 
 Removing Semantics
 ------------------
