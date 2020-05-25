@@ -1,6 +1,6 @@
 Notes for Administrators
 ========================
-Make sure to completely read and understand the following before putting ``ngshare`` into production
+Make sure to completely read and understand the following before putting ``ngshare`` into production.
 
 Race Condition
 --------------
