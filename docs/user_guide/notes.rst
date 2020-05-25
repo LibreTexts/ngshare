@@ -8,7 +8,7 @@ ngshare should NOT run concurrently, or there may be race conditions and data ma
 
 Database Upgrade
 ----------------
-ngshare checks database version every time it starts up. If database version is older than ngshare version, it performs schema and data migration. Normally this may only happen after ngshare is updated.
+ngshare checks database version every time it starts up. If database version is older than ngshare version, it performs schema and data migration. Normally, this may only happen after ngshare is updated.
 
 The check can be disabled using ``--no-upgrade-db`` but do not disable it unless you have a good reason and know the possible consequences. 
 
@@ -31,4 +31,3 @@ Users may receive 500 Internal Server Error in some extreme cases, for example:
 * Database or storage path has incorrect permission, or disk is full.
 * There are too many files (probably more than :math:`10^{18}`) created and
   causes Version 4 UUID collision in ``json_files_unpack()``.
-
