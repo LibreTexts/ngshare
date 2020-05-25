@@ -1,6 +1,6 @@
 vngshare
 ========
-vngshare is the stand-alone mode version of ngshare. It stands for Vserver-like Notebook Grader Share. It is similar to `vserver <https://github.com/lxylxy123456/ngshare-vserver/>`_ and allows easy testing.
+vngshare is the stand-alone mode of ngshare. It stands for Vserver-like Notebook Grader Share. It is similar to `vserver <https://github.com/lxylxy123456/ngshare-vserver/>`_ and allows easy testing.
 
 Install
 -------
