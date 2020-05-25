@@ -30,7 +30,7 @@ The first line installs pip dependencies
 
 Run vngshare
 ------------
-vngshare is simply adding some arguments to ngshare.
+vnshare can be used by running ``vngshare.py`` or by adding some arguments to ngshare.
 
 * ``--vngshare``: Mock authentication (using only username)
 * ``--debug``: enable debug
