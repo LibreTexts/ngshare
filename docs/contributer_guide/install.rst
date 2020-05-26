@@ -41,7 +41,7 @@ Run vngshare from Installed ngshare
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. code:: bash
 
-    python3 -m ngshare --vngshare --debug ... [arguments]
+    python3 -m ngshare --vngshare --debug [arguments]
 
 Run vngshare without Installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -52,4 +52,4 @@ Run vngshare without Installation
     cd ngshare/ngshare/
     python3 vngshare.py [arguments]
     # OR
-    python3 ngshare.py --vngshare --debug ... [arguments]
+    python3 ngshare.py --vngshare --debug [arguments]
