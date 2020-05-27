@@ -6,7 +6,7 @@ This section is under construction
 Technologies Employed
 ---------------------
 
-When developing this project, we mostly followed the way ``nbgrader`` and `JupyterHub <https://github.com/jupyterhub/jupyterhub>`_ is designed so that our project is consistent with other Jupyter projects.
+When developing ``ngshare``, we used many technologies that are used by other Jupyter projects, especially ``nbgrader`` and `JupyterHub <https://github.com/jupyterhub/jupyterhub>`_ is designed. In this way, our project most likely to be consistent with other Jupyter projects.
 
 Backend
 ^^^^^^^
