@@ -253,7 +253,7 @@ DELETE /api/student/<course_id>/<student_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Remove a student (instructors only)*
 
-Submissions of the student are not removed from the course (visible to instructors).
+The student's submissions are not removed from the course (visible to instructors).
 
 Response
 """"""""
