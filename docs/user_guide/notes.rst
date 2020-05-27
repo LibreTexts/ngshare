@@ -10,7 +10,7 @@ Database Upgrade
 ----------------
 ngshare checks the database version every time it starts up. If the database version is older than the ngshare version, it performs schema and data migration. 
 
-Under normal circumstances, migrations only happen after ngshare is updated and the update involves change in database structure. The ngshare database update log can be found in :doc:`/contributer_guide/alembic`.
+Under normal circumstances, migrations only happen after ngshare is updated and the update involves changing the database structure. The ngshare database update log can be found in :doc:`/contributer_guide/alembic`.
 
 The check can be disabled using ``--no-upgrade-db`` but do not disable it unless you have a good reason and know the possible consequences. 
 
