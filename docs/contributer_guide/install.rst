@@ -4,7 +4,7 @@ Developer Installation
 For using ``ngshare``, see :doc:`../user_guide/install`.
 
 Install from GitHub
-----------------
+-------------------
 .. code:: bash
 
     git clone https://github.com/lxylxy123456/ngshare.git

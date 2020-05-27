@@ -28,8 +28,10 @@ Table of Contents
    :caption: User Documentation
 
    user_guide/install.rst
+   user_guide/uninstall.rst
    user_guide/extra.rst
    user_guide/notes.rst
+   user_guide/bugs.rst
 
 .. toctree::
    :maxdepth: 2
