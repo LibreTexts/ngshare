@@ -28,8 +28,10 @@ Table of Contents
    :caption: User Documentation
 
    user_guide/install.rst
+   user_guide/uninstall.rst
    user_guide/extra.rst
    user_guide/notes.rst
+   user_guide/bugs.rst
 
 .. toctree::
    :maxdepth: 2
@@ -47,7 +49,6 @@ Table of Contents
    :caption: Contributor Guide
 
    contributer_guide/why_ngshare.rst
-   contributer_guide/dev_history.rst
    contributer_guide/system_architecture.rst
    contributer_guide/project_structure.rst
    contributer_guide/decisions.rst

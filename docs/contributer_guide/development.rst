@@ -37,3 +37,10 @@ We use `black <https://github.com/psf/black>`_ to format our code.
     pip3 install black
     black -S -l 80 .
 
+Contributing
+------------
+
+If you want to contribute to ``ngshare``, submit a pull request to `https://github.com/lxylxy123456/ngshare/ <https://github.com/lxylxy123456/ngshare/>`_.
+
+This section is under construction.
+

@@ -6,7 +6,7 @@ This section is under construction
 Technologies Employed
 ---------------------
 
-When developing this project, we mostly followed the way ``nbgrader`` and `JupyterHub <https://github.com/jupyterhub/jupyterhub>`_ is designed so that our project is consistent with other Jupyter projects.
+When developing ``ngshare``, we used many technologies that are used by other Jupyter projects, especially ``nbgrader`` and `JupyterHub <https://github.com/jupyterhub/jupyterhub>`_. In this way, our project is most likely to be consistent with other Jupyter projects.
 
 Backend
 ^^^^^^^
@@ -65,4 +65,3 @@ There are a few options on letting whom to update the database:
 JupyterHub is using option 2, and we decide to follow this, so that users do not have to perform manual intervention during upgrades. So it is developers' responsibility to make sure Alembic upgrade will not break (e.g. write enough test cases).
 
 To make sure users do not encounter database version problems, we decided to automatically run Alembic upgrade (both schematic and data migration) each time ngshare / vngshare is started. There is little overhead for the version check. We assume that users are regularly backing up their database (e.g. when data migration fails, the database's schema may be updated while ``alembic_version`` is not).
-
