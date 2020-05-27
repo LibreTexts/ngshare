@@ -139,7 +139,7 @@ DELETE /api/instructor/<course_id>/<instructor_id>
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Remove a course instructor (admins)*
 
-Submissions of the instructor are not removed from the course.
+The instructor's submissions are not removed from the course.
 
 Response
 """"""""
@@ -355,4 +355,3 @@ Error Messages
 * 302 (Login required)
 * 403 Permission denied
 * 404 Course not found
-
