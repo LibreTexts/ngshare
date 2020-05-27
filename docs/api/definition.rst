@@ -1,5 +1,5 @@
-API Definitions
-===============
+Definitions
+===========
 
 Admin User
 ----------
@@ -41,12 +41,6 @@ The ID given to an instructor. For example, "course1_instructor" or "doe_jane".
 Notebook Name
 -------------
 Also referred to as ``notebook_id``, this is the base name of a .ipynb notebook without the extension. For example, "Problem 1" is the name for the notebook "Problem 1.ipynb".
-
-Removing Semantics
-------------------
-Removing something will remove relevant objects and relations in database, but the actual files are not removed from the file system.
-
-If storage space is a problem, the administrators can dump the database and remove files from the file system that are not referenced by the database.
 
 Student ID
 ----------

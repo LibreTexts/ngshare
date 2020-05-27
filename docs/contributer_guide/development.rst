@@ -1,8 +1,12 @@
 Development
 ===========
 
-Testing
--------
+Stand-Alone Mode
+----------------
+Using ``vngshare`` can make developing easy because developers do not need to worry about authentications etc. See :doc:`vngshare`.
+
+Unit Testing
+------------
 We use `pytest <https://pypi.org/project/pytest/>`_ for unit tests. The `pytest-tornado <https://pypi.org/project/pytest-tornado/>`_ plugin allows us to test a Tornado server.
 
 .. code:: bash

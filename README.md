@@ -12,7 +12,6 @@ Click [here](#installation-and-setup) for installation instructions.
 
 <img src="ngshare/favicon.png" width="64px" />
 
-
 ## What can I use it for?
 You can use ngshare if you
 * Need to run nbgrader on a distributed set up (probably using
@@ -21,9 +20,9 @@ You can use ngshare if you
  homework submissions and feedbacks, etc.
 * Want to learn Flask, SQLAlchemy, or Tornado Web Server. 
 
-## APIs
-The API specifications for `ngshare` are available in
- [`api-specifications.md`](api-specifications.md).
+## Documentation
+The API specifications and documentation for `ngshare` are in
+ [Read the Docs](https://ngshare.readthedocs.io/en/latest/).
 
 ## Installation and setup
 * See [/testing](/testing#testing-setup) for setting up `ngshare` and `JupyterHub` for simple testing.
@@ -169,4 +168,3 @@ Ngshare / vngshare automatically checks database upgrade each time it starts up.
 
 ## Code formatting
 `black -S -l 80 ngshare`
-
