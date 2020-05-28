@@ -2,7 +2,7 @@ ngshare
 =======
 ``ngshare`` is a backend server for `nbgrader <https://github.com/jupyter/nbgrader>`_'s exchange service.
 
-.. image:: ../../ngshare/ngshare/favicon.png
+.. image:: ../../ngshare/ngshare/favicon.svg
     :width: 64
     :alt: ngshare Logo
 
