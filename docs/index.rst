@@ -63,3 +63,9 @@ Table of Contents
    contributer_guide/docs.rst
    contributer_guide/deploy.rst
 
+.. toctree::
+   :maxdepth: 2
+   :caption: User Guide
+
+   user_guide/user_guide.rst
+
