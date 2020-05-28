@@ -23,12 +23,14 @@ N/A
 
 Acknowledgments
 ---------------
-Special thanks to Professor Nitta, Professor Moore, the UC Davis Jupyter Team, and Jupyter contributors for their support.
+Special thanks to Professor Nitta, Professor Moore, the UC Davis Jupyter Team, and Jupyter contributors for their support with this senior design project.
 
 Related Documentation
 ---------------------
 * nbgrader: `https://nbgrader.readthedocs.io/en/stable/ <https://nbgrader.readthedocs.io/en/stable/>`_
-* TODO: add k8s etc.
+* JupyterHub: `https://jupyterhub.readthedocs.io/en/stable/ <https://jupyterhub.readthedocs.io/en/stable/>`_
+* Kubernetes: `https://kubernetes.io/docs/home/ <https://kubernetes.io/docs/home/>`_
+* TODO
 
 Project Overview
 ================
@@ -52,30 +54,59 @@ Goals
 
 Technical Specifications
 ------------------------
+TODO
 
 Features
 --------
+1. Sharing files between different Kubernetes pods without relying on a shared
+   file system.
+2. Managing courses, instructors, and students for ngshare. 
+3. Easy interface for administrators to debug ngshare database. 
+4. Open source projects with continuous integration, code coverage, and online
+   documentation.
+
+TODO
 
 Future Application
 ------------------
+Although this project is specifically built for nbgrader and Kubernetes, it can be ported to use other container cluster managers like Docker Swarm and Apache Mesos. The ngshare part of this project can be used as a template when developing other projects that require specialized sharing between containers. 
+
+TODO
 
 Installation
 ============
+TODO
 
 Functionality
 =============
+TODO
 
 Troubleshooting
 ===============
+TODO
 
 Frequently Asked Questions
 ==========================
 
-Is there any overhead on other Jupyter applications after I install this? 
+Is there any overhead on other Jupyter applications after I install this?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TODO
+
+Theoreotically, this project brings minimal overhead to other Jupyter applications.
+
+Starting ``ngshare`` requires some CPU time and memory. If no one is using the service only ``/healthz`` will be accessed. The overhead should be neglectable in most modern systems. 
+
+If no one is using ``nbgrader``, ... (TODO)
 
 How do I update nbgrader / ngshare? 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TODO
 
 Do I need to backup database? 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Yes, you should regularly backup your database in case of corruption. 
+
+The database should be backed up before updating ngshare because the schema and data migration may corrupt the database.
 
 Glossary
 ========
@@ -101,7 +132,7 @@ Team Members
 Clients
 -------
 * Christopher Nitta <TODO>
-* Jason Moore <TODO>
+* Jason K. Moore <TODO>
 
 Jupyter Community
 -----------------
