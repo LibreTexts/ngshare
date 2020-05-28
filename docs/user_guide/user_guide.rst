@@ -27,8 +27,8 @@ Special thanks to Professor Nitta, Professor Moore, the UC Davis Jupyter Team, a
 
 Related Documentation
 ---------------------
-nbgrader: `https://nbgrader.readthedocs.io/en/stable/ <https://nbgrader.readthedocs.io/en/stable/>`_
-TODO: add k8s etc.
+* nbgrader: `https://nbgrader.readthedocs.io/en/stable/ <https://nbgrader.readthedocs.io/en/stable/>`_
+* TODO: add k8s etc.
 
 Project Overview
 ================
@@ -37,14 +37,18 @@ Background
 ----------
 UC Davis JupyterHub will be used for course instruction. Students will be able to complete and submit assignments through JupyterHub and instructors can grade assignments. nbgrader will be used to add such functionality to UC Davis JupyterHub, but there are issues. When JupyterHub is deployed as a Kubernetes cluster, nbgrader is unable to automatically distribute and collect assignments since there isn’t a shared filesystem. Also, nbgrader is not compatible with JupyterLab, an improved version of the Jupyter Notebook frontend.
 
+.. image:: ../assets/architecture5a.svg
+    :alt: System Architecture Diagram without ngshare
+    :align: center
+
 Goals
 -----
-Create a JupyterHub service that allows nbgrader to work on a Kubernetes set up
-Create an nbgrader exchange plugin to enable the use of our service
-Provide good testing coverage of our service and plugin
-Package ngshare for easy installation through pip
-Write clear documentation to facilitate the maintenance of our service by the UC Davis Jupyter Team
-Port nbexchange extensions to JupyterLab
+* Create a JupyterHub service that allows nbgrader to work on a Kubernetes set up
+* Create an nbgrader exchange plugin to enable the use of our service
+* Provide good testing coverage of our service and plugin
+* Package ngshare for easy installation through pip
+* Write clear documentation to facilitate the maintenance of our service by the UC Davis Jupyter Team
+* Port nbexchange extensions to JupyterLab
 
 Technical Specifications
 ------------------------
@@ -68,34 +72,36 @@ Frequently Asked Questions
 ==========================
 
 Is there any overhead on other Jupyter applications after I install this? 
+
 How do I update nbgrader / ngshare? 
+
 Do I need to backup database? 
 
 Glossary
 ========
-Jupyter (notebook): web application to create and share documents that contain live code, equations, visualizations etc.
-JupyterLab: web-based interactive development environment for Jupyter notebooks, code and data.
-JupyterHub: A multi-user version of the notebook designed for companies, classrooms and research labs.
-Zero-to-JupyterHub: A version of JupyterHub, for use with a Kubernetes cluster.
-nbgrader: facilitates creating and grading assignments in the jupyter notebook.
-kubernetes (k8s): system for automating, deployment, scaling, and management of containerized applications.
-hubshare: a directory sharing service for JupyterHub, currently in early development.
-ngshare: an original backend server for nbgrader's exchange service.
+* `Jupyter (notebook) <https://jupyter.org/>`_: web application to create and share documents that contain live code, equations, visualizations etc.
+* `JupyterLab <https://jupyter.org/>`_: web-based interactive development environment for Jupyter notebooks, code and data.
+* `JupyterHub <https://jupyter.org/>`__: A multi-user version of the notebook designed for companies, classrooms and research labs.
+* `Zero-to-JupyterHub <https://zero-to-jupyterhub.readthedocs.io/en/latest/>`_: A version of JupyterHub, for use with a Kubernetes cluster.
+* `nbgrader <https://nbgrader.readthedocs.io/en/stable/>`_: facilitates creating and grading assignments in the jupyter notebook.
+* `kubernetes (k8s) <https://kubernetes.io>`_: system for automating, deployment, scaling, and management of containerized applications.
+* `hubshare <https://github.com/jupyterhub/hubshare>`_: a directory sharing service for JupyterHub, currently in early development.
+* `ngshare <https://github.com/lxylxy123456/ngshare>`_: an original backend server for nbgrader's exchange service.
 
 Contact Information
 ===================
 
 Team Members
 ------------
-Kevin Rong <TODO>
-Abigail Almanza <TODO>
-Lawrence Lee <TODO>
-Eric Li <TODO>
+* Kevin Rong <TODO>
+* Abigail Almanza <TODO>
+* Lawrence Lee <TODO>
+* Eric Li <TODO>
 
 Clients
 -------
-Christopher Nitta <TODO>
-Jason Moore <TODO>
+* Christopher Nitta <TODO>
+* Jason Moore <TODO>
 
 Jupyter Community
 -----------------
@@ -103,63 +109,137 @@ Reached by posting issues in Github repos like https://github.com/jupyter/nbgrad
 
 Deployment
 ----------
-UC Davis Jupyter team <TODO>
+* UC Davis Jupyter team <TODO>
 
 Appendix
 ========
 
 Technology Survey
 -----------------
+.. Ori: contributer_guide/why_ngshare.html#alternative-solutions
 
-HubShare
-Pros: Universal solution that can be integrated with nbgrader.
-Cons: Lots of work to implement HubShare. nbgrader exchange mechanisms may need to be reworked. Too generic, does not have permission control specific to classes & assignment. 
+hubshare
+^^^^^^^^
+
+`hubshare <https://github.com/jupyterhub/hubshare>`_ is a directory sharing service for JupyterHub.
+
+Pros
+""""
+
+* Universal solution which can be integrated with nbgrader.
+
+* Considered for a similar service desired by the primary nbgrader developer
+  (see
+  `jupyter/nbgrader#659 <https://github.com/jupyter/nbgrader/issues/659>`_).
+
+Cons
+""""
+
+* Lots of work to implement HubShare.
+
+* The nbgrader exchange needs to be reworked.
+
+* Too generic, as it does not have permission control specific to courses and
+  assignments (see
+  `this comment <https://github.com/jupyter/nbgrader/issues/659#issuecomment-431762792>`_).
+
 NFS
-Pros: Very doable. Does not “require” input from the Jupyter community.
-Cons: Not a universal solution.
+^^^
+
+Another solution is to let every container access a shared file system
+through NFS (Network File System).
+
+Pros
+""""
+
+* Simple and doable.
+
+* Requires minimal changes and additions to the Jupyter project.
+
+Cons
+""""
+
+* Not a universal solution. NFS setups will vary across deployments.
+
 Kubernetes Persistent Volume Claim
-Pros: More universal than the NFS solution. Does not “require” input from the Jupyter community.
-Cons: Difficult to work around limitations regarding multiple writers per volume. Need to find a way to have correct permissions for students and instructors.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+`Kubernetes Persistent Volume Claim
+<https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims>`_
+allows containers to request shared file systems.
+
+Pros
+""""
+
+* More universal than the NFS solution.
+
+* Requires minimal changes and additions to the Jupyter project.
+
+Cons
+""""
+
+* Difficult to work around limitations regarding multiple writers per
+  volume. Need to find a way to have correct permissions for students and
+  instructors.
+
+* Does not work with `some volume plugins <https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes>`_.
+
 ngshare
-Pros: Universal solution that can be integrated with nbgrader. Fully controlled APIs by this project.
-Cons: Work needs to be done to implement ngshare. nbgrader exchange mechanism needs to be reworked. 
+^^^^^^^
+
+ngshare implements a set of :doc:`REST APIs </api/index>` designed
+for the nbgrader exchange mechanism.
+
+Pros
+""""
+
+* Universal solution which can be integrated with nbgrader.
+
+* **Full control over APIs in this project.**
+
+Cons
+""""
+
+* Work needs to be done to implement ngshare.
+
+* The nbgrader exchange needs to be reworked.
 
 Requirements
 ------------
 
 User Stories
 ^^^^^^^^^^^^
-As a campus IT service provider, I want to be able to run nbgrader on kubernetes, so the teachers can easily direct students to use nbgrader on the service I provide in their programming classes.
-As a programming class teacher, I want nbgrader to be able to run on the JupyterLab interface. It would give students access to a more user-friendly programming environment.
-As a course instructor, I want nbgrader to warn me when I’m about to publish an edited assignment from “preview” mode in order to minimize the risk of accidentally releasing something I wrote for testing purposes.
-As a course instructor / TA, I want a button that runs the nbgrader autograder for all students’ submissions so that I don’t have to click “autograde” for every submission.
-As a course instructor / TA, I want to be able to manually grade one question across all submissions so that I can grade question by question instead of submission by submission.
-As a course instructor / TA, I want to be able to write a rubric before grading and then use it to quickly assign points to a problem, instead of typing in grade and feedback for each student’s submission. This functionality can be similar to what Gradescope provides.
-As a course instructor, I want to be able to automatically create links in Canvas that directs students to the corresponding JupyterHub / JupyterLab page.
-As a course instructor, I want a way to automatically upload all grades from an nbgrader assignment to Canvas.
-As a course instructor / TA, I want to make sure that nbgrader is running the student’s submission in a sandbox environment, so that if a student writes malicious code, the code will not affect me and other students.
-As a course instructor, I want to be able to assign each TA a separate JupyterHub account, and they can grade the assignment for the same course. It is favorable to record who graded which assignment / submission.
-As a course instructor / TA, I want to be able to work on multiple courses with only one account to the system. Currently I have to have one account for each course I am grading.
-As a non-English speaker / teacher, I hope nbgrader can have a internationalized interface (e.g. Chinese, Japanese) so that it is more friendly to my students. 
-As a teacher, I would like to easily import student roster from Canvas when the quarter begins. And when I notice students add , drop, or switch sections of the course, I would like to have a way to easily manage the change. 
-As a instructor, I would like to have a back button in formgrader (url is /user/<username>/formgrader) of ngshare so that I can easily go back to my JupyterHub homepage after I grade a homework 
-As a instructor / TA, I hope ngshare can have a way to handle regrade requests, instead of having all students email me and looking for each student in the system when handling each regrade request. 
-As a Windows server cluster manager, I hope nbgrader and ngshare can support more platforms by fixing problems like path name translation. 
+* As a campus IT service provider, I want to be able to run nbgrader on kubernetes, so the teachers can easily direct students to use nbgrader on the service I provide in their programming classes.
+* As a programming class teacher, I want nbgrader to be able to run on the JupyterLab interface. It would give students access to a more user-friendly programming environment.
+* As a course instructor, I want nbgrader to warn me when I’m about to publish an edited assignment from “preview” mode in order to minimize the risk of accidentally releasing something I wrote for testing purposes.
+* As a course instructor / TA, I want a button that runs the nbgrader autograder for all students’ submissions so that I don’t have to click “autograde” for every submission.
+* As a course instructor / TA, I want to be able to manually grade one question across all submissions so that I can grade question by question instead of submission by submission.
+* As a course instructor / TA, I want to be able to write a rubric before grading and then use it to quickly assign points to a problem, instead of typing in grade and feedback for each student’s submission. This functionality can be similar to what Gradescope provides.
+* As a course instructor, I want to be able to automatically create links in Canvas that directs students to the corresponding JupyterHub / JupyterLab page.
+* As a course instructor, I want a way to automatically upload all grades from an nbgrader assignment to Canvas.
+* As a course instructor / TA, I want to make sure that nbgrader is running the student’s submission in a sandbox environment, so that if a student writes malicious code, the code will not affect me and other students.
+* As a course instructor, I want to be able to assign each TA a separate JupyterHub account, and they can grade the assignment for the same course. It is favorable to record who graded which assignment / submission.
+* As a course instructor / TA, I want to be able to work on multiple courses with only one account to the system. Currently I have to have one account for each course I am grading.
+* As a non-English speaker / teacher, I hope nbgrader can have a internationalized interface (e.g. Chinese, Japanese) so that it is more friendly to my students. 
+* As a teacher, I would like to easily import student roster from Canvas when the quarter begins. And when I notice students add , drop, or switch sections of the course, I would like to have a way to easily manage the change. 
+* As a instructor, I would like to have a back button in formgrader (url is /user/<username>/formgrader) of ngshare so that I can easily go back to my JupyterHub homepage after I grade a homework 
+* As a instructor / TA, I hope ngshare can have a way to handle regrade requests, instead of having all students email me and looking for each student in the system when handling each regrade request. 
+* As a Windows server cluster manager, I hope nbgrader and ngshare can support more platforms by fixing problems like path name translation. 
 
 Prototyping code
-^^^^^^^^^^^^^^^^
-https://github.com/lxylxy123456/ngshare
-https://github.com/lxylxy123456/nbgrader
-https://github.com/rkevin-arch/zero-to-jupyterhub-k8s
-https://github.com/rkevin-arch/kubespawner_service_jupyterhub
-https://github.com/lxylxy123456/ngshare-vserver
-https://github.com/lxylxy123456/ngshare_exchange
+----------------
+* https://github.com/lxylxy123456/ngshare
+* https://github.com/lxylxy123456/nbgrader
+* https://github.com/rkevin-arch/zero-to-jupyterhub-k8s
+* https://github.com/rkevin-arch/kubespawner_service_jupyterhub
+* https://github.com/lxylxy123456/ngshare-vserver
+* https://github.com/lxylxy123456/ngshare_exchange
 
 Technologies Employed
 ---------------------
 .. Ori: contributer_guide/decisions.html#technologies-employed
 
-When developing ``ngshare``, we used many technologies that are used by other Jupyter projects, especially ``nbgrader`` and `JupyterHub <https://github.com/jupyterhub/jupyterhub>`_. In this way, our project is most likely to be consistent with other Jupyter projects.
+When developing ``ngshare``, we used many technologies that are used by other Jupyter projects, especially ``nbgrader`` and `JupyterHub <https://github.com/jupyterhub/jupyterhub>`__. In this way, our project is most likely to be consistent with other Jupyter projects.
 
 Backend
 ^^^^^^^
@@ -203,6 +283,7 @@ System Architecture Overview
 
 .. image:: ../assets/architecture5b.svg
     :alt: System Architecture Diagram
+    :align: center
 
 Legal & Social Aspects
 ----------------------
