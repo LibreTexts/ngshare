@@ -40,7 +40,7 @@ Users may receive 500 Internal Server Error in some extreme cases, for example:
 
 Limitations
 -----------
-* ngshare cannot run concurrently, which may be a bottle neck if too many users
+* ngshare cannot run concurrently, which may be a bottleneck if too many users
   are using this service.
 * ngshare stores all uploaded files in a same directory. This may create
   performance issues when there are too many files uploaded.
@@ -48,4 +48,3 @@ Limitations
   files).
 * Admin user names cannot contain "," (comma sign).
 * User names are not designed to be changable.
-
