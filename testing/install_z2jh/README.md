@@ -16,7 +16,7 @@ Then run
 It takes around 5 minutes to complete.
 
 Using the following command, you can see where to access JupyterHub
-```
+```sh
 minikube service list
 ```
 
