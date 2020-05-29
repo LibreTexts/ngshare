@@ -9,8 +9,8 @@ hub:
         'url': 'http://{{ include "ngshare.fullname" . }}:{{ .Values.deployment.port }}',
         'api_token': '{{ include "ngshare.getToken" . }}'})
 
-Afterwards, tell nbgrader to use ngshare as the exchange. For a sample of how to do that, see:
-https://github.com/lxylxy123456/ngshare/blob/master/README.md#installation-and-setup
+Afterwards, install ngshare_exchange in every Docker image that has nbgrader.
+https://ngshare.readthedocs.io/user_guide/install_z2jh.html#installing-ngshare-exchange
 
 Please let us know on Github if you encounter any issues, thanks!
 {{- if .Values.ngshare.hub_api_token_is_random }}
