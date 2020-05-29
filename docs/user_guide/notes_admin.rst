@@ -42,7 +42,7 @@ Limitations
 -----------
 * ngshare cannot run concurrently, which may be a bottleneck if too many users
   are using this service.
-* ngshare stores all uploaded files in a same directory. This may create
+* ngshare stores all uploaded files in one directory. This may create
   performance issues when there are too many files uploaded.
 * Currently there are no control on user uploads (e.g. file size, number of
   files).
