@@ -47,4 +47,4 @@ Limitations
 * Currently, there are no limits on user uploads (e.g. file size, number of
   files).
 * Admin user names cannot contain "," (comma sign).
-* User names are not designed to be changable.
+* User names are not designed to be interchangeable between students.
