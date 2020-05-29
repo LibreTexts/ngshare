@@ -46,6 +46,6 @@ Limitations
   performance issues when there are too many files uploaded.
 * Currently there are no control on user uploads (e.g. file size, number of
   files).
-* Admin user names cannot contain `,`.
+* Admin user names cannot contain "," (comma sign).
 * User names are not designed to be changable.
 
