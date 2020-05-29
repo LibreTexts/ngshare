@@ -89,7 +89,7 @@ Frequently Asked Questions
 ==========================
 
 Is there any overhead on other Jupyter applications after I install this?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------------------------------------
 TODO
 
 Theoreotically, this project brings minimal overhead to other Jupyter applications.
@@ -98,12 +98,16 @@ Starting ``ngshare`` requires some CPU time and memory. If no one is using the s
 
 If no one is using ``nbgrader``, ... (TODO)
 
-How do I update nbgrader / ngshare? 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+How do I update nbgrader / ngshare?
+-----------------------------------
 TODO
 
-Do I need to backup database? 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Can I uninstall ngshare?
+------------------------
+TODO
+
+Do I need to backup database?
+-----------------------------
 Yes, you should regularly backup your database in case of corruption. 
 
 The database should be backed up before updating ngshare because the schema and data migration may corrupt the database.
@@ -125,7 +129,7 @@ Contact Information
 Team Members
 ------------
 * Kevin Rong <`krong@ucdavis.edu <krong@ucdavis.edu>`_>
-* Abigail Almanza <aalmanza@ucdavis.edu `<aalmanza@ucdavis.edu>`_>
+* Abigail Almanza <`aalmanza@ucdavis.edu <aalmanza@ucdavis.edu>`_>
 * Lawrence Lee <`billee@ucdavis.edu <billee@ucdavis.edu>`_>
 * Eric Li <`ercli@ucdavis.edu <mailto:ercli@ucdavis.edu>`_>
 
