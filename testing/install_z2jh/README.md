@@ -1,5 +1,7 @@
 # Sample Installation Setup using Z2JH
 
+This sample code assumes you are using helm 3.
+
 First clone this project and go to this directory
 ```sh
 git clone https://github.com/lxylxy123456/ngshare
@@ -10,4 +12,6 @@ Then run
 ```sh
 ./install.sh
 ```
+
+It takes around 5 minutes to complete.
 
