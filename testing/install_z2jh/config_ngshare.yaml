@@ -1,0 +1,7 @@
+# For a complete list of options, check here:
+# https://github.com/lxylxy123456/ngshare/blob/master/helmchart/ngshare/values.yaml
+ngshare:
+  hub_api_token: demo_token_9wRp0h4BLzAnC88jjBfpH0fa4QV9tZNI
+  admins:
+    - admin
+    - admin2

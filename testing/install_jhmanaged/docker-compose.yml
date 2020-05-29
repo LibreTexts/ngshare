@@ -1,0 +1,9 @@
+version: '3'
+services:
+  jupyterhub:
+    ports:
+      - 127.0.0.1:8000:8000
+    build:
+      context: .
+    volumes:
+      - ./data:/srv/ngshare/:rw

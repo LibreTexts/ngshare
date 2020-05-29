@@ -38,7 +38,9 @@ after_success:
   openssl aes-256-cbc -K $encrypted_defe1004a0ce_key -iv $encrypted_defe1004a0ce_iv -in helmchart/ssh_key.enc -out /tmp/ssh_key -d &&
   chmod 400 /tmp/ssh_key &&
   python3 -m pip install chartpress &&
-  GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --long
+  GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --long &&
+  test "${TRAVIS_BRANCH}" = stable &&
+  GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --tag `python -c 'from ngshare import __version__; print(__version__)'`
 deploy:
   provider: pypi
   user: "__token__"
