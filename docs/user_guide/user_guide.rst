@@ -99,7 +99,7 @@ Is there any overhead on other Jupyter applications after I install this?
 -------------------------------------------------------------------------
 TODO
 
-Theoreotically, this project brings minimal overhead to other Jupyter applications.
+Theoretically, this project brings minimal overhead to other Jupyter applications.
 
 Starting ``ngshare`` requires some CPU time and memory. If no one is using the service only ``/healthz`` will be accessed. The overhead should be neglectable in most modern systems. 
 
