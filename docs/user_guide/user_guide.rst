@@ -139,7 +139,7 @@ Team Members
 
 Clients
 -------
-* Christopher Nitta <TODO>
+* Christopher Nitta <`cjnitta@ucdavis.edu <cjnitta@ucdavis.edu>`_>
 * Jason K. Moore <TODO>
 
 Jupyter Community
