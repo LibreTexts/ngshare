@@ -1,7 +1,7 @@
 Installing on a Z2JH Cluster
 ============================
 
-This guide assumes you are already familiar with installing Z2JH. You should also be familiar with using Helm.
+This guide assumes you already have a Kubernetes cluster with a persistent volume provisioner (which should be the case if you run Z2JH). You should also be familiar with installing Z2JH and using Helm.
 
 If you prefer looking at examples instead, `here's <https://github.com/lxylxy123456/ngshare/tree/master/testing/install_z2jh>`_ a sample installation setup. It doesn't demonstrate all the configurable options, though.
 
