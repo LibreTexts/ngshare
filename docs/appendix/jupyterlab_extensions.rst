@@ -26,7 +26,7 @@ Files
 """""
 * ``index.ts``
 
-	* attaches the UI to the main work area
+	* Attaches the UI to the main work area
 
 * ``assignmentlist.ts``
 
