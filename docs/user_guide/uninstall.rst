@@ -1,5 +1,5 @@
-Uninstalling ngshare and ngshare_exchange
-=========================================
+Uninstalling
+============
 
 Uninstalling ngshare
 --------------------

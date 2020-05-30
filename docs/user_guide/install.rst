@@ -1,5 +1,5 @@
-Installing ngshare
-==================
+Installing
+==========
 
 ``ngshare`` is designed to be installed on a Z2JH cluster, but you may install it without Kubernetes.
 
