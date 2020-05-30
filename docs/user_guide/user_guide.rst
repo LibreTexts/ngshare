@@ -97,7 +97,7 @@ Creating Course
 
 .. code::
 
-    ngshare-course-management create_course -c ECS193 --instructors kevin abigail
+    ngshare-course-management create_course ECS193 kevin abigail
 
 .. All usernames are login-able with any passwords.
 
@@ -109,8 +109,8 @@ Adding Students
 
 .. code::
 
-    ngshare-course-management add_student --gb --course_id ECS193 --student_id lawrence --first_name first --last_name last --email lawrence@email.com
-    ngshare-course-management add_student --gb --course_id ECS193 --student_id eric --first_name first --last_name last --email eric@email.com
+    ngshare-course-management add_student ECS193 lawrence -f lawrence_first -l lawrence_last -e lawrence@email
+    ngshare-course-management add_student ECS193 eric -f eric_first -l eric_last -e eric@email
 
 4. Create a new file with "New -> Text File", name it ``nbgrader_config.py`` and add the following content:
 
