@@ -2,7 +2,7 @@ Notes for Administrators
 ========================
 Make sure to completely read and understand the following before putting ``ngshare`` into production.
 
-Admin users
+Admin Users
 -----------
 Admin users are the only users who can create courses and assign instructors to them. This is to prevent unauthorized users from creating courses. All admins have full access to every course on ``ngshare``, so keep this in mind when assigning admins. Courses can be created and managed using the `ngshare-course-management <course_management.html>`_ tool that comes with ``ngshare_exchange``.
 

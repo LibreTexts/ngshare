@@ -1,14 +1,14 @@
-Installing on a Z2JH cluster
+Installing on a Z2JH Cluster
 ============================
 
 This guide assumes you are already familiar with installing Z2JH. You should also be familiar with using Helm.
 
-If you prefer looking at examples instead, `here's <https://github.com/lxylxy123456/ngshare/testing/install_z2jh>`_ a sample installation setup. It doesn't demonstrate all the configurable options, though.
+If you prefer looking at examples instead, `here's <https://github.com/lxylxy123456/ngshare/tree/master/testing/install_z2jh>`_ a sample installation setup. It doesn't demonstrate all the configurable options, though.
 
 Installing ngshare
 ------------------
 
-Installing the helm chart
+Installing the Helm Chart
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``ngshare`` is prepackaged into a Helm chart. You may add the repo like this:
@@ -66,7 +66,7 @@ You can now install ``ngshare`` using Helm:
 
 After installation, Helm should give you some instructions on how to configure Z2JH.
 
-Configuring Z2JH to work with ngshare
+Configuring Z2JH to Work with ngshare
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``ngshare`` Helm chart should output something like this at the end of installation:
@@ -113,8 +113,11 @@ Finally, you need to configure nbgrader to use ngshare_exchange. This can be don
     from ngshare_exchange import configureExchange
     c=get_config()
     configureExchange(c)
+
+    # Add the following to let students access courses without configuration
+    # For more information, read Notes for Instructors in the documentation
     c.CourseDirectory.course_id = '*'
 
-A sample singleuser Dockerfile that does all of the above is available `on Github <https://github.com/lxylxy123456/ngshare/testing/install_z2jh/Dockerfile-singleuser>`_.
+A sample singleuser Dockerfile that does all of the above is available `on Github <https://github.com/lxylxy123456/ngshare/tree/master/testing/install_z2jh/Dockerfile-singleuser>`_.
 
 If running ``nbgrader list`` doesn't cause any significant errors, you have installed ``ngshare_exchange`` correctly. Please check `Notes for Administrators <notes_admin.html>`_ and `Notes for Instructors <notes_instructor.html>`_ for more information on how to use ``ngshare``. The students should be able to use nbgrader as normal without additional configuration.

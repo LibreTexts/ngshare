@@ -1,14 +1,14 @@
-Intalling as an unmanaged service
-==================================================================
+Intalling as an Unmanaged Service
+=================================
 
 **WARNING:** This is for advanced configurations only. Unless you wish to run ``ngshare`` in a different environment than the hub, or have very specific proxying setups, you should not be using this guide.
 
-This guide assumes you already have a JupyterHub environment setup. You should also be familiar with 
+This guide assumes you already have a JupyterHub environment setup. You will need to manage ``ngshare`` separately as a service, and ensure it and the hub can communicate with one another.
 
 Installing ngshare
 ------------------
 
-Mocking required environment variables
+Mocking Required Environment Variables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ``ngshare`` gets some configurations from the hub via `environment variables <https://jupyterhub.readthedocs.io/en/stable/reference/services.html#launching-a-hub-managed-service>`_. To run ``ngshare``, you will need to mock these variables. You should at least set the following:
 
@@ -22,7 +22,7 @@ Mocking required environment variables
 
 Running ``ngshare``
 ^^^^^^^^^^^^^^^^^^^
-After configuring the environment variables, you may start ngshare as a service. You should also take a look at the `list of command line arguments <cmdline.rst>`_ for further configuration.
+After configuring the environment variables, you may start ngshare as a service. You should also take a look at the `list of command line arguments <cmdline.html>`_ for further configuration.
 
 Configuring JupyterHub
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -45,4 +45,4 @@ After you restart JupyterHub, you can verify the service is working as intended 
 Installing ngshare_exchange
 ---------------------------
 
-This will be largely the same as `installing ngshare as a managed service <installation_jupyterhub.html>`_. You only need to ensure the ngshare URL in ``nbgrader_config.py`` is accessible by the spawned notebook servers.
+This will be largely the same as `installing ngshare as a managed service <install_jupyterhub.html>`_. You only need to ensure the ngshare URL in ``nbgrader_config.py`` is accessible by the spawned notebook servers.
