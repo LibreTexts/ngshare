@@ -63,4 +63,5 @@ Table of Contents
    appendix/technologies.rst
    appendix/system_architecture.rst
    appendix/legal_social.rst
+   appendix/jupyterlab_extensions.rst
 
