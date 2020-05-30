@@ -27,13 +27,17 @@ Table of Contents
 -----------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: User Documentation
 
    user_guide/install.rst
    user_guide/uninstall.rst
+   user_guide/upgrade.rst
+   user_guide/cmdline.rst
    user_guide/extra.rst
-   user_guide/notes.rst
+   user_guide/notes_admin.rst
+   user_guide/notes_instructor.rst
+   user_guide/course_management.rst
    user_guide/bugs.rst
 
 .. toctree::

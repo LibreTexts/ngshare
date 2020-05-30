@@ -1,0 +1,15 @@
+proxy:
+  secretToken: "57856fad13702360592b9a1a97d1924c406f465390615934957d05422bc7d24a"
+  https:
+    enabled: false
+hub:
+  extraConfig:
+    ngshare.py: |
+      c.JupyterHub.services.append({
+        'name': 'ngshare',
+        'url': 'http://ngshare:8080',
+        'api_token': 'demo_token_9wRp0h4BLzAnC88jjBfpH0fa4QV9tZNI'})
+singleuser:
+  image:
+    name: ngshare-singleuser-sample
+    tag: 0.0.1

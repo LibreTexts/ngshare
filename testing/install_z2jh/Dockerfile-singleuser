@@ -1,0 +1,16 @@
+FROM jupyterhub/k8s-singleuser-sample:0.9.0
+
+# Install nbgrader and enable the extensions
+# The current master branch (commit 5a81fd5) has been tested to work
+RUN python3 -m pip install git+https://github.com/jupyter/nbgrader.git@5a81fd5 && \
+    jupyter nbextension install --symlink --sys-prefix --py nbgrader && \
+    jupyter nbextension enable --sys-prefix --py nbgrader && \
+    jupyter serverextension enable --sys-prefix --py nbgrader
+
+# Install ngshare_exchange
+RUN python3 -m pip install ngshare_exchange
+
+# Configure nbgrader
+COPY nbgrader_config.py /etc/jupyter/nbgrader_config.py
+
+# That's it!
