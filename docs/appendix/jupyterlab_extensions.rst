@@ -113,7 +113,7 @@ Same functionality and layout as the course list nbextension. After installation
 
 What’s Done
 ^^^^^^^^^^^
-* All functionality is there.
+* All functionality is there
 * Unit tests
 * Some styling
 
