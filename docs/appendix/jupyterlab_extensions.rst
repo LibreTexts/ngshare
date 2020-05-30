@@ -8,7 +8,7 @@ Here's a `link <https://github.com/jupyter/nbgrader/issues/1006>`_ to an existin
 Assignment List
 ---------------
 
-The assignment list JupyterLab extension contains the exact same functionality and layout as the nbextension. After installation it can be launched by opening the command palette on the left side and searching for Assignment List
+The assignment list JupyterLab extension contains the exact same functionality and layout as the nbextension. After installation, it can be launched by opening the command palette on the left side and searching for Assignment List.
 
 What's Done 
 ^^^^^^^^^^^
@@ -28,7 +28,7 @@ Files
 """""
 * ``index.ts``
 
-	* attaches the UI to the main work area
+	* Attaches the UI to the main work area
 
 * ``assignmentlist.ts``
 
@@ -78,13 +78,13 @@ Files
 """""
 * ``index.ts``
 
-	* attaches the UI to a side panel.
+	* Attaches the UI to a side panel.
 * ``extension.ts``
 
-	* contains the UI elements.
+	* Contains the UI elements.
 * ``model.ts``
 
-	* contains the logic which acts as an intermediary between the UI and the notebook cell metadata.
+	* Contains the logic which acts as an intermediary between the UI and the notebook cell metadata.
 
 Classes
 """""""
@@ -111,11 +111,11 @@ CellWidget
 
 Course List
 -----------
-Same functionality and layout as the course list nbextension. After installation it can be launched by opening the command palette on the left side and searching for Course List
+Same functionality and layout as the course list nbextension. After installation, it can be launched by opening the command palette on the left side and searching for Course List.
 
 What’s Done
 ^^^^^^^^^^^
-* All functionality is there.
+* All functionality is there
 * Unit tests
 * Some styling
 
@@ -129,7 +129,7 @@ Files
 """""
 * ``index.ts``
 
-	* attaches the UI to the main work area.
+	* Attaches the UI to the main work area.
 * ``courselist.ts``
 
 	* Contains all the logic necessary to display the courses. 
