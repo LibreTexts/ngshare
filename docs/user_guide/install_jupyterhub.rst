@@ -1,9 +1,9 @@
-Intalling in a regular JupyterHub environment as a managed service
+Intalling in a Regular JupyterHub Environment as a Managed Service
 ==================================================================
 
-This guide assumes you already know how to set up a JupyterHub environment. You should also be familiar with [adding JupyterHub-managed services](https://jupyterhub.readthedocs.io/en/stable/reference/services.html#hub-managed-services) into ``jupyterhub_config.py``.
+This guide assumes you already know how to set up a JupyterHub environment. You should also be familiar with `adding JupyterHub-managed services <https://jupyterhub.readthedocs.io/en/stable/reference/services.html#hub-managed-services>`_ into ``jupyterhub_config.py``.
 
-If you prefer looking at examples instead, `here's <https://github.com/lxylxy123456/ngshare/testing/install_jhmanaged>`_ a sample installation setup. It doesn't demonstrate all the configurable options, though.
+If you prefer looking at examples instead, `here's <https://github.com/lxylxy123456/ngshare/tree/master/testing/install_jhmanaged>`_ a sample installation setup. It doesn't demonstrate all the configurable options, though.
 
 Installing ngshare
 ------------------
@@ -26,7 +26,7 @@ After it's installed, you should tell JupyterHub to spawn ``ngshare`` as a manag
         }
     )
 
-You may want to check the `list of command line arguments <cmdline.rst>`_ for further configuration. JupyterHub will automatically spawn ``ngshare`` on port 10101 in this case.
+You may want to check the `list of command line arguments <cmdline.html>`_ for further configuration. JupyterHub will automatically spawn ``ngshare`` on port 10101 in this case.
 
 After you restart JupyterHub, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
 
@@ -56,6 +56,9 @@ Finally, you need to configure nbgrader to use ngshare_exchange. This can be don
     c=get_config()
     # Note: It's important to specify the right ngshare URL when not using k8s
     configureExchange(c, 'http://127.0.0.1:10101/services/ngshare')
+
+    # Add the following to let students access courses without configuration
+    # For more information, read Notes for Instructors in the documentation
     c.CourseDirectory.course_id = '*'
 
 You will have to specify the right URL to ngshare inside ``configureExchange``. This is usually ``http://ip:port/services/ngshare`` where ``ip`` is the hub's IP and ``port`` is the port ngshare runs on. Make sure each user can access this endpoint.

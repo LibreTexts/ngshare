@@ -5,7 +5,6 @@ Installing ngshare
 
 .. toctree::
    :maxdepth: 2
-   :caption: Install ngshare
 
    install_z2jh.rst   
    install_jupyterhub.rst

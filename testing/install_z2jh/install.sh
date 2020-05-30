@@ -18,9 +18,14 @@ eval $(minikube docker-env -u)
 
 # Install Z2JH
 helm install jhub jupyterhub/jupyterhub -f config_z2jh.yaml
+# For helm2, use
+# helm install jupyterhub/jupyterhub -n jhub -f config_z2jh.yaml
 
 # Install ngshare
 helm install ngshare ngshare/ngshare -f config_ngshare.yaml
+# For helm2, use
+# helm install ngshare/ngshare -n ngshare -f config_ngshare.yaml
 
 # We're done!
 kubectl get pods
+minikube service list

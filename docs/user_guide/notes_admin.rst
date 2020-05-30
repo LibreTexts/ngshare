@@ -2,7 +2,7 @@ Notes for Administrators
 ========================
 Make sure to completely read and understand the following before putting ``ngshare`` into production.
 
-Admin users
+Admin Users
 -----------
 Admin users are the only users who can create courses and assign instructors to them. This is to prevent unauthorized users from creating courses. All admins have full access to every course on ``ngshare``, so keep this in mind when assigning admins. Courses can be created and managed using the `ngshare-course-management <course_management.html>`_ tool that comes with ``ngshare_exchange``.
 
@@ -24,6 +24,10 @@ ngshare users should regularly back up the database in case of corruption.
 
 The database should be backed up before updating ngshare because the schema and data migration may corrupt the database.
 
+When installed using Helm, the database and all uploaded files are stored in a PVC usually called ``ngshare-pvc`` (or ``yourreleasename-pvc``). You can back up everything in that volume.
+
+When installed manually using ``pip``, you should have configured where the database is using command line arguments. If not, the database and all uploaded files should be in ``/srv/ngshare``.
+
 Removing Semantics
 ------------------
 Removing something (e.g. assignment, course) in ngshare will remove relevant objects and relations in database, but the actual files are NOT removed from the storage path.
@@ -37,3 +41,14 @@ Users may receive 500 Internal Server Error in some extreme cases, for example:
 * Database or storage path has incorrect permission, or disk is full.
 * There are too many files (probably more than :math:`10^{18}`) created and
   causes Version 4 UUID collision in ``json_files_unpack()``.
+
+Limitations
+-----------
+* ngshare cannot run concurrently, which may be a bottleneck if too many users
+  are using this service.
+* ngshare stores all uploaded files in one directory. This may create
+  performance issues when there are too many files uploaded.
+* Currently, there are no limits on user uploads (e.g. file size, number of
+  files).
+* Admin user names cannot contain "," (comma sign).
+* User names are not designed to be interchangeable between students.
