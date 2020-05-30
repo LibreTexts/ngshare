@@ -1,5 +1,5 @@
-Upgrading ngshare and ngshare_exchange
-======================================
+Upgrading
+=========
 
 Upgrading ngshare
 -----------------
