@@ -10,10 +10,8 @@
 
 ## What can I use it for?
 You can use ngshare if you
-* Need to run nbgrader on a distributed set up (probably using
- [lxylxy123456/nbgrader](https://github.com/lxylxy123456/nbgrader))
-* Have something similar to nbgrader that also needs an API to manage courses,
- homework submissions and feedbacks, etc.
+* Need to run nbgrader on a distributed set up (such as Zero to JupyterHub, using DockerSpawner, etc)
+* Need better course management without messing with filesystem permissions and user groups
 
 ## Documentation
 The API specifications, installation guide, and documentation for `ngshare` are
