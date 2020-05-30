@@ -21,7 +21,7 @@ If you installed ngshare manually using pip, you may uninstall it there as well:
 
 Afterwards, be sure to also modify your Z2JH helm values or ``jupyterhub_config.py`` and remove ngshare as a service.
 
-Please back up the database and user files before uninstallation, in case you need it. Read `Notes for Administrators <notes_admin.html>`_ for more information.
+Please back up the database and user files before uninstalling, in case you need it. Read `Notes for Administrators <notes_admin.html>`_ for more information.
 
 Uninstalling ngshare_exchange
 -----------------------------

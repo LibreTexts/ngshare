@@ -3,7 +3,7 @@ Notes for Instructors
 Make sure to read the following to understand how to manage courses with ``ngshare``.
 
 Course Creation
-----------------
+---------------
 Only the administrators can create courses due to security concerns. Please contact your system administrator if you want to create a course. After they assign you as an instructor, you may manage the course roster and add more students to the course yourself.
 
 Managing Students
