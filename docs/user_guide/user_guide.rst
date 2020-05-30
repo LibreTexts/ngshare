@@ -84,6 +84,9 @@ Installation
    install_jupyterhub.rst
    install_unmanaged.rst
 
+   uninstall.rst
+   upgrade.rst
+
 Demo
 ====
 For this demo, you need to setup a clean environment using JupyterHub + nbgrader + ngshare. 
