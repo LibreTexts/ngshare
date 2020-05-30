@@ -53,6 +53,19 @@ Deployment
 
 Testing
 -------
-``testing/`` is for installing ``ngshare`` in a Kubernetes setup.
+``testing/`` contains setups used for testing ngshare, ngshare_exchange nbgrader and Z2JH.
 
-This section is under construction
+``testing/docker`` contains a Docker environment for initial testing. It is slightly out of date and still uses our fork of ngshare rather than ngshare_exchange.
+
+``testing/minikube`` contains a minikube environment. This is the main testing setup for local development, and it uses ngshare and ngshare_exchange on the local filesystem.
+
+``testing/install_jhmanaged`` contains a Docker environment that demonstrates how a regular user would install ngshare and ngshare_exchange.
+
+``testing/install_z2jh`` contains a minikube environment that demonstrates how a regular user would install ngshare and ngshare_exchange on a standard Kubernetes cluster.
+
+``
+
+ngshare_exchange
+----------------
++
+
