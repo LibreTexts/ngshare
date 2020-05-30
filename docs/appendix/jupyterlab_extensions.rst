@@ -3,6 +3,8 @@ Porting nbextensions to JupyterLab
 
 We have made good progress porting the extensions to JupyterLab, but we are not quite finished. This document contains notes on the progress for all of the extensions.
 
+You can view our progress `here <https://github.com/lxylxy123456/nbgrader/tree/lab-common>`_.
+
 Here's a `link <https://github.com/jupyter/nbgrader/issues/1006>`_ to an existing issue relating to this. 
 
 Assignment List
