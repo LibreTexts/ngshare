@@ -33,7 +33,7 @@ POST Example
 vngshare Authentication
 -----------------------
 
-For ``vngshare``, there is no authentication. The username is specified in the GET param or POST data field ``user``.
+For ``vngshare``, there is no password authentication. The username is specified in the GET param or POST data field ``user``.
 
 GET Example
 ^^^^^^^^^^^
@@ -54,4 +54,3 @@ Post Example
     Content-Length: 38
 
     instructors=%5B%22eric%22%5D&user=root
-

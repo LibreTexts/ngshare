@@ -53,7 +53,7 @@ Deployment
 
 Testing
 -------
-``testing/`` contains setups used for testing ngshare, ngshare_exchange nbgrader and Z2JH.
+``testing/`` contains setups used for testing ngshare, ngshare_exchange, nbgrader, and Z2JH.
 
 ``testing/docker`` contains a Docker environment for initial testing. It is slightly out of date and still uses our fork of ngshare rather than ngshare_exchange.
 
@@ -68,4 +68,3 @@ Testing
 ngshare_exchange
 ----------------
 +
-

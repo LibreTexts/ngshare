@@ -16,9 +16,9 @@ ngshare should NOT be run concurrently, or there may be race conditions and data
 
 Storage
 -------
-If you're using the Helm chart, only 1Gi of storage is allocated by default. You may increase this limit by specifying `pvc.storage` in the Helm values. If ngshare returns 500 for requests, lack of storage space could be a reason.
+If you're using the Helm chart, only 1GiB of storage is allocated by default. You may increase this limit by specifying `pvc.storage` in the Helm values. If ngshare returns 500 for requests, lack of storage space could be a reason.
 
-Also, when courses are deleted, their corresponding files are not automatically deleted. You may want to delete these files to clean up storage.
+Also, when courses or assignments are deleted, their corresponding files are not automatically deleted. You may want to delete these files to clean up storage. See the Removing Semantics section below for more info.
 
 Database Upgrade
 ----------------
