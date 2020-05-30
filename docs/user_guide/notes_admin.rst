@@ -41,3 +41,14 @@ Users may receive 500 Internal Server Error in some extreme cases, for example:
 * Database or storage path has incorrect permission, or disk is full.
 * There are too many files (probably more than :math:`10^{18}`) created and
   causes Version 4 UUID collision in ``json_files_unpack()``.
+
+Limitations
+-----------
+* ngshare cannot run concurrently, which may be a bottleneck if too many users
+  are using this service.
+* ngshare stores all uploaded files in one directory. This may create
+  performance issues when there are too many files uploaded.
+* Currently, there are no limits on user uploads (e.g. file size, number of
+  files).
+* Admin user names cannot contain "," (comma sign).
+* User names are not designed to be interchangeable between students.
