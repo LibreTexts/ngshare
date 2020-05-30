@@ -13,7 +13,6 @@ You can use ngshare if you
  [lxylxy123456/nbgrader](https://github.com/lxylxy123456/nbgrader))
 * Have something similar to nbgrader that also needs an API to manage courses,
  homework submissions and feedbacks, etc.
-* Want to learn Flask, SQLAlchemy, or Tornado Web Server. 
 
 ## Documentation
 The API specifications, installation guide, and documentation for `ngshare` are
