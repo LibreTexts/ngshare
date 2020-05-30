@@ -3,6 +3,8 @@ Porting nbextensions to JupyterLab
 
 We have made good progress porting the extensions to JupyterLab, but we are not quite finished. This document contains notes on the progress for all of the extensions.
 
+Here's a `link <https://github.com/jupyter/nbgrader/issues/1006>`_ to an existing issue relating to this. 
+
 Assignment List
 ---------------
 
@@ -179,3 +181,4 @@ What’s Not Done
 
 .. image:: ../extension_screenshots/validate_assignment.png
    :width: 600
+
