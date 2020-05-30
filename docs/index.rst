@@ -1,27 +1,9 @@
-ngshare
-=======
-``ngshare`` is a backend server for `nbgrader <https://github.com/jupyter/nbgrader>`_'s exchange service.
+nbgrader Integration with JupyterHub and Kubernetes
+===================================================
 
-.. image:: assets/favicon.svg
-    :width: 64
-    :alt: ngshare Logo
+Kevin Rong | Abigail Almanza | Lawrence Lee | Eric Li
 
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/psf/black
-
-.. image:: https://travis-ci.org/lxylxy123456/ngshare.svg?branch=master
-    :target: https://travis-ci.org/lxylxy123456/ngshare
-
-.. image:: https://codecov.io/gh/lxylxy123456/ngshare/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/lxylxy123456/ngshare
-
-.. image:: https://readthedocs.org/projects/ngshare/badge/?version=latest
-    :target: https://ngshare.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
-
-`nbgrader <https://github.com/jupyter/nbgrader>`_ is a Jupyter notebooks extension for grading running on JupyterHub, but it does not work well in distributed setup of JupyterHub like in Kubernetes, because the file systems exchange uses are not connected between containers. 
-
-To solve this problem, we are letting exchange to gather all information it needs from a set of REST APIs, which is implemented by ``ngshare``.
+Team KALE
 
 Table of Contents
 -----------------
@@ -30,6 +12,8 @@ Table of Contents
    :maxdepth: 3
    :caption: User Documentation
 
+   user_guide/preface.rst
+   user_guide/overview.rst
    user_guide/install.rst
    user_guide/uninstall.rst
    user_guide/upgrade.rst
@@ -38,7 +22,9 @@ Table of Contents
    user_guide/notes_admin.rst
    user_guide/notes_instructor.rst
    user_guide/course_management.rst
+   user_guide/demo.rst
    user_guide/bugs.rst
+   user_guide/faqs.rst
 
 .. toctree::
    :maxdepth: 2
@@ -55,8 +41,6 @@ Table of Contents
    :maxdepth: 2
    :caption: Contributor Guide
 
-   contributer_guide/why_ngshare.rst
-   contributer_guide/system_architecture.rst
    contributer_guide/project_structure.rst
    contributer_guide/decisions.rst
    contributer_guide/install.rst
@@ -69,7 +53,14 @@ Table of Contents
 
 .. toctree::
    :maxdepth: 2
-   :caption: User Guide
+   :caption: Appendix
 
-   user_guide/user_guide.rst
+   appendix/glossary.rst
+   appendix/contact.rst
+   appendix/survey.rst
+   appendix/requirements.rst
+   appendix/prototyping.rst
+   appendix/technologies.rst
+   appendix/system_architecture.rst
+   appendix/legal_social.rst
 
