@@ -23,6 +23,13 @@ ngshare
 
 To solve this problem, we are letting exchange to gather all information it needs from a set of REST APIs, which is implemented by ``ngshare``.
 
+Youtube Video Demo
+------------------
+
+.. raw:: html
+
+    <p><iframe width="640" height="360" src="https://www.youtube.com/embed/SEJCaqD7xXQ" frameborder="0" allowfullscreen></iframe></p>
+
 Table of Contents
 -----------------
 
