@@ -5,6 +5,13 @@ Kevin Rong | Abigail Almanza | Lawrence Lee | Eric Li
 
 Team KALE
 
+Youtube Video Demo
+------------------
+
+.. raw:: html
+
+    <p><iframe width="640" height="360" src="https://www.youtube.com/embed/SEJCaqD7xXQ" frameborder="0" allowfullscreen></iframe></p>
+
 Table of Contents
 -----------------
 
