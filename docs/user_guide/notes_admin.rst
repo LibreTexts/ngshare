@@ -14,6 +14,12 @@ Race Condition
 --------------
 ngshare should NOT be run concurrently, or there may be race conditions and data may be corrupted. For example, do not create multiple ngshare instances that share the same underlying database.
 
+Storage
+-------
+If you're using the Helm chart, only 1GiB of storage is allocated by default. You may increase this limit by specifying `pvc.storage` in the Helm values. If ngshare returns 500 for requests, lack of storage space could be a reason.
+
+Also, when courses or assignments are deleted, their corresponding files are not automatically deleted. You may want to delete these files to clean up storage. See the Removing Semantics section below for more info.
+
 Database Upgrade
 ----------------
 ngshare checks the database version every time it starts up. If the database version is older than the ngshare version, it performs schema and data migration. 

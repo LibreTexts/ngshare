@@ -40,7 +40,4 @@ We use `black <https://github.com/psf/black>`_ to format our code.
 Contributing
 ------------
 
-If you want to contribute to ``ngshare``, submit a pull request to `https://github.com/lxylxy123456/ngshare/ <https://github.com/lxylxy123456/ngshare/>`_.
-
-This section is under construction.
-
+If you want to contribute to ``ngshare``, submit a pull request to `https://github.com/lxylxy123456/ngshare/pulls <https://github.com/lxylxy123456/ngshare/pulls>`_.

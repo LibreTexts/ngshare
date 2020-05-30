@@ -1,8 +1,6 @@
 Decisions
 =========
 
-This section is under construction
-
 Technologies Employed
 ---------------------
 
