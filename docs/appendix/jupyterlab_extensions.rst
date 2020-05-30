@@ -55,7 +55,7 @@ CourseList
 	* Used to load and display the  course dropdown. 
 	* When you click on a course it switches to to display the assignments for that course.
 
-.. image:: ../extension_screenshots/assignment_list.jpg
+.. image:: ../extension_screenshots/assignment_list.png
    :width: 600
 
 Create Assignment
@@ -104,7 +104,7 @@ CellWidget
 	* Contains the UI showing the nbgrader assignment information for one cell
 	* Reads and writes nbgrader data in the cell metadata
 
-.. image:: ../extension_screenshots/create_assignment.jpg
+.. image:: ../extension_screenshots/create_assignment.png
    :width: 600
 
 Course List
@@ -141,7 +141,7 @@ CourseList
 	* Loads and displays the list of courses.
 	* The name of each course is a link to the formgrader for that course.
 
-.. image:: ../extension_screenshots/course_list.jpg
+.. image:: ../extension_screenshots/course_list.png
    :width: 600
 
 Formgrader
@@ -177,5 +177,5 @@ What’s Not Done
   * The modals could use some better styling. 
   * Make styling of modals between assignment list and validate assignment consistent. 
 
-.. image:: ../extension_screenshots/validate_assignment.jpg
+.. image:: ../extension_screenshots/validate_assignment.png
    :width: 600
