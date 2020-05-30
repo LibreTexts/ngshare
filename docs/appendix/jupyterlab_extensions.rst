@@ -76,13 +76,13 @@ Files
 """""
 * ``index.ts``
 
-	* attaches the UI to a side panel.
+	* Attaches the UI to a side panel.
 * ``extension.ts``
 
-	* contains the UI elements.
+	* Contains the UI elements.
 * ``model.ts``
 
-	* contains the logic which acts as an intermediary between the UI and the notebook cell metadata.
+	* Contains the logic which acts as an intermediary between the UI and the notebook cell metadata.
 
 Classes
 """""""
