@@ -63,8 +63,10 @@ Testing
 
 ``testing/install_z2jh`` contains a minikube environment that demonstrates how a regular user would install ngshare and ngshare_exchange on a standard Kubernetes cluster.
 
-``
-
 ngshare_exchange
 ----------------
-+
+The client side of ngshare is packaged into a `separate repo <https://github.com/lxylxy123456/ngshare_exchange>`_.
+
+``ngshare_exchange/*.py`` implement a nbgrader pluggable exchange that uses ngshare to release, fetch, and submit assignments.
+
+``ngshare_exchange/course_management.py`` will be installed as the ``ngshare-course-management`` command. It is used for admins and instructors to manage course rosters.
