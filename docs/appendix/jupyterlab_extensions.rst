@@ -6,7 +6,7 @@ We have made good progress porting the extensions to JupyterLab, but we are not 
 Assignment List
 ---------------
 
-The assignment list JupyterLab extension contains the exact same functionality and layout as the nbextension. After installation it can be launched by opening the command palette on the left side and searching for Assignment List
+The assignment list JupyterLab extension contains the exact same functionality and layout as the nbextension. After installation, it can be launched by opening the command palette on the left side and searching for Assignment List.
 
 What's Done 
 ^^^^^^^^^^^
