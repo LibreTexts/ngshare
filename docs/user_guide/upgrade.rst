@@ -3,7 +3,7 @@ Upgrading
 
 Upgrading ngshare
 -----------------
-If you installed ngshare using a helm chart, upgrading is as simple as a `helm update`:
+If you installed ngshare using a helm chart, upgrading is as simple as a `helm upgrade`:
 
 .. code:: bash
 
