@@ -6,6 +6,10 @@ Admin Users
 -----------
 Admin users are the only users who can create courses and assign instructors to them. This is to prevent unauthorized users from creating courses. All admins have full access to every course on ``ngshare``, so keep this in mind when assigning admins. Courses can be created and managed using the `ngshare-course-management <course_management.html>`_ tool that comes with ``ngshare_exchange``.
 
+User Name Reuse
+---------------
+In ngshare, all users (instructors and students) are identified using their username in JupyterHub. They are authenticated using the API token inside their notebook server. Be careful when reusing usernames in JupyterHub, as users with the same name will be identified as the same. We haven't added functionality to rename or delete users in ngshare, so be sure not to delete a user and create a new one with the same name. If you do, you will have to manually edit the ngshare database to remove or rename that user.
+
 Race Condition
 --------------
 ngshare should NOT be run concurrently, or there may be race conditions and data may be corrupted. For example, do not create multiple ngshare instances that share the same underlying database.
