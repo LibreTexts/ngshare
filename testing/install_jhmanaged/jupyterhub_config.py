@@ -13,6 +13,7 @@ from jupyterhub.spawner import LocalProcessSpawner
 import os, sys
 from traitlets import Unicode
 
+
 class SUIDSimpleLocalProcessSpawner(LocalProcessSpawner):
     home_path_template = Unicode(
         '/tmp/{userid}',
@@ -45,6 +46,7 @@ class SUIDSimpleLocalProcessSpawner(LocalProcessSpawner):
         env['HOME'] = self.home_path
         env['SHELL'] = '/bin/bash'
         return env
+
 
 c.JupyterHub.authenticator_class = DummyAuthenticator
 c.JupyterHub.spawner_class = SUIDSimpleLocalProcessSpawner

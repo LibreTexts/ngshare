@@ -1,5 +1,6 @@
 from ngshare_exchange import configureExchange
-c=get_config()
+
+c = get_config()
 configureExchange(c)
 
 # Add the following to let students access courses without configuration
