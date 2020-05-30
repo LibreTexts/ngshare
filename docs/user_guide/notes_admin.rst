@@ -24,6 +24,10 @@ ngshare users should regularly back up the database in case of corruption.
 
 The database should be backed up before updating ngshare because the schema and data migration may corrupt the database.
 
+When installed using Helm, the database and all uploaded files are stored in a PVC usually called ``ngshare-pvc`` (or ``yourreleasename-pvc``). You can back up everything in that volume.
+
+When installed manually using ``pip``, you should have configured where the database is using command line arguments. If not, the database and all uploaded files should be in ``/srv/ngshare``.
+
 Removing Semantics
 ------------------
 Removing something (e.g. assignment, course) in ngshare will remove relevant objects and relations in database, but the actual files are NOT removed from the storage path.
