@@ -83,7 +83,6 @@ Installation
    install_z2jh.rst
    install_jupyterhub.rst
    install_unmanaged.rst
-
    uninstall.rst
    upgrade.rst
 
