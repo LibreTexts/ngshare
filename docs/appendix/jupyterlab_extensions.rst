@@ -109,7 +109,7 @@ CellWidget
 
 Course List
 -----------
-Same functionality and layout as the course list nbextension. After installation it can be launched by opening the command palette on the left side and searching for Course List
+Same functionality and layout as the course list nbextension. After installation, it can be launched by opening the command palette on the left side and searching for Course List.
 
 What’s Done
 ^^^^^^^^^^^
