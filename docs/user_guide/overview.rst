@@ -1,8 +1,6 @@
 Project Overview
 ================
 
-.. TODO: should we put this here?
-
 ``ngshare`` is a backend server for `nbgrader <https://github.com/jupyter/nbgrader>`_'s exchange service.
 
 .. image:: ../assets/favicon.svg
@@ -43,24 +41,16 @@ Goals
 * Write clear documentation to facilitate the maintenance of our service by the UC Davis Jupyter Team
 * Port nbexchange extensions to JupyterLab
 
-Technical Specifications
-------------------------
-TODO
-
 Features
 --------
-1. Sharing files between different Kubernetes pods without relying on a shared
-   file system.
+1. Sharing files between different Jupyter Notebook servers without relying on a
+   shared file system.
 2. Managing courses, instructors, and students for ngshare. 
 3. Easy interface for administrators to debug ngshare database. 
 4. Open source projects with continuous integration, code coverage, and online
    documentation.
 
-TODO
-
 Future Application
 ------------------
-Although this project is specifically built for nbgrader and Kubernetes, it can be ported to use other container cluster managers like Docker Swarm and Apache Mesos. The ngshare part of this project can be used as a template when developing other projects that require specialized sharing between containers. 
-
-TODO
+Although this project is specifically built for nbgrader and Kubernetes, it can be ported to other container cluster managers like Docker Swarm and Apache Mesos, or even regular JupyterHub environments. The ngshare part of this project can be used as a template when developing other projects that require specialized sharing between containers. 
 

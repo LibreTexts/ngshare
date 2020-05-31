@@ -20,5 +20,5 @@ Related Documentation
 * nbgrader: `https://nbgrader.readthedocs.io/en/stable/ <https://nbgrader.readthedocs.io/en/stable/>`_
 * JupyterHub: `https://jupyterhub.readthedocs.io/en/stable/ <https://jupyterhub.readthedocs.io/en/stable/>`_
 * Kubernetes: `https://kubernetes.io/docs/home/ <https://kubernetes.io/docs/home/>`_
-* TODO
+* Zero to JupyterHub with Kubernetes `https://zero-to-jupyterhub.readthedocs.io/en/latest/ <https://zero-to-jupyterhub.readthedocs.io/en/latest/>`_
 

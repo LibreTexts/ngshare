@@ -11,7 +11,7 @@ Team Members
 Clients
 -------
 * Christopher Nitta <`cjnitta@ucdavis.edu <cjnitta@ucdavis.edu>`_>
-* Jason K. Moore <TODO>
+* Jason K. Moore <available upon request>
 
 Jupyter Community
 -----------------
@@ -19,5 +19,5 @@ Reached by posting issues in Github repos like https://github.com/jupyter/nbgrad
 
 Deployment
 ----------
-* UC Davis Jupyter team <TODO>
+* UC Davis Jupyter team <available upon request>
 
