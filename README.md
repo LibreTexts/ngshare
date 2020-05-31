@@ -17,8 +17,8 @@ You can use ngshare if you
 The API specifications, installation guide, and documentation for `ngshare` are
  in [Read the Docs](https://ngshare.readthedocs.io/en/latest/).
 
-### Youtube Video Demo
-http://www.youtube.com/watch?v=iiaVpKLj89c
+## Youtube Video Demo
+http://www.youtube.com/watch?v=SEJCaqD7xXQ
 
-[![Youtube Video Demo](http://img.youtube.com/vi/iiaVpKLj89c/0.jpg)](http://www.youtube.com/watch?v=iiaVpKLj89c)
+[![Youtube Video Demo](http://img.youtube.com/vi/SEJCaqD7xXQ/0.jpg)](http://www.youtube.com/watch?v=SEJCaqD7xXQ)
 
