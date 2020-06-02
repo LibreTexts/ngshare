@@ -20,7 +20,7 @@ Jupyter Community
 * Jupyter Discourse Forum
   `https://discourse.jupyter.org/ <https://discourse.jupyter.org/>`_
 * Github issues pages (e.g.
-  `https://github.com/jupyter/nbgrader/ <https://github.com/jupyter/nbgrader/>`_)
+  `https://github.com/jupyter/nbgrader/issues <https://github.com/jupyter/nbgrader/issues>`_)
 
 Deployment
 ----------
