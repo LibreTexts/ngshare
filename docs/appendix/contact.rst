@@ -19,8 +19,8 @@ Jupyter Community
   `jupyter-education@googlegroups.com <jupyter-education@googlegroups.com>`_
 * Jupyter Discourse Forum
   `https://discourse.jupyter.org/ <https://discourse.jupyter.org/>`_
-* Github issues page
-  `https://github.com/jupyter/nbgrader/ <https://github.com/jupyter/nbgrader/>`_
+* Github issues pages (e.g.
+  `https://github.com/jupyter/nbgrader/ <https://github.com/jupyter/nbgrader/>`_)
 
 Deployment
 ----------
