@@ -11,6 +11,8 @@ If you installed ngshare using a helm chart, upgrading is as simple as a `helm u
     # assuming your release is called ngshare
     helm upgrade ngshare ngshare/ngshare -f your_config.yaml
 
+Please note that if during your first installation you didn't specify an API token, the randomized API token will be regenerated every upgrade. Therefore, it's highly recommended to specify the API token in your config.yaml.
+
 If you aren't using the helm chart and installed ngshare using pip, upgrade through pip:
 
 .. code:: bash
