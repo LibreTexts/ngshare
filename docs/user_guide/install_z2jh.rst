@@ -64,7 +64,7 @@ You can now install ``ngshare`` using Helm:
     # For helm2
     helm install ngshare/ngshare -n ngshare -f config.yaml
 
-If you didn't install Z2JH in the default namespace, it is recommended to install ``ngshare`` in the same namespace as Z2JH by specifying ``--namespace your_namespace_name`` in ``helm install``.
+If you didn't install Z2JH in the default namespace, it is recommended to install ``ngshare`` in the same namespace as Z2JH by specifying ``--namespace your_namespace_name`` in ``helm install``. Note that if you don't put ``ngshare`` and Z2JH in the same namespace, you will have to modify the ``ngshare.hub_api_url`` value in your config to point to ``http://hub.your-z2jh-namespace.svc.cluster.local:8081/hub/api`` instead (replace ``your-z2jh-namespace`` with the namespace where Z2JH is installed).
 
 After installation, Helm should give you some instructions on how to configure Z2JH.
 
