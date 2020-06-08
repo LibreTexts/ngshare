@@ -53,6 +53,7 @@ Table of Contents
    user_guide/notes_instructor.rst
    user_guide/course_management.rst
    user_guide/bugs.rst
+   user_guide/change_log.rst
 
 .. toctree::
    :maxdepth: 2
