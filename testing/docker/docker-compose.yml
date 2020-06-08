@@ -10,7 +10,7 @@ services:
       # for some reason pip needs rw access. oh well
       # this expects the nbgrader repo to be cloned
       # in the parent directory of the repo root
-      # (https://github.com/lxylxy123456/nbgrader)
+      # (https://github.com/LibreTexts/nbgrader)
       - ../../../nbgrader:/srv/src/nbgrader:rw
       - ../../ngshare:/ngshare:ro
       - ./data:/srv/ngshare/:rw

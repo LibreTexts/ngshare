@@ -9,11 +9,11 @@ ngshare
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
-.. image:: https://travis-ci.org/lxylxy123456/ngshare.svg?branch=master
-    :target: https://travis-ci.org/lxylxy123456/ngshare
+.. image:: https://travis-ci.org/LibreTexts/ngshare.svg?branch=master
+    :target: https://travis-ci.org/LibreTexts/ngshare
 
-.. image:: https://codecov.io/gh/lxylxy123456/ngshare/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/lxylxy123456/ngshare
+.. image:: https://codecov.io/gh/LibreTexts/ngshare/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/LibreTexts/ngshare
 
 .. image:: https://readthedocs.org/projects/ngshare/badge/?version=latest
     :target: https://ngshare.readthedocs.io/en/latest/?badge=latest

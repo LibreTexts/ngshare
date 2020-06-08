@@ -65,7 +65,7 @@ Testing
 
 ngshare_exchange
 ----------------
-The client side of ngshare is packaged into a `separate repo <https://github.com/lxylxy123456/ngshare_exchange>`_.
+The client side of ngshare is packaged into a `separate repo <https://github.com/LibreTexts/ngshare_exchange>`_.
 
 ``ngshare_exchange/*.py`` implement a nbgrader pluggable exchange that uses ngshare to release, fetch, and submit assignments.
 
