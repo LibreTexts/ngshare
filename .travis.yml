@@ -38,8 +38,8 @@ after_success:
   chmod 400 /tmp/ssh_key &&
   python3 -m pip install chartpress &&
   GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --long &&
-  test "${TRAVIS_BRANCH}" = stable &&
-  GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --tag `python -c 'from ngshare import __version__; print(__version__)'`
+  test -n "${TRAVIS_TAG}" &&
+  GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --tag "${TRAVIS_TAG}"
 deploy:
   provider: pypi
   user: __token__
