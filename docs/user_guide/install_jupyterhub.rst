@@ -3,7 +3,7 @@ Intalling in a Regular JupyterHub Environment as a Managed Service
 
 This guide assumes you already know how to set up a JupyterHub environment. You should also be familiar with `adding JupyterHub-managed services <https://jupyterhub.readthedocs.io/en/stable/reference/services.html#hub-managed-services>`_ into ``jupyterhub_config.py``.
 
-If you prefer looking at examples instead, `here's <https://github.com/lxylxy123456/ngshare/tree/master/testing/install_jhmanaged>`_ a sample installation setup. It doesn't demonstrate all the configurable options, though.
+If you prefer looking at examples instead, `here's <https://github.com/LibreTexts/ngshare/tree/master/testing/install_jhmanaged>`_ a sample installation setup. It doesn't demonstrate all the configurable options, though.
 
 Installing ngshare
 ------------------

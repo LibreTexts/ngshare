@@ -8,7 +8,7 @@ minikube start
 
 # Add the helm charts for Z2JH and nbgrader
 helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
-helm repo add ngshare https://rkevin-arch.github.io/ngshare-helm-repo/
+helm repo add ngshare https://LibreTexts.github.io/ngshare-helm-repo/
 helm repo update
 
 # Build custom singleuser image

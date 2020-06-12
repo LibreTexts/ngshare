@@ -4,8 +4,8 @@
 <img src="ngshare/favicon.png" width="64px" />
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Build Status](https://travis-ci.org/LibreTexts/ngshare.svg?branch=master)](https://travis-ci.org/lxylxy123456/ngshare)
-[![codecov](https://codecov.io/gh/lxylxy123456/ngshare/branch/master/graph/badge.svg)](https://codecov.io/gh/lxylxy123456/ngshare)
+[![Build Status](https://travis-ci.org/LibreTexts/ngshare.svg?branch=master)](https://travis-ci.org/LibreTexts/ngshare)
+[![codecov](https://codecov.io/gh/LibreTexts/ngshare/branch/master/graph/badge.svg)](https://codecov.io/gh/LibreTexts/ngshare)
 [![Documentation Status](https://readthedocs.org/projects/ngshare/badge/?version=latest)](https://ngshare.readthedocs.io/en/latest/?badge=latest)
 
 ## What can I use it for?
