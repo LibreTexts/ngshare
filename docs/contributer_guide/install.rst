@@ -7,7 +7,7 @@ Install from GitHub
 -------------------
 .. code:: bash
 
-    git clone https://github.com/lxylxy123456/ngshare.git
+    git clone https://github.com/LibreTexts/ngshare.git
     cd ngshare/
     pip3 install .
 
@@ -24,7 +24,7 @@ The first line installs pip dependencies.
 .. code:: bash
 
     pip3 install tornado jupyterhub sqlalchemy
-    git clone https://github.com/lxylxy123456/ngshare.git
+    git clone https://github.com/LibreTexts/ngshare.git
     cd ngshare/ngshare/
     python3 ngshare.py [arguments]
 
@@ -48,7 +48,7 @@ Run vngshare without Installation
 .. code:: bash
 
     pip3 install pytest pytest-cov pytest-tornado
-    git clone https://github.com/lxylxy123456/ngshare.git
+    git clone https://github.com/LibreTexts/ngshare.git
     cd ngshare/ngshare/
     python3 vngshare.py [arguments]
     # OR

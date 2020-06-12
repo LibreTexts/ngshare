@@ -1,15 +1,23 @@
 # Testing setup
 
+These testing setups should allow you to deploy ngshare for simple testing. In particular, the `install_z2jh` and `install_jhmanaged` folders show how to install `ngshare` and `ngshare_exchange` in your Z2JH cluster or as a JupyterHub managed service outside of k8s, respectively.
+
+The `minikube` folder contains some slightly out-of-date instructions on how to install `ngshare` and `ngshare_exchange` from source locally, for testing purposes. You may look at `test.sh` for more details.
+
+The `docker` folder is extremely out of date and should not be used. It was developed back when `ngshare` was not yet ready for Kubernetes.
+
+# NOTE: Everything below is out of date. In particular, we do not need a separate fork for nbgrader anymore. Follow at your own risk.
+
 This is the testing / dev environment setup. We have two dev environments, one using Docker (regular JupyterHub without k8s) and one using minikube (Z2JH).
 
 ## Preparation
 You should clone the following repos in the same folder:
-1. [ngshare](https://github.com/lxylxy123456/ngshare) (this repo!)
-2. [nbgrader](https://github.com/lxylxy123456/nbgrader), which is built on the [pluggable exchange](https://github.com/jupyter/nbgrader/pull/1238) pull request, with an exchange that works with ngshare.
+1. [ngshare](https://github.com/LibreTexts/ngshare) (this repo!)
+2. [nbgrader](https://github.com/LibreTexts/nbgrader), which is built on the [pluggable exchange](https://github.com/jupyter/nbgrader/pull/1238) pull request, with an exchange that works with ngshare.
 
 ```
-git clone https://github.com/lxylxy123456/ngshare
-git clone https://github.com/lxylxy123456/nbgrader
+git clone https://github.com/LibreTexts/ngshare
+git clone https://github.com/LibreTexts/nbgrader
 ```
 
 ## Docker
