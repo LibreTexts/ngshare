@@ -4,7 +4,7 @@ fullnameOverride: ""
 
 # Where to pull the ngshare image
 image:
-  repository: rkevin/ngshare
+  repository: libretexts/ngshare
   pullPolicy: IfNotPresent
   imagePullSecrets: []
   tag: 'set-by-chartpress'

@@ -15,7 +15,7 @@ Installing the Helm Chart
 
 .. code:: bash
 
-    helm repo add ngshare https://rkevin-arch.github.io/ngshare-helm-repo/
+    helm repo add ngshare https://libretexts.github.io/ngshare-helm-repo/
     helm repo update
 
 Afterwards, create a ``config.yaml`` file to customize your helm chart. Here's a bare minimum ``config.yaml`` file:
