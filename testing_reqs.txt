@@ -1,0 +1,5 @@
+pytest>=5.2.1
+pytest-cov>=2.10.0
+pytest-tornado>=0.8.0
+black>=19.10b0
+codecov>=2.1.0

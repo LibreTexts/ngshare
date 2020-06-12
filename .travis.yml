@@ -21,14 +21,13 @@ before_install:
 install:
 - python3 -m pip install .
 before_script:
-- python3 -m pip install pytest pytest-cov pytest-tornado black
+- python3 -m pip install -r testing_reqs.txt
 script:
 - python3 -m pytest ./ngshare/ --cov=./ngshare/
 - python3 -m black -S -l 80 --check .
 - helm2 lint --strict helmchart/ngshare
 - helm lint --strict helmchart/ngshare
 after_success:
-- python3 -m pip install "codecov>=2.1.0"
 - codecov
 - |-
   test ${TRAVIS_PYTHON_VERSION} = 3.8 &&
