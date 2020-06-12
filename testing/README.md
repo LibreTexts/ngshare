@@ -1,5 +1,13 @@
 # Testing setup
 
+These testing setups should allow you to deploy ngshare for simple testing. In particular, the `install_z2jh` and `install_jhmanaged` folders show how to install `ngshare` and `ngshare_exchange` in your Z2JH cluster or as a JupyterHub managed service outside of k8s, respectively.
+
+The `minikube` folder contains some slightly out-of-date instructions on how to install `ngshare` and `ngshare_exchange` from source locally, for testing purposes. You may look at `test.sh` for more details.
+
+The `docker` folder is extremely out of date and should not be used. It was developed back when `ngshare` was not yet ready for Kubernetes.
+
+# NOTE: Everything below is out of date. In particular, we do not need a separate fork for nbgrader anymore. Follow at your own risk.
+
 This is the testing / dev environment setup. We have two dev environments, one using Docker (regular JupyterHub without k8s) and one using minikube (Z2JH).
 
 ## Preparation
