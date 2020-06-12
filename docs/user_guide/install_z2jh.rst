@@ -3,7 +3,7 @@ Installing on a Z2JH Cluster
 
 This guide assumes you already have a Kubernetes cluster with a persistent volume provisioner (which should be the case if you run Z2JH). You should also be familiar with installing Z2JH and using Helm.
 
-If you prefer looking at examples instead, `here's <https://github.com/lxylxy123456/ngshare/tree/master/testing/install_z2jh>`_ a sample installation setup. It doesn't demonstrate all the configurable options, though.
+If you prefer looking at examples instead, `here's <https://github.com/LibreTexts/ngshare/tree/master/testing/install_z2jh>`_ a sample installation setup. It doesn't demonstrate all the configurable options, though.
 
 Installing ngshare
 ------------------
@@ -15,7 +15,7 @@ Installing the Helm Chart
 
 .. code:: bash
 
-    helm repo add ngshare https://rkevin-arch.github.io/ngshare-helm-repo/
+    helm repo add ngshare https://libretexts.github.io/ngshare-helm-repo/
     helm repo update
 
 Afterwards, create a ``config.yaml`` file to customize your helm chart. Here's a bare minimum ``config.yaml`` file:
@@ -53,7 +53,7 @@ Here's a sample ``config.yaml`` file that contains the most commonly used option
       # Amount of storage to allocate
       storage: 1Gi
 
-For a full list of configurable values, check `here <https://github.com/lxylxy123456/ngshare/blob/master/helmchart/ngshare/values.yaml>`_.
+For a full list of configurable values, check `here <https://github.com/LibreTexts/ngshare/blob/master/helmchart/ngshare/values.yaml>`_.
 
 You can now install ``ngshare`` using Helm:
 
@@ -120,6 +120,6 @@ Finally, you need to configure nbgrader to use ngshare_exchange. This can be don
     # For more information, read Notes for Instructors in the documentation
     c.CourseDirectory.course_id = '*'
 
-A sample singleuser Dockerfile that does all of the above is available `on Github <https://github.com/lxylxy123456/ngshare/tree/master/testing/install_z2jh/Dockerfile-singleuser>`_.
+A sample singleuser Dockerfile that does all of the above is available `on Github <https://github.com/LibreTexts/ngshare/tree/master/testing/install_z2jh/Dockerfile-singleuser>`_.
 
 If running ``nbgrader list`` doesn't cause any significant errors, you have installed ``ngshare_exchange`` correctly. Please check `Notes for Administrators <notes_admin.html>`_ and `Notes for Instructors <notes_instructor.html>`_ for more information on how to use ``ngshare``. The students should be able to use nbgrader as normal without additional configuration.

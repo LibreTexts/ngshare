@@ -4,12 +4,12 @@ This is the testing / dev environment setup. We have two dev environments, one u
 
 ## Preparation
 You should clone the following repos in the same folder:
-1. [ngshare](https://github.com/lxylxy123456/ngshare) (this repo!)
-2. [nbgrader](https://github.com/lxylxy123456/nbgrader), which is built on the [pluggable exchange](https://github.com/jupyter/nbgrader/pull/1238) pull request, with an exchange that works with ngshare.
+1. [ngshare](https://github.com/LibreTexts/ngshare) (this repo!)
+2. [nbgrader](https://github.com/LibreTexts/nbgrader), which is built on the [pluggable exchange](https://github.com/jupyter/nbgrader/pull/1238) pull request, with an exchange that works with ngshare.
 
 ```
-git clone https://github.com/lxylxy123456/ngshare
-git clone https://github.com/lxylxy123456/nbgrader
+git clone https://github.com/LibreTexts/ngshare
+git clone https://github.com/LibreTexts/nbgrader
 ```
 
 ## Docker
