@@ -18,7 +18,7 @@ Installing the Helm Chart
     helm repo add ngshare https://libretexts.github.io/ngshare-helm-repo/
     helm repo update
 
-Afterwards, create a ``config.yaml`` file to customize your helm chart. Here's a bare minimum ``config.yaml`` file:
+Afterwards, create a ``config.yaml`` file to customize your helm chart. Here's a bare minimum ``config.yaml`` file that assumes you're installing ``ngshare`` into the same namespace as Z2JH, and that you only need 1GB of storage in total:
 
 .. code:: yaml
 
@@ -45,6 +45,9 @@ Here's a sample ``config.yaml`` file that contains the most commonly used option
 
     ngshare:
       hub_api_token: demo_token_9wRp0h4BLzAnC88jjBfpH0fa4QV9tZNI
+      # Please change the line below with the namespace your Z2JH helm chart is installed under
+      # You can omit this value if you're installing ngshare in the same namespace
+      hub_api_url: http://hub.your-z2jh-namespace.svc.cluster.local:8081/hub/api
       admins:
         - admin1
         - admin2
@@ -83,10 +86,10 @@ The ``ngshare`` Helm chart should output something like this at the end of insta
         ngshare.py: |
           c.JupyterHub.services.append({
             'name': 'ngshare',
-            'url': 'http://ngshare:8080',
-            'api_token': 'demo_token_9wRp0h4BLzAnC88jjBfpH0fa4QV9tZNI'})
+            'url': 'http://ngshare.default.svc.cluster.local:8080',
+            'api_token': '3VEgEzkhFkQsdZNI7zhnyMW6U0a2xsZq'})
 
-If you have installed ``ngshare`` in the same namespace as JupyterHub, then just add this to your Z2JH ``config.yaml``. Otherwise, you will have to change the URL and use the fully qualified domain name for the ``ngshare`` service (usually ``ngshare.your-namespace.svc.cluster.local``). After you have updated Z2JH's configuration using ``helm upgrade``, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
+Follow the instructions and add the code block to your Z2JH ``config.yaml``. After you have updated Z2JH's configuration using ``helm upgrade``, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
 
 Installing ngshare_exchange
 ---------------------------
@@ -108,17 +111,18 @@ Afterwards, you may install ``ngshare_exchange``:
 
     python3 -m pip install ngshare_exchange
 
-Finally, you need to configure nbgrader to use ngshare_exchange. This can be done by adding the following to nbgrader's global config file, ``/etc/jupyter/nbgrader_config.py``:
+Finally, you need to configure nbgrader to use ngshare_exchange. This can be done by adding some code to nbgrader's global config file, ``/etc/jupyter/nbgrader_config.py``. The relevant code should be output by the ``helm install`` command earlier when you installed ``ngshare``:
 
 .. code:: python
 
     from ngshare_exchange import configureExchange
     c=get_config()
-    configureExchange(c)
-
-    # Add the following to let students access courses without configuration
+    configureExchange(c, 'http://ngshare.default.svc.cluster.local:8080/services/ngshare')
+    # Add the following line to let students access courses without configuration
     # For more information, read Notes for Instructors in the documentation
     c.CourseDirectory.course_id = '*'
+
+Depending on your helm values and the namespace you install in, the URL will be different. Be sure to follow the code your ``helm install`` command outputs.
 
 A sample singleuser Dockerfile that does all of the above is available `on Github <https://github.com/LibreTexts/ngshare/tree/master/testing/install_z2jh/Dockerfile-singleuser>`_.
 
