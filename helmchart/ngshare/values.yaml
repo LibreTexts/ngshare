@@ -4,7 +4,7 @@ fullnameOverride: ""
 
 # Where to pull the ngshare image
 image:
-  repository: rkevin/ngshare
+  repository: libretexts/ngshare
   pullPolicy: IfNotPresent
   imagePullSecrets: []
   tag: 'set-by-chartpress'
@@ -46,7 +46,8 @@ ngshare:
   admins: []
 
   # JupyterHub API url, without the trailing slash
-  # If you didn't modify the Z2JH helm chart, this value should be right
+  # If you are installing ngshare in the same namespace as Z2JH
+  # and you didn't modify the Z2JH helm chart itself, this value should be right
   hub_api_url: http://hub:8081/hub/api
 
   # Not sure what this is, frankly, so leaving it configurable

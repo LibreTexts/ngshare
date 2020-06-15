@@ -39,6 +39,7 @@ Table of Contents
    user_guide/demo.rst
    user_guide/bugs.rst
    user_guide/faqs.rst
+   user_guide/change_log.rst
 
 .. toctree::
    :maxdepth: 2

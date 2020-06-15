@@ -1,9 +1,9 @@
 charts:
   - name: helmchart/ngshare
-    imagePrefix: rkevin/
+    imagePrefix: libretexts/
     repo:
-      git: rkevin-arch/ngshare-helm-repo
-      published: https://rkevin-arch.github.io/ngshare-helm-repo
+      git: libretexts/ngshare-helm-repo
+      published: https://libretexts.github.io/ngshare-helm-repo
     images:
       ngshare:
         dockerfilePath: Dockerfile

@@ -6,11 +6,21 @@ hub:
     ngshare.py: |
       c.JupyterHub.services.append({
         'name': '{{ include "ngshare.name" . }}',
-        'url': 'http://{{ include "ngshare.fullname" . }}:{{ .Values.deployment.port }}',
+        'url': 'http://{{ include "ngshare.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.deployment.port }}',
         'api_token': '{{ include "ngshare.getToken" . }}'})
 
 Afterwards, install ngshare_exchange in every Docker image that has nbgrader.
-https://ngshare.readthedocs.io/user_guide/install_z2jh.html#installing-ngshare-exchange
+Then, place the following in /etc/jupyter/nbgrader_config.py:
+
+from ngshare_exchange import configureExchange
+c=get_config()
+configureExchange(c, 'http://{{ include "ngshare.fullname" .}}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.deployment.port }}/services/{{ include "ngshare.name" . }}')
+# Add the following line to let students access courses without configuration
+# For more information, read Notes for Instructors in the documentation
+c.CourseDirectory.course_id = '*'
+
+Read the documentation for more detailed instructions:
+https://ngshare.readthedocs.io/en/latest/user_guide/install_z2jh.html
 
 Please let us know on Github if you encounter any issues, thanks!
 {{- if .Values.ngshare.hub_api_token_is_random }}
