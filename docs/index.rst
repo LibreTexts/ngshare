@@ -5,6 +5,13 @@ Kevin Rong | Abigail Almanza | Lawrence Lee | Eric Li
 
 Team KALE
 
+Project Introduction Video
+--------------------------
+
+.. raw:: html
+
+    <p><iframe width="640" height="360" src="https://www.youtube.com/embed/FdK0AGwxkSw" frameborder="0" allowfullscreen></iframe></p>
+
 Youtube Video Demo
 ------------------
 

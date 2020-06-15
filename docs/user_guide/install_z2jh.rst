@@ -64,6 +64,8 @@ You can now install ``ngshare`` using Helm:
     # For helm2
     helm install ngshare/ngshare -n ngshare -f config.yaml
 
+If you didn't install Z2JH in the default namespace, it is recommended to install ``ngshare`` in the same namespace as Z2JH by specifying ``--namespace your_namespace_name`` in ``helm install``. Note that if you don't put ``ngshare`` and Z2JH in the same namespace, you will have to modify the ``ngshare.hub_api_url`` value in your config to point to ``http://hub.your-z2jh-namespace.svc.cluster.local:8081/hub/api`` instead (replace ``your-z2jh-namespace`` with the namespace where Z2JH is installed).
+
 After installation, Helm should give you some instructions on how to configure Z2JH.
 
 Configuring Z2JH to Work with ngshare
@@ -84,7 +86,7 @@ The ``ngshare`` Helm chart should output something like this at the end of insta
             'url': 'http://ngshare:8080',
             'api_token': 'demo_token_9wRp0h4BLzAnC88jjBfpH0fa4QV9tZNI'})
 
-If you have installed ``ngshare`` in the same namespace as JupyterHub, then just add this to your Z2JH ``config.yaml``. Otherwise, you will have to change the URL and use the fully qualified domain name for the ``ngshare`` service (usually ``ngshare.my-namespace.svc.cluster-domain.example``). After you have updated Z2JH's configuration using ``helm upgrade``, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
+If you have installed ``ngshare`` in the same namespace as JupyterHub, then just add this to your Z2JH ``config.yaml``. Otherwise, you will have to change the URL and use the fully qualified domain name for the ``ngshare`` service (usually ``ngshare.your-namespace.svc.cluster.local``). After you have updated Z2JH's configuration using ``helm upgrade``, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
 
 Installing ngshare_exchange
 ---------------------------

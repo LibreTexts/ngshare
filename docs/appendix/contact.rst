@@ -11,13 +11,18 @@ Team Members
 Clients
 -------
 * Christopher Nitta <`cjnitta@ucdavis.edu <cjnitta@ucdavis.edu>`_>
-* Jason K. Moore <available upon request>
+* Jason K. Moore <`jkm@ucdavis.edu <jkm@ucdavis.edu>`_>
 
 Jupyter Community
 -----------------
-Reached by posting issues in Github repos like https://github.com/jupyter/nbgrader/
+* Jupyter in Education Mailing List
+  `jupyter-education@googlegroups.com <jupyter-education@googlegroups.com>`_
+* Jupyter Discourse Forum
+  `https://discourse.jupyter.org/ <https://discourse.jupyter.org/>`_
+* Github issues pages (e.g.
+  `https://github.com/jupyter/nbgrader/issues <https://github.com/jupyter/nbgrader/issues>`_)
 
 Deployment
 ----------
-* UC Davis Jupyter team <available upon request>
+* UC Davis Jupyter team <`jupyterteam@ucdavis.edu <jupyterteam@ucdavis.edu>`_>
 
