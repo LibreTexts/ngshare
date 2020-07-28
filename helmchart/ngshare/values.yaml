@@ -80,3 +80,5 @@ pvc:
   annotations: {}
   selector: {}
   storageClassName: ""
+  accessModes:
+  - ReadWriteMany
