@@ -37,6 +37,8 @@ deployment:
   tolerations: []
   affinity: {}
 
+  initContainers: []
+
 
 # Configure environment / cmdline passed to ngshare
 ngshare:
