@@ -7,6 +7,7 @@ Change Log
 ngshare:
 
 - Update helm chart to allow configuring the `accessMode` of ngshare's PVC via `pvc.accessModes`. The PVC will be mounted `ReadWriteMany` by default unless you override this value. (Thanks [pcfens](https://github.com/pcfens) for the [PR](https://github.com/LibreTexts/ngshare/pull/120)!)
+- Update helm chart to allow `initContainers` to be added, via `deployment.initContainers`. This is an array of `initContainers`, such as expected in Kubernetes, and such as implemented in Z2JH itself.
 
 0.5.1
 -----
