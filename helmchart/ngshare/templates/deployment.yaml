@@ -9,6 +9,7 @@ spec:
   selector:
     matchLabels:
       {{- include "ngshare.selectorLabels" . | nindent 6 }}
+  strategy: {{ .Values.deployment.strategy }}
   template:
     metadata:
       labels:
