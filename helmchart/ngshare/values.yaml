@@ -15,6 +15,9 @@ deployment:
   # WARNING: Anything greater than 1 is not tested
   replicaCount: 1
 
+  # Strategy for redeployment https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  strategy: {}
+
   # Port to expose on the ClusterIP service. Shouldn't matter that much.
   port: 8080
 
@@ -36,6 +39,8 @@ deployment:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+
+  initContainers: []
 
 
 # Configure environment / cmdline passed to ngshare
@@ -80,3 +85,5 @@ pvc:
   annotations: {}
   selector: {}
   storageClassName: ""
+  accessModes:
+  - ReadWriteMany

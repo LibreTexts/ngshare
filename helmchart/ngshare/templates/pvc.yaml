@@ -17,11 +17,7 @@ spec:
   storageClassName: {{ .Values.pvc.storageClassName | quote }}
   {{- end }}
   accessModes:
-    {{- if gt .Values.deployment.replicaCount 1.0 }}
-    - ReadWriteOnce
-    {{- else }}
-    - ReadWriteMany
-    {{- end }}
+    {{- .Values.pvc.accessModes | toYaml | trimSuffix "\n" | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.pvc.storage | quote }}

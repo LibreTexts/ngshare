@@ -23,14 +23,15 @@ install:
 before_script:
 - python3 -m pip install -r testing_reqs.txt
 script:
-- python3 -m pytest ./ngshare/ --cov=./ngshare/
 - python3 -m black -S -l 80 --check .
 - helm2 lint --strict helmchart/ngshare
 - helm lint --strict helmchart/ngshare
+- python3 -m pytest ./ngshare/ --cov=./ngshare/
 after_success:
 - codecov
 - |-
   test ${TRAVIS_PYTHON_VERSION} = 3.8 &&
+  test -n "${DOCKER_PASSWORD}" &&
   echo '{"mtu": 1460}' | sudo dd of=/etc/docker/daemon.json &&
   sudo systemctl restart docker &&
   docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}" &&

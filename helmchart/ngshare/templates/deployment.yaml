@@ -9,6 +9,7 @@ spec:
   selector:
     matchLabels:
       {{- include "ngshare.selectorLabels" . | nindent 6 }}
+  strategy: {{ .Values.deployment.strategy }}
   template:
     metadata:
       labels:
@@ -21,6 +22,10 @@ spec:
       securityContext:
         runAsNonRoot: true
         fsGroup: {{ .Values.deployment.fsGroup }}
+      {{- if .Values.deployment.initContainers }}
+      initContainers:
+        {{- .Values.deployment.initContainers | toYaml | trimSuffix "\n" | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
