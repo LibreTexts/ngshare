@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+0.5.3
+-----
+
+ngshare:
+
+- Fix not having a `deployment.strategy` causing helm chart rendering to fail.
+
 0.5.2
 -----
 
