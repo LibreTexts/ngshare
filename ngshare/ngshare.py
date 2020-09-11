@@ -25,6 +25,7 @@ from tornado.web import (
 from jupyterhub.services.auth import HubAuthenticated
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import database_exists, create_database
 
 try:
     from . import dbutil
@@ -944,6 +945,8 @@ class MyApplication(Application):
         )
         # Connect Database
         engine = create_engine(db_url)
+        if not database_exists(engine.url):
+            create_database(engine.url)
         Base.metadata.bind = engine
         Base.metadata.create_all(engine)
         self.db_session = sessionmaker(bind=engine)
