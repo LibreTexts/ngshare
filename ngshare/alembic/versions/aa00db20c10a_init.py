@@ -71,7 +71,7 @@ def upgrade():
     )
     op.create_table(
         'assignment_files_assoc_table',
-        sa.Column('left_id', sa.TEXT(), nullable=False),
+        sa.Column('left_id', sa.INTEGER(), nullable=False), # changed from TEXT
         sa.Column('right_id', sa.INTEGER(), nullable=False),
         sa.ForeignKeyConstraint(['left_id'], ['assignments._id'],),
         sa.ForeignKeyConstraint(['right_id'], ['files._id'],),
@@ -89,7 +89,7 @@ def upgrade():
     )
     op.create_table(
         'feedback_files_assoc_table',
-        sa.Column('left_id', sa.TEXT(), nullable=False),
+        sa.Column('left_id', sa.INTEGER(), nullable=False), # changed from TEXT
         sa.Column('right_id', sa.INTEGER(), nullable=False),
         sa.ForeignKeyConstraint(['left_id'], ['submissions._id'],),
         sa.ForeignKeyConstraint(['right_id'], ['files._id'],),
@@ -97,7 +97,7 @@ def upgrade():
     )
     op.create_table(
         'submission_files_assoc_table',
-        sa.Column('left_id', sa.TEXT(), nullable=False),
+        sa.Column('left_id', sa.INTEGER(), nullable=False), # changed from TEXT
         sa.Column('right_id', sa.INTEGER(), nullable=False),
         sa.ForeignKeyConstraint(['left_id'], ['submissions._id'],),
         sa.ForeignKeyConstraint(['right_id'], ['files._id'],),
