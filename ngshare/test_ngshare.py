@@ -26,22 +26,38 @@ from .ngshare import (
 application, db_name, storage_name = None, None, None
 user, hc, bu = None, None, None
 
+BACKEND_POSTGRES = "postgresql"
+BACKEND_SQLITE = "sqlite"
+
+db_backend = BACKEND_POSTGRES
+#db_backend = BACKEND_SQLITE
 
 @pytest.fixture
 def app():
+    '''Handle alternative backends'''
     'Create Tornado application for testing'
     global application, db_name, storage_name
     # Create temporary location for db and storage
+    storage_name = tempfile.mktemp('-ngshare-test-dir')
     if db_name is None:
-        db_name = tempfile.mktemp('.db')
-        storage_name = tempfile.mktemp('-ngshare-test-dir')
-    application = MyApplication(
-        '/api/',
-        'sqlite:///' + db_name,
-        storage_name,
-        admin=['root'],
-        debug=True,
-    )
+        if db_backend == BACKEND_SQLITE:
+            db_name = tempfile.mktemp('.db')
+            application = MyApplication(
+                '/api/',
+                'sqlite:///' + db_name,
+                storage_name,
+                admin=['root'],
+                debug=True,
+            )
+        elif db_backend == BACKEND_POSTGRES:
+#            db_name = tempfile.mktemp('.db')
+            application = MyApplication(
+                '/api/',
+                'postgresql://postgres:omg-a-password@localhost:5432/ngshare_test',
+                storage_name,
+                admin=['root'],
+                debug=True,
+            )
     # Mock authentication using vngshare
     MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)
     return application
@@ -1312,7 +1328,10 @@ def test_notimpl():
 
 
 def test_clean():
-    'Clean temporary files'
+    'Clean temporary files - only relevant with an sqlite backend'
     global db_name, storage_name
-    os.remove(db_name)
-    shutil.rmtree(storage_name)
+    if db_backend == BACKEND_SQLITE:
+        os.remove(db_name)
+        shutil.rmtree(storage_name)
+    elif db_backend == BACKEND_POSTGRES:
+        pass
