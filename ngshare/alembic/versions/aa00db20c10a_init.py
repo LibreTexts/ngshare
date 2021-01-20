@@ -44,7 +44,10 @@ def upgrade():
         sa.Column('id', sa.TEXT(), nullable=True),
         sa.Column('course_id', sa.INTEGER(), nullable=True),
         sa.Column('due', sa.TIMESTAMP(), nullable=True),
-        sa.ForeignKeyConstraint(['course_id'], ['courses._id'],),
+        sa.ForeignKeyConstraint(
+            ['course_id'],
+            ['courses._id'],
+        ),
         sa.PrimaryKeyConstraint('_id'),
     )
     op.create_table(
@@ -54,8 +57,14 @@ def upgrade():
         sa.Column('first_name', sa.TEXT(), nullable=True),
         sa.Column('last_name', sa.TEXT(), nullable=True),
         sa.Column('email', sa.TEXT(), nullable=True),
-        sa.ForeignKeyConstraint(['left_id'], ['users.id'],),
-        sa.ForeignKeyConstraint(['right_id'], ['courses.id'],),
+        sa.ForeignKeyConstraint(
+            ['left_id'],
+            ['users.id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['right_id'],
+            ['courses.id'],
+        ),
         sa.PrimaryKeyConstraint('left_id', 'right_id'),
     )
     op.create_table(
@@ -65,16 +74,28 @@ def upgrade():
         sa.Column('first_name', sa.TEXT(), nullable=True),
         sa.Column('last_name', sa.TEXT(), nullable=True),
         sa.Column('email', sa.TEXT(), nullable=True),
-        sa.ForeignKeyConstraint(['left_id'], ['users.id'],),
-        sa.ForeignKeyConstraint(['right_id'], ['courses.id'],),
+        sa.ForeignKeyConstraint(
+            ['left_id'],
+            ['users.id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['right_id'],
+            ['courses.id'],
+        ),
         sa.PrimaryKeyConstraint('left_id', 'right_id'),
     )
     op.create_table(
         'assignment_files_assoc_table',
         sa.Column('left_id', sa.TEXT(), nullable=False),
         sa.Column('right_id', sa.INTEGER(), nullable=False),
-        sa.ForeignKeyConstraint(['left_id'], ['assignments._id'],),
-        sa.ForeignKeyConstraint(['right_id'], ['files._id'],),
+        sa.ForeignKeyConstraint(
+            ['left_id'],
+            ['assignments._id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['right_id'],
+            ['files._id'],
+        ),
         sa.PrimaryKeyConstraint('left_id', 'right_id'),
     )
     op.create_table(
@@ -83,24 +104,42 @@ def upgrade():
         sa.Column('assignment_id', sa.INTEGER(), nullable=True),
         sa.Column('timestamp', sa.TIMESTAMP(), nullable=True),
         sa.Column('student_id', sa.TEXT(), nullable=True),
-        sa.ForeignKeyConstraint(['assignment_id'], ['assignments._id'],),
-        sa.ForeignKeyConstraint(['student_id'], ['users.id'],),
+        sa.ForeignKeyConstraint(
+            ['assignment_id'],
+            ['assignments._id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['student_id'],
+            ['users.id'],
+        ),
         sa.PrimaryKeyConstraint('_id'),
     )
     op.create_table(
         'feedback_files_assoc_table',
         sa.Column('left_id', sa.TEXT(), nullable=False),
         sa.Column('right_id', sa.INTEGER(), nullable=False),
-        sa.ForeignKeyConstraint(['left_id'], ['submissions._id'],),
-        sa.ForeignKeyConstraint(['right_id'], ['files._id'],),
+        sa.ForeignKeyConstraint(
+            ['left_id'],
+            ['submissions._id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['right_id'],
+            ['files._id'],
+        ),
         sa.PrimaryKeyConstraint('left_id', 'right_id'),
     )
     op.create_table(
         'submission_files_assoc_table',
         sa.Column('left_id', sa.TEXT(), nullable=False),
         sa.Column('right_id', sa.INTEGER(), nullable=False),
-        sa.ForeignKeyConstraint(['left_id'], ['submissions._id'],),
-        sa.ForeignKeyConstraint(['right_id'], ['files._id'],),
+        sa.ForeignKeyConstraint(
+            ['left_id'],
+            ['submissions._id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['right_id'],
+            ['files._id'],
+        ),
         sa.PrimaryKeyConstraint('left_id', 'right_id'),
     )
     # ### end Alembic commands ###
