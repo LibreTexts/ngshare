@@ -16,6 +16,7 @@ spec:
   template:
     metadata:
       labels:
+        hub.jupyter.org/network-access-hub: "true"
         {{- include "ngshare.selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.image.imagePullSecrets }}
