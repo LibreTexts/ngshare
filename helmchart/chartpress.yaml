@@ -7,5 +7,5 @@ charts:
     images:
       ngshare:
         dockerfilePath: Dockerfile
-        contextPath: .
+        contextPath: ..
         valuesPath: image
