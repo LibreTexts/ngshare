@@ -1,5 +1,5 @@
 charts:
-  - name: helmchart/ngshare
+  - name: ngshare
     imagePrefix: libretexts/
     repo:
       git: libretexts/ngshare-helm-repo
