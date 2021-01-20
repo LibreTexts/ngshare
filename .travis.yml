@@ -38,6 +38,7 @@ after_success:
   openssl aes-256-cbc -K $encrypted_defe1004a0ce_key -iv $encrypted_defe1004a0ce_iv -in helmchart/ssh_key.enc -out /tmp/ssh_key -d &&
   chmod 400 /tmp/ssh_key &&
   python3 -m pip install chartpress docker==4.2.1 &&
+  cd helmchart &&
   GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --long &&
   test -n "${TRAVIS_TAG}" &&
   GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --tag "${TRAVIS_TAG}"
