@@ -100,13 +100,17 @@ class Course(Base):
     instructors = association_proxy(
         'inst_assoc',
         'user',
-        creator=lambda user: InstructorAssociation(user=user,),
+        creator=lambda user: InstructorAssociation(
+            user=user,
+        ),
         cascade_scalar_deletes=True,
     )
     students = association_proxy(
         'student_assoc',
         'user',
-        creator=lambda user: StudentAssociation(user=user,),
+        creator=lambda user: StudentAssociation(
+            user=user,
+        ),
         cascade_scalar_deletes=True,
     )
     assignments = relationship('Assignment', backref='course')

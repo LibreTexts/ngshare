@@ -85,17 +85,17 @@ class MyHelpers:
                 self.json_error(400, 'Time format incorrect')
 
     def path_check(self, pathname):
-        '''
-            Return whether a pathname (for file, in director tree) is safe
-            Current policy:
-                Not empty
-                os.path.abspath resolves to a child address
-                Path does not contain ('.', '..', '', '/')
-            Note: os.path.abspath is used instead of os.path.realpath to prevent
-             symbolic link issues, because the file is not on server
-            Note: os.path.abspath is not 100% safe
-            Note: currently only using Linux pathname conventions
-        '''
+        """
+        Return whether a pathname (for file, in director tree) is safe
+        Current policy:
+            Not empty
+            os.path.abspath resolves to a child address
+            Path does not contain ('.', '..', '', '/')
+        Note: os.path.abspath is used instead of os.path.realpath to prevent
+         symbolic link issues, because the file is not on server
+        Note: os.path.abspath is not 100% safe
+        Note: currently only using Linux pathname conventions
+        """
         if not pathname:
             return False
         path = pathname
@@ -133,11 +133,11 @@ class MyHelpers:
         return ans
 
     def json_files_unpack(self, json_str, target):
-        '''
-            Generate a list of File objects from a JSON directory tree
-            json_str: json object as string; raise error when None
-            target: a list to put file objects in
-        '''
+        """
+        Generate a list of File objects from a JSON directory tree
+        json_str: json object as string; raise error when None
+        target: a list to put file objects in
+        """
         if json_str is None:
             self.json_error(400, 'Please supply files')
         try:
@@ -409,10 +409,10 @@ class ListCourses(MyRequestHandler):
 
     @authenticated
     def get(self):
-        '''
-            List all available courses the user is taking or teaching. (anyone)
-            List all courses in ngshare. (admin)
-        '''
+        """
+        List all available courses the user is taking or teaching. (anyone)
+        List all courses in ngshare. (admin)
+        """
         courses = set()
         if self.is_admin():
             for i in self.db.query(Course).all():
@@ -460,10 +460,10 @@ class ManageInstructor(MyRequestHandler):
 
     @authenticated
     def post(self, course_id, instructor_id):
-        '''
-            Add or update a course instructor. (admin)
-            Update self full name or email. (instructors)
-        '''
+        """
+        Add or update a course instructor. (admin)
+        Update self full name or email. (instructors)
+        """
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         instructor = self.find_or_create_user(instructor_id)
@@ -564,10 +564,10 @@ class ManageStudent(MyRequestHandler):
 
     @authenticated
     def get(self, course_id, student_id):
-        '''
-            Get information about a student.
-            (instructors+student with same student_id)
-        '''
+        """
+        Get information about a student.
+        (instructors+student with same student_id)
+        """
         course = self.find_course(course_id)
         if self.user.id != student_id:
             self.check_course_instructor(course)
@@ -635,7 +635,10 @@ class ListStudents(MyRequestHandler):
             association.last_name = i['last_name']
             association.email = i['email']
             ans.append(
-                {'username': i['username'], 'success': True,}
+                {
+                    'username': i['username'],
+                    'success': True,
+                }
             )
         self.db.commit()
         self.json_success(status=ans)
@@ -705,10 +708,10 @@ class ListSubmissions(MyRequestHandler):
     '/api/submissions/<course_id>/<assignment_id>'
 
     def get(self, course_id, assignment_id):
-        '''
-            List all submissions for an assignment from all students
-             (instructors only)
-        '''
+        """
+        List all submissions for an assignment from all students
+         (instructors only)
+        """
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         assignment = self.find_assignment(course, assignment_id)
@@ -727,11 +730,11 @@ class ListStudentSubmissions(MyRequestHandler):
     '/api/submissions/<course_id>/<assignment_id>/<student_id>'
 
     def get(self, course_id, assignment_id, student_id):
-        '''
-            List all submissions for an assignment from a particular student
-             (instructors+students,
-              students restricted to their own submissions)
-        '''
+        """
+        List all submissions for an assignment from a particular student
+         (instructors+students,
+          students restricted to their own submissions)
+        """
         course = self.find_course(course_id)
         if self.user.id != student_id:
             self.check_course_instructor(course)
@@ -767,10 +770,10 @@ class DownloadAssignment(MyRequestHandler):
     '/api/submission/<course_id>/<assignment_id>/<student_id>'
 
     def get(self, course_id, assignment_id, student_id):
-        '''
-            Download a student's submitted assignment (instructors only)
-            TODO: maybe allow student to see their own submissions?
-        '''
+        """
+        Download a student's submitted assignment (instructors only)
+        TODO: maybe allow student to see their own submissions?
+        """
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         assignment = self.find_assignment(course, assignment_id)
@@ -795,10 +798,10 @@ class UploadDownloadFeedback(MyRequestHandler):
     '/api/feedback/<course_id>/<assignment_id>/<student_id>'
 
     def post(self, course_id, assignment_id, student_id):
-        '''
-            POST /api/feedback/<course_id>/<assignment_id>/<student_id>
-            Upload feedback on a student's assignment (instructors only)
-        '''
+        """
+        POST /api/feedback/<course_id>/<assignment_id>/<student_id>
+        Upload feedback on a student's assignment (instructors only)
+        """
         course = self.find_course(course_id)
         self.check_course_instructor(course)
         assignment = self.find_assignment(course, assignment_id)
@@ -819,11 +822,11 @@ class UploadDownloadFeedback(MyRequestHandler):
         self.json_success()
 
     def get(self, course_id, assignment_id, student_id):
-        '''
-            GET /api/feedback/<course_id>/<assignment_id>/<student_id>
-            Download feedback on a student's assignment
-             (instructors+students, students restricted to own submissions)
-        '''
+        """
+        GET /api/feedback/<course_id>/<assignment_id>/<student_id>
+        Download feedback on a student's assignment
+         (instructors+students, students restricted to own submissions)
+        """
         course = self.find_course(course_id)
         if self.user.id != student_id:
             self.check_course_instructor(course)
@@ -871,7 +874,11 @@ class InitDatabase(MyRequestHandler):
                 for line in value:
                     tbody.append(list(map(line.__getitem__, thead)))
                 ans.append(
-                    {'header': key, 'thead': thead, 'tbody': tbody,}
+                    {
+                        'header': key,
+                        'thead': thead,
+                        'tbody': tbody,
+                    }
                 )
             self.render('dump.html', tables=ans)
         else:
@@ -954,9 +961,9 @@ class MyApplication(Application):
 
 
 class MockAuth(HubAuthenticated):
-    '''
-        Mock class substituting HubAuthenticated, for vngshare
-    '''
+    """
+    Mock class substituting HubAuthenticated, for vngshare
+    """
 
     def get_login_url(self):
         return 'http://example.com/'

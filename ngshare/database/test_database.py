@@ -38,17 +38,17 @@ def clear_db(db, storage_path):
 
 
 def init_db(db, storage_path):
-    '''
-        Create testing data
-        course1
-            instructor = [kevin]
-            student = [lawrence]
-            assignments = [challenge] (two submissions, one feedback)
-        course2
-            instructor = [abigail]
-            student = [eric]
-            assignments = [assignment2a, assignment2b] (no submissions)
-    '''
+    """
+    Create testing data
+    course1
+        instructor = [kevin]
+        student = [lawrence]
+        assignments = [challenge] (two submissions, one feedback)
+    course2
+        instructor = [abigail]
+        student = [eric]
+        assignments = [assignment2a, assignment2b] (no submissions)
+    """
     uk = User('kevin')
     ua = User('abigail')
     ul = User('lawrence')
@@ -105,7 +105,10 @@ def dump_db(db):
     ):
         for i in db.query(table).all():
             ans[table.name].append(
-                {'left_id': i.left_id, 'right_id': i.right_id,}
+                {
+                    'left_id': i.left_id,
+                    'right_id': i.right_id,
+                }
             )
     return ans
 
