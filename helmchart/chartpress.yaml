@@ -6,6 +6,6 @@ charts:
       published: https://libretexts.github.io/ngshare-helm-repo
     images:
       ngshare:
-        dockerfilePath: Dockerfile
+        dockerfilePath: ../Dockerfile
         contextPath: ..
         valuesPath: image
