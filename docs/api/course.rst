@@ -283,9 +283,7 @@ Request (HTTP POST data)
 """"""""""""""""""""""""
 .. code:: javascript
 
-    {
-        "students":
-        [
+    students=[
             {
                 "username": /* student ID */,
                 "first_name": /* student first name */,
@@ -294,7 +292,6 @@ Request (HTTP POST data)
             },
             ...
         ]
-    }
 
 Response
 """"""""
