@@ -24,7 +24,7 @@ Base = declarative_base()
 assignment_files_assoc_table = Table(
     'assignment_files_assoc_table',
     Base.metadata,
-    Column('left_id', TEXT, ForeignKey('assignments._id'), primary_key=True),
+    Column('left_id', INTEGER, ForeignKey('assignments._id'), primary_key=True), # changed from TEXT
     Column('right_id', INTEGER, ForeignKey('files._id'), primary_key=True),
 )
 
@@ -32,7 +32,7 @@ assignment_files_assoc_table = Table(
 submission_files_assoc_table = Table(
     'submission_files_assoc_table',
     Base.metadata,
-    Column('left_id', TEXT, ForeignKey('submissions._id'), primary_key=True),
+    Column('left_id', INTEGER, ForeignKey('submissions._id'), primary_key=True), # changed from TEXT
     Column('right_id', INTEGER, ForeignKey('files._id'), primary_key=True),
 )
 
@@ -40,7 +40,7 @@ submission_files_assoc_table = Table(
 feedback_files_assoc_table = Table(
     'feedback_files_assoc_table',
     Base.metadata,
-    Column('left_id', TEXT, ForeignKey('submissions._id'), primary_key=True),
+    Column('left_id', INTEGER, ForeignKey('submissions._id'), primary_key=True), # changed from TEXT
     Column('right_id', INTEGER, ForeignKey('files._id'), primary_key=True),
 )
 

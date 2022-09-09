@@ -19,19 +19,20 @@ from .database import *
 
 def clear_db(db, storage_path):
     'Remove all data from database'
-    db.query(User).delete()
-    db.query(Course).delete()
-    db.query(Assignment).delete()
-    db.query(Submission).delete()
-    db.query(File).delete()
-    db.query(InstructorAssociation).delete()
-    db.query(StudentAssociation).delete()
     for table_name in [
         'assignment_files_assoc_table',
         'submission_files_assoc_table',
         'feedback_files_assoc_table',
     ]:
         db.execute('DELETE FROM %s' % table_name)
+    db.query(InstructorAssociation).delete()
+    db.query(StudentAssociation).delete()
+    db.query(Submission).delete()
+    db.query(Assignment).delete()
+    db.query(File).delete()
+    db.query(Course).delete()
+    db.query(User).delete()
+    
     db.commit()
     if storage_path is not None:
         shutil.rmtree(storage_path, ignore_errors=True)
