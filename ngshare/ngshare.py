@@ -11,8 +11,9 @@ import base64
 import binascii
 import datetime
 from collections import namedtuple
-from urllib.parse import urlparse
-
+from urllib.parse import urlencode, urlparse
+from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+from tornado.httputil import url_concat
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import (
@@ -22,9 +23,12 @@ from tornado.web import (
     Finish,
     MissingArgumentError,
 )
-from jupyterhub.services.auth import HubAuthenticated
+from jupyterhub.services.auth import HubAuthenticated,HubOAuthCallbackHandler,HubOAuthenticated
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
+from tornado import log
+import requests
+
 
 try:
     from . import dbutil
@@ -59,6 +63,58 @@ except ImportError:  # pragma: no cover
         init_db,
         dump_db,
     )
+
+class JupyterHubLoginHandler(RequestHandler):
+    """Login Handler
+    this handler both begins and ends the OAuth process
+    """
+
+    async def token_for_code(self, code):
+        """Complete OAuth by requesting an access token for an oauth code
+        
+            client_id=self.settings['client_id'],"""
+        params = dict(
+            
+            client_id=self.settings['client_id'],
+            client_secret=self.settings['api_token'],
+            grant_type='authorization_code',
+            code=code,
+            redirect_uri=self.settings['redirect_uri'],
+        )
+        req = HTTPRequest(
+            self.settings['token_url'],
+            method='POST',
+            body=urlencode(params).encode('utf8'),
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+        )
+        response = await AsyncHTTPClient().fetch(req)
+        data = json.loads(response.body.decode('utf8', 'replace'))
+        return data['access_token']
+
+    async def get(self):
+        #raise ValueError(self.settings)
+        code = self.get_argument('code', None)
+        if code:
+            # code is set, we are the oauth callback
+            # complete oauth
+            token = await self.token_for_code(code)
+            # login successful, set cookie and redirect back to home
+            self.set_secure_cookie('ngshare-oauth-token', token)
+            self.redirect('/services/ngshare/')
+        else:
+            # we are the login handler,
+            # begin oauth process which will come back later with an
+            # authorization_code
+            self.redirect(
+                url_concat(
+                    self.settings['authorize_url'],
+                    dict(
+                        redirect_uri=self.settings['redirect_uri'],
+                        client_id=self.settings['client_id'],
+                        response_type='code',
+                    ),
+                )
+            )
 
 
 class MyHelpers:
@@ -350,7 +406,7 @@ class MyHelpers:
             self.json_error(403, msg)
 
 
-class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
+class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
     'Custom request handler for ngshare'
 
     def json_success(self, msg=None, **kwargs):
@@ -368,16 +424,47 @@ class MyRequestHandler(HubAuthenticated, RequestHandler, MyHelpers):
         raise Finish(json.dumps({'success': False, 'message': msg, **kwargs}))
 
     def prepare(self):
-        'Provide a db object'
-        self.db = self.application.db_session()
-        current_user = self.get_current_user()
-        if current_user is not None:
+        if "Authorization" in self.request.headers:
+            token=self.request.headers.get('Authorization')[6:]
+            self.db = self.application.db_session()
+            r = requests.get(os.environ["JUPYTERHUB_API_URL"] + '/user',
+                headers={
+                'Authorization': f'token {token}',
+                }
+            )
+            current_user = r.json()
+            self.current_user=r.json()
+        else:
+            'Provide a db object'
+            self.db = self.application.db_session()
+            user_token = self.get_current_user()
+            current_user = self.user_for_token(user_token)
+        if current_user is not None and "name" in current_user.keys():
             self.user = User.from_jupyterhub_user(current_user, self.db)
         else:
             self.user = None
 
     def on_finish(self):
         self.db.close()
+
+        """Serve the JSON model for the authenticated user"""
+
+    def get_current_user(self):
+        """The login handler stored a JupyterHub API token in a cookie
+        @web.authenticated calls this method.
+        If a Falsy value is returned, the request is redirected to `login_url`.
+        If a Truthy value is returned, the request is allowed to proceed.
+        """
+        token = self.get_secure_cookie('ngshare-oauth-token')
+
+        if token:
+            # secure cookies are bytes, decode to str
+            return token.decode('ascii', 'replace')
+
+    def user_for_token(self, token):
+        """Retrieve the user for a given token, via /hub/api/user"""
+        r = requests.get(self.settings['user_url'], headers={'Authorization': f'token {token}'})
+        return r.json()
 
 
 class HomePage(MyRequestHandler):
@@ -906,7 +993,6 @@ class HealthCheckHandler(RequestHandler):
         self.write(json.dumps({'success': True}))
         return
 
-
 class MyApplication(Application):
     'Custom application for ngshare'
 
@@ -943,11 +1029,18 @@ class MyApplication(Application):
                 UploadDownloadFeedback,
             ),
             (prefix + 'initialize-Data6ase', InitDatabase),
+            (prefix+'oauth_callback',  JupyterHubLoginHandler),
+            (prefix+'healthz', HealthCheckHandler),
             ('/healthz', HealthCheckHandler),
         ]
+        hub_api = os.environ['JUPYTERHUB_API_URL'].rstrip('/')
+        authorize_url = hub_api + '/oauth2/authorize'
+        token_url = hub_api + '/oauth2/token'
+        user_url = hub_api + '/user'
         handlers.append((r'.*', NotFoundHandler))
         super(MyApplication, self).__init__(
-            handlers, debug=debug, autoreload=autoreload
+            handlers, debug=debug, autoreload=autoreload,cookie_secret=os.urandom(32),login_url='/oauth_callback',api_token=os.environ['JUPYTERHUB_API_TOKEN'],client_id=os.environ['JUPYTERHUB_CLIENT_ID'],redirect_uri=os.environ['JUPYTERHUB_SERVICE_PREFIX'].rstrip('/')
+        + '/oauth_callback',authorize_url=authorize_url,token_url=token_url,user_url=user_url
         )
         # Connect Database
         engine = create_engine(db_url)
@@ -958,7 +1051,6 @@ class MyApplication(Application):
         self.debug = debug
         self.vngshare = False
         self.admin = admin
-
 
 class MockAuth(HubAuthenticated):
     """
@@ -974,7 +1066,6 @@ class MockAuth(HubAuthenticated):
         else:
             user = self.get_argument('user')
         return {'name': user}
-
 
 def main(argv=None):  # pragma: no cover
     'Main function'
