@@ -13,3 +13,6 @@ singleuser:
   image:
     name: ngshare-singleuser-sample
     tag: 0.0.1
+  networkPolicy:
+    egressAllowRules:
+     privateIPs: true
