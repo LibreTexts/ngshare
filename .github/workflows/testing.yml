@@ -41,5 +41,4 @@ jobs:
           files: ./ngshare/coverage1.xml,./ngshare/coverage2.xml
           flags: unittests
           name: codecov-umbrella
-          path_to_write_report: ./ngshare/coverage/codecov_report.txt
           verbose: true
