@@ -1,7 +1,8 @@
 name: Publish to DockerHub and helm repo
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - '*'
 jobs:
   pypi:
     runs-on: ubuntu-latest
@@ -29,4 +30,4 @@ jobs:
           chmod 400 /tmp/ssh_key
           python3 -m pip install chartpress docker==4.2.1
           cd helmchart
-          GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --long
+          GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --tag ${{github.ref_name}}
