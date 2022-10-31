@@ -1253,7 +1253,7 @@ def test_corner_case(http_client, base_url):
     def mock_filename_create(self, filename):
         nonlocal counter
         counter += 1
-        return str(counter ** 2 % 10) + '.tmp'
+        return str(counter**2 % 10) + '.tmp'
 
     MyHelpers.filename_create = mock_filename_create
     for i in range(100):
