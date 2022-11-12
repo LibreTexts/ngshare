@@ -4,7 +4,7 @@ on:
     tags:
       - '*'
 jobs:
-  pypi:
+  docker:
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -20,7 +20,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: user/app:latest
+          tags: libretexts/ngshare:latest
       - name: Checkout
         uses: actions/checkout@v3
         with:
