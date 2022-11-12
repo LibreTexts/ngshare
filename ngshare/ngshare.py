@@ -1044,15 +1044,18 @@ class MyApplication(Application):
         self.vngshare = False
         self.admin = admin
 
-class MockAuth(HubAuthenticated):
+class MockAuth():
     """
-    Mock class substituting HubAuthenticated, for vngshare
+    Mock class containing methods to replace request handler methods.
     """
 
     def get_login_url(self):
         return 'http://example.com/'
 
     def get_current_user(self):
+        return "token"
+
+    def user_for_token(self, _):
         if type(self).__name__ in ('HomePage', 'Static', 'InitDatabase'):
             user = self.get_argument('user', 'user')
         else:
