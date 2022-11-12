@@ -70,6 +70,8 @@ ngshare:
   # Please leave this on unless you know what you're doing.
   upgrade_db: true
 
+  oauth_client_id: service-ngshare
+
   # Additional environment variables
   env: {}
 
