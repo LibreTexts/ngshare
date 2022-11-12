@@ -28,6 +28,6 @@ jobs:
       - run: |
           echo ${HELM_SSH_KEY} > /tmp/ssh_key
           chmod 400 /tmp/ssh_key
-          python3 -m pip install chartpress docker==4.2.1
+          python3 -m pip install chartpress
           cd helmchart
-          GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --push --publish-chart --tag ${{github.ref_name}}
+          GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --no-build --publish-chart
