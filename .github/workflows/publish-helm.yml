@@ -29,6 +29,7 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.HELM_SSH_KEY }}
+          known_hosts: unnecessary
       - run: |
           python3 -m pip install chartpress
           cd helmchart
