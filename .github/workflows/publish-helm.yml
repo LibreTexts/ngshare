@@ -31,6 +31,8 @@ jobs:
           key: ${{ secrets.HELM_SSH_KEY }}
           known_hosts: unnecessary
       - run: |
+          git config --global user.email "jupyterteam@ucdavis.edu"
+          git config --global user.name "ngshare GitHub Actions"
           python3 -m pip install chartpress
           cd helmchart
           chartpress --no-build --publish-chart
