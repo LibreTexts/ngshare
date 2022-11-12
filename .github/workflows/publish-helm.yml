@@ -25,9 +25,11 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.HELM_SSH_KEY }}
       - run: |
-          echo ${HELM_SSH_KEY} > /tmp/ssh_key
-          chmod 400 /tmp/ssh_key
           python3 -m pip install chartpress
           cd helmchart
-          GIT_SSH_COMMAND="ssh -i /tmp/ssh_key" chartpress --no-build --publish-chart
+          chartpress --no-build --publish-chart
