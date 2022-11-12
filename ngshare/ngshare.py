@@ -23,7 +23,9 @@ from tornado.web import (
     Finish,
     MissingArgumentError,
 )
-from jupyterhub.services.auth import HubAuthenticated,HubOAuthCallbackHandler,HubOAuthenticated
+from jupyterhub.services.auth import (
+    HubOAuthenticated,
+)
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 from tornado import log
@@ -64,17 +66,18 @@ except ImportError:  # pragma: no cover
         dump_db,
     )
 
+
 class JupyterHubLoginHandler(RequestHandler):
-    """Login Handler
-    this handler both begins and ends the OAuth process
+    """
+    Login Handler
+    This handler both begins and ends the OAuth process
     """
 
     async def token_for_code(self, code):
-        """Complete OAuth by requesting an access token for an oauth code
-        
-            client_id=self.settings['client_id'],"""
+        """
+        Complete OAuth by requesting an access token for an oauth code
+        """
         params = dict(
-            
             client_id=self.settings['client_id'],
             client_secret=self.settings['api_token'],
             grant_type='authorization_code',
@@ -92,7 +95,6 @@ class JupyterHubLoginHandler(RequestHandler):
         return data['access_token']
 
     async def get(self):
-        #raise ValueError(self.settings)
         code = self.get_argument('code', None)
         if code:
             # code is set, we are the oauth callback
@@ -425,7 +427,7 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
 
     def prepare(self):
         if "Authorization" in self.request.headers:
-            token=self.request.headers.get('Authorization')[6:]
+            token = self.request.headers.get('Authorization')[6:]
         else:
             token = self.get_current_user()
 
@@ -455,7 +457,10 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
 
     def user_for_token(self, token):
         """Retrieve the user for a given token, via /hub/api/user"""
-        r = requests.get(self.settings['user_url'], headers={'Authorization': f'token {token}'})
+        r = requests.get(
+            self.settings['user_url'],
+            headers={'Authorization': f'token {token}'},
+        )
         return r.json()
 
 
@@ -985,6 +990,7 @@ class HealthCheckHandler(RequestHandler):
         self.write(json.dumps({'success': True}))
         return
 
+
 class MyApplication(Application):
     'Custom application for ngshare'
 
@@ -1021,8 +1027,8 @@ class MyApplication(Application):
                 UploadDownloadFeedback,
             ),
             (prefix + 'initialize-Data6ase', InitDatabase),
-            (prefix+'oauth_callback',  JupyterHubLoginHandler),
-            (prefix+'healthz', HealthCheckHandler),
+            (prefix + 'oauth_callback', JupyterHubLoginHandler),
+            (prefix + 'healthz', HealthCheckHandler),
             ('/healthz', HealthCheckHandler),
         ]
         hub_api = os.environ['JUPYTERHUB_API_URL'].rstrip('/')
@@ -1031,8 +1037,18 @@ class MyApplication(Application):
         user_url = hub_api + '/user'
         handlers.append((r'.*', NotFoundHandler))
         super(MyApplication, self).__init__(
-            handlers, debug=debug, autoreload=autoreload,cookie_secret=os.urandom(32),login_url='/oauth_callback',api_token=os.environ['JUPYTERHUB_API_TOKEN'],client_id=os.environ['JUPYTERHUB_CLIENT_ID'],redirect_uri=os.environ['JUPYTERHUB_SERVICE_PREFIX'].rstrip('/')
-        + '/oauth_callback',authorize_url=authorize_url,token_url=token_url,user_url=user_url
+            handlers,
+            debug=debug,
+            autoreload=autoreload,
+            cookie_secret=os.urandom(32),
+            login_url='/oauth_callback',
+            api_token=os.environ['JUPYTERHUB_API_TOKEN'],
+            client_id=os.environ['JUPYTERHUB_CLIENT_ID'],
+            redirect_uri=os.environ['JUPYTERHUB_SERVICE_PREFIX'].rstrip('/')
+            + '/oauth_callback',
+            authorize_url=authorize_url,
+            token_url=token_url,
+            user_url=user_url,
         )
         # Connect Database
         engine = create_engine(db_url)
@@ -1044,7 +1060,8 @@ class MyApplication(Application):
         self.vngshare = False
         self.admin = admin
 
-class MockAuth():
+
+class MockAuth:
     """
     Mock class containing methods to replace request handler methods.
     """
@@ -1061,6 +1078,7 @@ class MockAuth():
         else:
             user = self.get_argument('user')
         return {'name': user}
+
 
 def main(argv=None):  # pragma: no cover
     'Main function'
