@@ -433,6 +433,7 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
 
         self.db = self.application.db_session()
         current_user = self.user_for_token(token)
+        self.current_user = current_user
         if current_user is not None and "name" in current_user.keys():
             self.user = User.from_jupyterhub_user(current_user, self.db)
         else:
