@@ -433,7 +433,7 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
             token = self.request.headers.get('Authorization')[6:]
         else:
             token = self.get_current_user()
-        
+
         current_user = self.user_for_token(token)
 
         if authorized_header:
