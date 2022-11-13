@@ -426,14 +426,19 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
         raise Finish(json.dumps({'success': False, 'message': msg, **kwargs}))
 
     def prepare(self):
-        if "Authorization" in self.request.headers:
+        self.db = self.application.db_session()
+
+        authorized_header = "Authorization" in self.request.headers
+        if authorized_header:
             token = self.request.headers.get('Authorization')[6:]
         else:
             token = self.get_current_user()
-
-        self.db = self.application.db_session()
+        
         current_user = self.user_for_token(token)
-        self.current_user = current_user
+
+        if authorized_header:
+            self.current_user = current_user
+
         if current_user is not None and "name" in current_user.keys():
             self.user = User.from_jupyterhub_user(current_user, self.db)
         else:
