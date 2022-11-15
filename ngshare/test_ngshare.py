@@ -35,6 +35,11 @@ def app():
     if db_name is None:
         db_name = tempfile.mktemp('.db')
         storage_name = tempfile.mktemp('-ngshare-test-dir')
+    # set necessary environment variables
+    os.environ["JUPYTERHUB_API_URL"] = "http://hub.api"
+    os.environ["JUPYTERHUB_API_TOKEN"] = "token"
+    os.environ["JUPYTERHUB_CLIENT_ID"] = "ngshare-client"
+    os.environ["JUPYTERHUB_SERVICE_PREFIX"] = "service/prefix/"
     application = MyApplication(
         '/api/',
         'sqlite:///' + db_name,
@@ -42,8 +47,9 @@ def app():
         admin=['root'],
         debug=True,
     )
-    # Mock authentication using vngshare
-    MyRequestHandler.__bases__ = (MockAuth, RequestHandler, MyHelpers)
+    # Monkey patch auth methods
+    MyRequestHandler.get_current_user = MockAuth.get_current_user
+    MyRequestHandler.user_for_token = MockAuth.user_for_token
     return application
 
 

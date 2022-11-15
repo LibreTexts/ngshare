@@ -89,7 +89,7 @@ spec:
               value: /services/{{ include "ngshare.name" . }}/
             - name: JUPYTERHUB_SERVICE_URL
               value: http://0.0.0.0:8080/
-	    - name: JUPYTERHUB_CLIENT_ID
+            - name: JUPYTERHUB_CLIENT_ID
               value: {{ .Values.ngshare.oauth_client_id }}
             {{- range $k, $v := .Values.ngshare.env }}
             - name: {{ $k }}
