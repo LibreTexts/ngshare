@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+0.6.0
+-----
+
+ngshare:
+
+- Compatibility with JupyterHub 3.0
+- Updated authentication to use OAuth
+
 0.5.3
 -----
 

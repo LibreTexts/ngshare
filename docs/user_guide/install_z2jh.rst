@@ -96,20 +96,14 @@ Installing ngshare_exchange
 
 You should know how to `customize the user environment using Dockerfiles <https://zero-to-jupyterhub.readthedocs.io/en/latest/customizing/user-environment.html>`_ in Z2JH. For the clients to use ``ngshare``, the exchange must be installed in every user pod.
 
-``ngshare_exchange`` only works with nbgrader version 0.7.0 or above. Unfortunately, that version is not yet released. You will have to install the latest nbgrader from GitHub first:
-
-.. code:: bash
-
-    python3 -m pip install git+https://github.com/jupyter/nbgrader.git@5a81fd5
-    jupyter nbextension install --symlink --sys-prefix --py nbgrader
-    jupyter nbextension enable --sys-prefix --py nbgrader
-    jupyter serverextension enable --sys-prefix --py nbgrader
-
-Afterwards, you may install ``ngshare_exchange``:
+``ngshare_exchange`` can be installed like any other python package. Be sure to install and enable the ``nbgrader`` extension as well:
 
 .. code:: bash
 
     python3 -m pip install ngshare_exchange
+    jupyter nbextension install --symlink --sys-prefix --py nbgrader
+    jupyter nbextension enable --sys-prefix --py nbgrader
+    jupyter serverextension enable --sys-prefix --py nbgrader
 
 Finally, you need to configure nbgrader to use ngshare_exchange. This can be done by adding some code to nbgrader's global config file, ``/etc/jupyter/nbgrader_config.py``. The relevant code should be output by the ``helm install`` command earlier when you installed ``ngshare``:
 

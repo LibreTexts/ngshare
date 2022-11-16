@@ -33,20 +33,14 @@ After you restart JupyterHub, you can verify the service is working as intended 
 Installing ngshare_exchange
 ---------------------------
 
-``ngshare_exchange`` only works with nbgrader version 0.7.0 or above. Unfortunately, that version is not yet released. You will have to install the latest nbgrader from GitHub first:
-
-.. code:: bash
-
-    python3 -m pip install git+https://github.com/jupyter/nbgrader.git@5a81fd5
-    jupyter nbextension install --symlink --sys-prefix --py nbgrader
-    jupyter nbextension enable --sys-prefix --py nbgrader
-    jupyter serverextension enable --sys-prefix --py nbgrader
-
-Afterwards, you may install ``ngshare_exchange``:
+``ngshare_exchange`` can be installed like any other python package. Be sure to install and enable the ``nbgrader`` extension as well:
 
 .. code:: bash
 
     python3 -m pip install ngshare_exchange
+    jupyter nbextension install --symlink --sys-prefix --py nbgrader
+    jupyter nbextension enable --sys-prefix --py nbgrader
+    jupyter serverextension enable --sys-prefix --py nbgrader
 
 Finally, you need to configure nbgrader to use ngshare_exchange. This can be done by adding the following to nbgrader's global config file, ``/etc/jupyter/nbgrader_config.py``:
 
