@@ -9,9 +9,6 @@ ngshare
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
-.. image:: https://travis-ci.org/LibreTexts/ngshare.svg?branch=master
-    :target: https://travis-ci.org/LibreTexts/ngshare
-
 .. image:: https://codecov.io/gh/LibreTexts/ngshare/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/LibreTexts/ngshare
 
