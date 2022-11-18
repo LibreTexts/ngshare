@@ -89,7 +89,18 @@ The ``ngshare`` Helm chart should output something like this at the end of insta
             'url': 'http://ngshare.default.svc.cluster.local:8080',
             'api_token': '3VEgEzkhFkQsdZNI7zhnyMW6U0a2xsZq'})
 
-Follow the instructions and add the code block to your Z2JH ``config.yaml``. After you have updated Z2JH's configuration using ``helm upgrade``, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
+Follow the instructions and add the code block to your Z2JH ``config.yaml``.
+
+In addition, it is also necessary to append the following configuration values to the hub configuration if Z2JH 2.0 (JupterHub 3.0) is being used:
+
+.. code::
+
+  singleuser:
+    networkPolicy:
+      egressAllowRules:
+        privateIPs: true
+
+After you have updated Z2JH's configuration using ``helm upgrade``, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
 
 Installing ngshare_exchange
 ---------------------------
