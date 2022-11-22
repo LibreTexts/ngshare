@@ -428,17 +428,7 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
     def prepare(self):
         self.db = self.application.db_session()
 
-        authorized_header = "Authorization" in self.request.headers
-        if authorized_header:
-            token = self.request.headers.get('Authorization')[6:]
-        else:
-            # The login handler stored a JupyterHub API token in a cookie
-            token = self.get_secure_cookie('ngshare-oauth-token')
-            if token:
-                # secure cookies are bytes, decode to str
-                return token.decode('ascii', 'replace')
-
-        self.auth_token = token
+        self.auth_token = self.get_current_token()
 
         current_user = self.get_current_user()
 
@@ -456,7 +446,18 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
         If a Falsy value is returned, the request is redirected to `login_url`.
         If a Truthy value is returned, the request is allowed to proceed.
         """
-        return self.user_for_token(self.auth_token)
+        if self.auth_token:
+            return self.user_for_token(self.auth_token)
+
+    def get_current_token(self):
+        if "Authorization" in self.request.headers:
+            return self.request.headers.get('Authorization')[6:]
+        else:
+            # The login handler stored a JupyterHub API token in a cookie
+            token = self.get_secure_cookie('ngshare-oauth-token')
+            if token:
+                # secure cookies are bytes, decode to str
+                return token.decode('ascii', 'replace')
 
     def user_for_token(self, token):
         """Retrieve the user for a given token, via /hub/api/user"""
@@ -1072,7 +1073,7 @@ class MockAuth:
     def get_login_url(self):
         return 'http://example.com/'
 
-    def get_current_user(self):
+    def get_current_token(self):
         return "token"
 
     def user_for_token(self, _):
