@@ -465,7 +465,8 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
             self.settings['user_url'],
             headers={'Authorization': f'token {token}'},
         )
-        return r.json()
+        if r.ok:
+            return r.json()
 
 
 class HomePage(MyRequestHandler):
