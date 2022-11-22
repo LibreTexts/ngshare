@@ -432,12 +432,15 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
         if authorized_header:
             token = self.request.headers.get('Authorization')[6:]
         else:
-            token = self.get_current_user()
+            # The login handler stored a JupyterHub API token in a cookie
+            token = self.get_secure_cookie('ngshare-oauth-token')
+            if token:
+                # secure cookies are bytes, decode to str
+                return token.decode('ascii', 'replace')
 
-        current_user = self.user_for_token(token)
+        self.auth_token = token
 
-        if authorized_header:
-            self.current_user = current_user
+        current_user = self.get_current_user()
 
         if current_user is not None and "name" in current_user.keys():
             self.user = User.from_jupyterhub_user(current_user, self.db)
@@ -447,19 +450,13 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
     def on_finish(self):
         self.db.close()
 
-        """Serve the JSON model for the authenticated user"""
-
     def get_current_user(self):
-        """The login handler stored a JupyterHub API token in a cookie
+        """
         @web.authenticated calls this method.
         If a Falsy value is returned, the request is redirected to `login_url`.
         If a Truthy value is returned, the request is allowed to proceed.
         """
-        token = self.get_secure_cookie('ngshare-oauth-token')
-
-        if token:
-            # secure cookies are bytes, decode to str
-            return token.decode('ascii', 'replace')
+        return self.user_for_token(self.auth_token)
 
     def user_for_token(self, token):
         """Retrieve the user for a given token, via /hub/api/user"""
