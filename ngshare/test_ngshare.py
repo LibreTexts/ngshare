@@ -48,7 +48,7 @@ def app():
         debug=True,
     )
     # Monkey patch auth methods
-    MyRequestHandler.get_current_user = MockAuth.get_current_user
+    MyRequestHandler.get_current_token = MockAuth.get_current_token
     MyRequestHandler.user_for_token = MockAuth.user_for_token
     return application
 
