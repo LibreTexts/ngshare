@@ -426,6 +426,7 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
         raise Finish(json.dumps({'success': False, 'message': msg, **kwargs}))
 
     def prepare(self):
+        'Runs before web requests, initializes user and db session'
         self.db = self.application.db_session()
 
         self.auth_token = self.get_current_token()
@@ -450,6 +451,7 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
             return self.user_for_token(self.auth_token)
 
     def get_current_token(self):
+        'Gets token from either the headers, if provided, or from a cookie that should have been set earlier.'
         if "Authorization" in self.request.headers:
             return self.request.headers.get('Authorization')[6:]
         else:
@@ -460,7 +462,7 @@ class MyRequestHandler(HubOAuthenticated, RequestHandler, MyHelpers):
                 return token.decode('ascii', 'replace')
 
     def user_for_token(self, token):
-        """Retrieve the user for a given token, via /hub/api/user"""
+        'Retrieve the user for a given token, via /hub/api/user'
         r = requests.get(
             self.settings['user_url'],
             headers={'Authorization': f'token {token}'},
