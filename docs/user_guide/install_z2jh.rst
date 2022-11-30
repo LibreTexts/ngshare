@@ -87,7 +87,8 @@ The ``ngshare`` Helm chart should output something like this at the end of insta
           c.JupyterHub.services.append({
             'name': 'ngshare',
             'url': 'http://ngshare.default.svc.cluster.local:8080',
-            'api_token': '3VEgEzkhFkQsdZNI7zhnyMW6U0a2xsZq'})
+            'api_token': '3VEgEzkhFkQsdZNI7zhnyMW6U0a2xsZq',
+            'oauth_no_confirm': True})
 
 Follow the instructions and add the code block to your Z2JH ``config.yaml``.
 
