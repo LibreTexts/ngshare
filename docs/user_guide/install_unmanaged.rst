@@ -35,6 +35,7 @@ Inside JupyterHub's configuration Python script, add the following:
             'name': 'ngshare',
             'url': 'http://ngshare-location:1234',
             'api_token': 'top-secret-api-token',
+            'oauth_no_confirm': True
         }
     )
 

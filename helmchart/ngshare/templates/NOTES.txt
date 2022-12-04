@@ -7,7 +7,8 @@ hub:
       c.JupyterHub.services.append({
         'name': '{{ include "ngshare.name" . }}',
         'url': 'http://{{ include "ngshare.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.deployment.port }}',
-        'api_token': '{{ include "ngshare.getToken" . }}'})
+        'api_token': '{{ include "ngshare.getToken" . }}',
+        'oauth_no_confirm': True})
 
 Afterwards, install ngshare_exchange in every Docker image that has nbgrader.
 Then, place the following in /etc/jupyter/nbgrader_config.py:

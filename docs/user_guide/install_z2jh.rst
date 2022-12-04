@@ -87,29 +87,35 @@ The ``ngshare`` Helm chart should output something like this at the end of insta
           c.JupyterHub.services.append({
             'name': 'ngshare',
             'url': 'http://ngshare.default.svc.cluster.local:8080',
-            'api_token': '3VEgEzkhFkQsdZNI7zhnyMW6U0a2xsZq'})
+            'api_token': '3VEgEzkhFkQsdZNI7zhnyMW6U0a2xsZq',
+            'oauth_no_confirm': True})
 
-Follow the instructions and add the code block to your Z2JH ``config.yaml``. After you have updated Z2JH's configuration using ``helm upgrade``, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
+Follow the instructions and add the code block to your Z2JH ``config.yaml``.
+
+In addition, it is also necessary to append the following configuration values to the hub configuration if Z2JH 2.0 (JupterHub 3.0) is being used:
+
+.. code::
+
+  singleuser:
+    networkPolicy:
+      egressAllowRules:
+        privateIPs: true
+
+After you have updated Z2JH's configuration using ``helm upgrade``, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
 
 Installing ngshare_exchange
 ---------------------------
 
 You should know how to `customize the user environment using Dockerfiles <https://zero-to-jupyterhub.readthedocs.io/en/latest/customizing/user-environment.html>`_ in Z2JH. For the clients to use ``ngshare``, the exchange must be installed in every user pod.
 
-``ngshare_exchange`` only works with nbgrader version 0.7.0 or above. Unfortunately, that version is not yet released. You will have to install the latest nbgrader from GitHub first:
-
-.. code:: bash
-
-    python3 -m pip install git+https://github.com/jupyter/nbgrader.git@5a81fd5
-    jupyter nbextension install --symlink --sys-prefix --py nbgrader
-    jupyter nbextension enable --sys-prefix --py nbgrader
-    jupyter serverextension enable --sys-prefix --py nbgrader
-
-Afterwards, you may install ``ngshare_exchange``:
+``ngshare_exchange`` can be installed like any other python package. Be sure to install and enable the ``nbgrader`` extension as well:
 
 .. code:: bash
 
     python3 -m pip install ngshare_exchange
+    jupyter nbextension install --symlink --sys-prefix --py nbgrader
+    jupyter nbextension enable --sys-prefix --py nbgrader
+    jupyter serverextension enable --sys-prefix --py nbgrader
 
 Finally, you need to configure nbgrader to use ngshare_exchange. This can be done by adding some code to nbgrader's global config file, ``/etc/jupyter/nbgrader_config.py``. The relevant code should be output by the ``helm install`` command earlier when you installed ``ngshare``:
 
