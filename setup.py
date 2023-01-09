@@ -37,7 +37,7 @@ setuptools.setup(
         "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX :: Linux",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     install_requires=[
         'SQLAlchemy>=1.3.12',
         'alembic>=1.3.2',
