@@ -101,7 +101,8 @@ In addition, it is also necessary to append the following configuration values t
       egressAllowRules:
         privateIPs: true
 
-After you have updated Z2JH's configuration using ``helm upgrade``, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
+After you have updated Z2JH's configuration using ``helm upgrade``, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". 
+If you see the ``ngshare`` welcome page, you may proceed. If you get a 403 Forbidden error, try visiting the page as an admin.
 
 Installing ngshare_exchange
 ---------------------------
