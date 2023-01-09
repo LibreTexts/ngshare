@@ -23,6 +23,7 @@ project = 'ngshare'
 copyright = '2020, Team KALE'
 author = 'Team KALE'
 
+
 # The full version, including alpha/beta/rc tags
 def read(rel_path):
     here = os.path.abspath(os.path.dirname(__file__))
