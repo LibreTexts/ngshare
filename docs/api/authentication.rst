@@ -6,6 +6,8 @@ ngshare Authentication
 
 ``ngshare`` uses JupyterHub authentication tokens to authenticate the user. This is usually in the ``JUPYTERHUB_API_TOKEN`` environment variable in each user's notebook servers. ``ngshare`` will use this token to fetch the username of the current user. The username is the only information used to identify the user.
 
+When accessing JupyterHub's `services/ngshare` webpage, the authentication token is exchanged through secure cookies. If the cookie is not set, the user is sent through the JupyterHub OAuth process.
+
 To send the token to ``ngshare``, use the ``Authorization: token`` header in HTTP requests to ``ngshare``.
 
 GET Example

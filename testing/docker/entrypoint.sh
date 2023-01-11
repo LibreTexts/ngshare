@@ -6,10 +6,6 @@ cd /srv/src/nbgrader
 
 pip install -e .
 
-jupyter nbextension install --symlink --sys-prefix --py nbgrader
-jupyter nbextension enable --sys-prefix --py nbgrader
-jupyter serverextension enable --sys-prefix --py nbgrader
-
 # Then start jupyterhub
 
 cd -
