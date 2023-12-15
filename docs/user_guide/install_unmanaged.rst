@@ -20,6 +20,11 @@ Mocking Required Environment Variables
 
 ``JUPYTERHUB_SERVICE_URL`` is the URL that ``ngshare`` should be accessible on. For example, if ``ngshare`` has IP ``10.1.2.3`` and you want ``ngshare`` to listen on port 1234, this should be ``http://10.1.2.3:1234``. Changing this will affect ``ngshare``'s port.
 
+Additional Environment Variables for ngshare
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The follwing variable might be necessary in case the JupyterHub is running behindd a reverse proxy.
+``JUPYTERHUB_SERVICE_REDIRECT_URL`` is the URL that ``ngshare`` calles after the oauth authentication with the hub. For example: ``/my_hub_proxy_prefix/services/ngshare/```. The default values is ``/services/ngshare/```. 
+
 Running ``ngshare``
 ^^^^^^^^^^^^^^^^^^^
 After configuring the environment variables, you may start ngshare as a service. You should also take a look at the `list of command line arguments <cmdline.html>`_ for further configuration.
