@@ -30,6 +30,26 @@ You may want to check the `list of command line arguments <cmdline.html>`_ for f
 
 After you restart JupyterHub, you can verify the service is working as intended by logging into JupyterHub, clicking "Control Panel", then "Services -> ngshare". If you see the ``ngshare`` welcome page, you may proceed.
 
+Environment variables
+~~~~~~~~~~~~~~~~~~~~~
+
+Like other Services and JupyterHub itself ngsahre support some configuration via the environment. 
+
+The follwing configuration might be necessary in case the JupyterHub is running behindd a reverse proxy.
+``JUPYTERHUB_SERVICE_REDIRECT_URL`` is the URL that ``ngshare`` calles after the oauth authentication with the hub. For example: ``/my_hub_proxy_prefix/services/ngshare/```. The default values is ``/services/ngshare/```. 
+
+Example for hub-managed-services:
+.. code:: python
+
+    c.JupyterHub.services.append(
+        {
+            'name': 'ngshare',
+            'url': 'http://127.0.0.1:10101',
+            'command': ['python3', '-m', 'ngshare', '--admins', 'admin,admin2'],
+            'environment': { 'JUPYTERHUB_SERVICE_REDIRECT_URL': '/my_hub_proxy_prefix/services/ngshare/'}
+        }
+    )
+
 Installing ngshare_exchange
 ---------------------------
 

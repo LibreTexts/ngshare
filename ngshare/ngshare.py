@@ -102,7 +102,7 @@ class JupyterHubLoginHandler(RequestHandler):
             token = await self.token_for_code(code)
             # login successful, set cookie and redirect back to home
             self.set_secure_cookie('ngshare-oauth-token', token)
-            self.redirect('/services/ngshare/')
+            self.redirect(os.environ.get("JUPYTERHUB_SERVICE_REDIRECT_URL", '/services/ngshare/')) 
         else:
             # we are the login handler,
             # begin oauth process which will come back later with an

@@ -10,6 +10,7 @@ from collections import defaultdict
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import text
 
 Session = None
 test_storage = None
@@ -31,7 +32,7 @@ def clear_db(db, storage_path):
         'submission_files_assoc_table',
         'feedback_files_assoc_table',
     ]:
-        db.execute('DELETE FROM %s' % table_name)
+        db.execute(text('DELETE FROM %s' % table_name))
     db.commit()
     if storage_path is not None:
         shutil.rmtree(storage_path, ignore_errors=True)
