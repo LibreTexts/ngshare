@@ -37,11 +37,11 @@ setuptools.setup(
         "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX :: Linux",
     ],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=[
         'SQLAlchemy>=1.3.12,<2.0',
         'alembic>=1.3.2',
-        'tornado>=6.0.3,<7.0',
+        'tornado>=6.0.3',
         'jupyterhub>=1.1.0',
     ],
 )
