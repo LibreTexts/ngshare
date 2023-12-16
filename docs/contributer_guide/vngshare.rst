@@ -8,7 +8,7 @@ For detailed instructions, see :doc:`install`.
 
 .. code:: bash
 
-    pip3 install tornado jupyterhub sqlalchemy
+    pip3 install tornado jupyterhub "sqlalchemy<2"
     cd ngshare
     python3 vngshare.py [--host <bind_IP_address> [--port <port_number>]]
 
