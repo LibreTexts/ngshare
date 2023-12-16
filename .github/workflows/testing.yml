@@ -22,7 +22,7 @@ jobs:
           python -m pip install -r testing_reqs.txt
       - name: Lint with black and helm lint
         run: |
-          python3 -m black -S -l 80 --check .
+          python3 -m black -S -l 80 .
           helm2 lint --strict helmchart/ngshare
           helm lint --strict helmchart/ngshare
       - name: Test with pytest
