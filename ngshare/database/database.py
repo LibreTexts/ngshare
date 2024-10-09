@@ -8,15 +8,16 @@ import hashlib
 from sqlalchemy import (
     Table,
     Column,
-    INTEGER,
-    TEXT,
+    Integer,
+    Text,
     TIMESTAMP,
-    BOOLEAN,
+    Boolean,
     ForeignKey,
 )
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship, declarative_base, Mapped
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.ext.declarative import declarative_base
+
+from typing import List
 
 Base = declarative_base()
 
@@ -24,42 +25,52 @@ Base = declarative_base()
 assignment_files_assoc_table = Table(
     'assignment_files_assoc_table',
     Base.metadata,
-    Column('left_id', TEXT, ForeignKey('assignments._id'), primary_key=True),
-    Column('right_id', INTEGER, ForeignKey('files._id'), primary_key=True),
+    Column('left_id', Text, ForeignKey('assignments._id'), primary_key=True),
+    Column('right_id', Integer, ForeignKey('files._id'), primary_key=True),
 )
 
 # Submission -> Course (One to Many)
 submission_files_assoc_table = Table(
     'submission_files_assoc_table',
     Base.metadata,
-    Column('left_id', TEXT, ForeignKey('submissions._id'), primary_key=True),
-    Column('right_id', INTEGER, ForeignKey('files._id'), primary_key=True),
+    Column('left_id', Text, ForeignKey('submissions._id'), primary_key=True),
+    Column('right_id', Integer, ForeignKey('files._id'), primary_key=True),
 )
 
 # Submission (feedback) -> Course (One to Many)
 feedback_files_assoc_table = Table(
     'feedback_files_assoc_table',
     Base.metadata,
-    Column('left_id', TEXT, ForeignKey('submissions._id'), primary_key=True),
-    Column('right_id', INTEGER, ForeignKey('files._id'), primary_key=True),
+    Column('left_id', Text, ForeignKey('submissions._id'), primary_key=True),
+    Column('right_id', Integer, ForeignKey('files._id'), primary_key=True),
 )
 
 
 class User(Base):
     'A JupyterHub user; can be either instructor or student, or both'
     __tablename__ = 'users'
-    id = Column(TEXT, primary_key=True)
-    teaching = association_proxy(
+    id = Column(Text, primary_key=True)
+    teaching: Mapped[List['Course']] = association_proxy(
         'inst_assoc',
         'course',
         creator=lambda course: InstructorAssociation(course=course),
         cascade_scalar_deletes=True,
     )
-    taking = association_proxy(
+    inst_assoc: Mapped[List['InstructorAssociation']] = relationship(
+        'InstructorAssociation',
+        back_populates='user',
+        cascade='save-update, merge, delete, delete-orphan',
+    )
+    taking: Mapped[List['Course']] = association_proxy(
         'student_assoc',
         'course',
         creator=lambda course: StudentAssociation(course=course),
         cascade_scalar_deletes=True,
+    )
+    student_assoc: Mapped[List['StudentAssociation']] = relationship(
+        'StudentAssociation',
+        back_populates='user',
+        cascade='save-update, merge, delete, delete-orphan',
     )
 
     def __init__(self, name):
@@ -69,7 +80,7 @@ class User(Base):
     def __str__(self):
         return '<User %s>' % self.id
 
-    def dump(self):
+    def dump(self) -> dict:
         'Dump data to dict'
         return {
             'id': self.id,
@@ -95,9 +106,9 @@ class Course(Base):
     'An nbgrader course'
     __tablename__ = 'courses'
     # in case course name needs to be changed
-    _id = Column(INTEGER, primary_key=True)
-    id = Column(TEXT, unique=True)
-    instructors = association_proxy(
+    _id = Column(Integer, primary_key=True)
+    id = Column(Text, unique=True)
+    instructors: Mapped[List['User']] = association_proxy(
         'inst_assoc',
         'user',
         creator=lambda user: InstructorAssociation(
@@ -105,7 +116,12 @@ class Course(Base):
         ),
         cascade_scalar_deletes=True,
     )
-    students = association_proxy(
+    inst_assoc: Mapped[List['InstructorAssociation']] = relationship(
+        'InstructorAssociation',
+        back_populates='course',
+        cascade='save-update, merge, delete, delete-orphan',
+    )
+    students: Mapped[List['User']] = association_proxy(
         'student_assoc',
         'user',
         creator=lambda user: StudentAssociation(
@@ -113,9 +129,14 @@ class Course(Base):
         ),
         cascade_scalar_deletes=True,
     )
-    assignments = relationship('Assignment', backref='course')
+    student_assoc: Mapped[List['StudentAssociation']] = relationship(
+        'StudentAssociation',
+        back_populates='course',
+        cascade='save-update, merge, delete, delete-orphan',
+    )
+    assignments = relationship('Assignment', back_populates='course')
 
-    def dump(self):
+    def dump(self) -> dict:
         'Dump data to dict'
         return {
             '_id': self._id,
@@ -146,12 +167,13 @@ class Assignment(Base):
     'An nbgrader assignment'
     __tablename__ = 'assignments'
     # in case assignment name needs to be changed
-    _id = Column(INTEGER, primary_key=True)
-    id = Column(TEXT)
-    course_id = Column(INTEGER, ForeignKey('courses._id'))
-    submissions = relationship('Submission', backref='assignment')
+    _id = Column(Integer, primary_key=True)
+    id = Column(Text)
+    course_id = Column(Integer, ForeignKey('courses._id'))
+    course = relationship('Course', back_populates='assignments')
+    submissions = relationship('Submission', back_populates='assignment')
     files = relationship('File', secondary=assignment_files_assoc_table)
-    released = BOOLEAN()
+    released = False
     due = Column(TIMESTAMP)
     # TODO: timezoon
 
@@ -163,7 +185,7 @@ class Assignment(Base):
     def __str__(self):
         return '<Assignment %s>' % self.id
 
-    def dump(self):
+    def dump(self) -> dict:
         'Dump data to dict'
         return {
             '_id': self._id,
@@ -187,10 +209,11 @@ class Assignment(Base):
 class Submission(Base):
     'A submission for an assignment'
     __tablename__ = 'submissions'
-    _id = Column(INTEGER, primary_key=True)
-    assignment_id = Column(INTEGER, ForeignKey('assignments._id'))
+    _id = Column(Integer, primary_key=True)
+    assignment_id = Column(Integer, ForeignKey('assignments._id'))
+    assignment = relationship('Assignment', back_populates='submissions')
     timestamp = Column(TIMESTAMP)
-    student_id = Column(TEXT, ForeignKey('users.id'))
+    student_id = Column(Text, ForeignKey('users.id'))
     files = relationship('File', secondary=submission_files_assoc_table)
     feedbacks = relationship('File', secondary=feedback_files_assoc_table)
     student = relationship('User')
@@ -204,7 +227,7 @@ class Submission(Base):
     def __str__(self):
         return '<Submission %d>' % self._id
 
-    def dump(self):
+    def dump(self) -> dict:
         'Dump data to dict'
         return {
             '_id': self._id,
@@ -228,11 +251,11 @@ class Submission(Base):
 class File(Base):
     'A File (for assignment, submission file, or submission feedback)'
     __tablename__ = 'files'
-    _id = Column(INTEGER, primary_key=True)
-    filename = Column(TEXT)
-    checksum = Column(TEXT)
-    size = Column(INTEGER)
-    actual_name = Column(TEXT)
+    _id = Column(Integer, primary_key=True)
+    filename = Column(Text)
+    checksum = Column(Text)
+    size = Column(Integer)
+    actual_name = Column(Text)
 
     def __init__(self, filename, contents, actual_name=None):
         'Initialize with file name and content; auto-compute md5 and size'
@@ -244,7 +267,7 @@ class File(Base):
     def __str__(self):
         return '<File %s>' % self.filename
 
-    def dump(self):
+    def dump(self) -> dict:
         'Dump data to dict'
         return {
             '_id': self._id,
@@ -264,22 +287,18 @@ class File(Base):
 class InstructorAssociation(Base):
     'Relationship between instructor and course, many to many, with extra data'
     __tablename__ = 'instructor_assoc_table'
-    left_id = Column(TEXT, ForeignKey('users.id'), primary_key=True)
-    right_id = Column(TEXT, ForeignKey('courses.id'), primary_key=True)
-    first_name = Column(TEXT)
-    last_name = Column(TEXT)
-    email = Column(TEXT)
+    left_id = Column(Text, ForeignKey('users.id'), primary_key=True)
+    right_id = Column(Text, ForeignKey('courses.id'), primary_key=True)
+    first_name = Column(Text)
+    last_name = Column(Text)
+    email = Column(Text)
     user = relationship(
         User,
-        backref=backref(
-            'inst_assoc', cascade='save-update, merge, delete, delete-orphan'
-        ),
+        back_populates='inst_assoc',
     )
     course = relationship(
         Course,
-        backref=backref(
-            'inst_assoc', cascade='save-update, merge, delete, delete-orphan'
-        ),
+        back_populates='inst_assoc',
     )
 
     @staticmethod
@@ -291,7 +310,7 @@ class InstructorAssociation(Base):
             .one_or_none()
         )
 
-    def dump(self):
+    def dump(self) -> dict:
         'Dump data to dict'
         return {
             'left_id': self.left_id,
@@ -306,22 +325,18 @@ class InstructorAssociation(Base):
 class StudentAssociation(Base):
     'Relationship between student and course, many to many, with extra data'
     __tablename__ = 'student_assoc_table'
-    left_id = Column(TEXT, ForeignKey('users.id'), primary_key=True)
-    right_id = Column(TEXT, ForeignKey('courses.id'), primary_key=True)
-    first_name = Column(TEXT)
-    last_name = Column(TEXT)
-    email = Column(TEXT)
+    left_id = Column(Text, ForeignKey('users.id'), primary_key=True)
+    right_id = Column(Text, ForeignKey('courses.id'), primary_key=True)
+    first_name = Column(Text)
+    last_name = Column(Text)
+    email = Column(Text)
     user = relationship(
         User,
-        backref=backref(
-            'student_assoc', cascade='save-update, merge, delete, delete-orphan'
-        ),
+        back_populates='student_assoc',
     )
     course = relationship(
         Course,
-        backref=backref(
-            'student_assoc', cascade='save-update, merge, delete, delete-orphan'
-        ),
+        back_populates='student_assoc',
     )
 
     @staticmethod
@@ -333,7 +348,7 @@ class StudentAssociation(Base):
             .one_or_none()
         )
 
-    def dump(self):
+    def dump(self) -> dict:
         'Dump data to dict'
         return {
             'left_id': self.left_id,
