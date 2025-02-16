@@ -786,6 +786,7 @@ class DownloadReleaseAssignment(MyRequestHandler):
         assignment = Assignment(assignment_id, course)
         files = self.get_argument('files', None)
         self.json_files_unpack(files, assignment.files)
+        self.db.add(assignment)
         self.db.commit()
         self.json_success()
 
@@ -857,6 +858,7 @@ class SubmitAssignment(MyRequestHandler):
         submission = Submission(self.user, assignment)
         files = self.get_body_argument('files', None)
         self.json_files_unpack(files, submission.files)
+        self.db.add(submission)
         self.db.commit()
         self.json_success(timestamp=self.strftime(submission.timestamp))
 

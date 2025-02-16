@@ -7,9 +7,8 @@ import tempfile
 from collections import namedtuple
 import pytest
 
-from sqlalchemy import create_engine, Column, INTEGER, TEXT
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine, Column, Integer, Text
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 from . import dbutil
 
@@ -58,18 +57,18 @@ def test_add_file_size():
 
     class File_old(Base_old):
         __tablename__ = 'files'
-        _id = Column(INTEGER, primary_key=True)
-        filename = Column(TEXT)
-        checksum = Column(TEXT)
-        actual_name = Column(TEXT)
+        _id = Column(Integer, primary_key=True)
+        filename = Column(Text)
+        checksum = Column(Text)
+        actual_name = Column(Text)
 
     class File_new(Base_new):
         __tablename__ = 'files'
-        _id = Column(INTEGER, primary_key=True)
-        filename = Column(TEXT)
-        checksum = Column(TEXT)
-        size = Column(INTEGER)
-        actual_name = Column(TEXT)
+        _id = Column(Integer, primary_key=True)
+        filename = Column(Text)
+        checksum = Column(Text)
+        size = Column(Integer)
+        actual_name = Column(Text)
 
     # Add data
     db = sessionmaker(bind=create_engine(tempdb_url))()
