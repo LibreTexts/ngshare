@@ -34,11 +34,11 @@ Do not use Alembic to automatically upgrade the ngshare database. This will caus
 
 ``--jupyterhub_api_url CUSTOM_API_URL``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Override the JupyterHub API URL configured using the ``JUPUTERHUB_API_URL`` environment variable. You should only use this if you're installing ``ngshare`` as an unmanaged service.
+Override the JupyterHub API URL configured using the ``JUPYTERHUB_API_URL`` environment variable. You should only use this if you're installing ``ngshare`` as an unmanaged service.
 
 ``--prefix PREFIX``
 ^^^^^^^^^^^^^^^^^^^
-Override the default URL prefix configured using the ``JUPYTERHUB_SERVICE_PREFIX`` environment variable. Override the JupyterHub API URL configured using the ``JUPUTERHUB_API_URL`` environment variable. You should only use this if you're installing ``ngshare`` as an unmanaged service.
+Override the default URL prefix configured using the ``JUPYTERHUB_SERVICE_PREFIX`` environment variable. Override the JupyterHub API URL configured using the ``JUPYTERHUB_API_URL`` environment variable. You should only use this if you're installing ``ngshare`` as an unmanaged service.
 
 ``--vngshare``
 ^^^^^^^^^^^^^^

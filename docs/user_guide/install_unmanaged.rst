@@ -1,4 +1,4 @@
-Intalling as an Unmanaged Service
+Installing as an Unmanaged Service
 =================================
 
 **WARNING:** This is for advanced configurations only. Unless you wish to run ``ngshare`` in a different environment than the hub, or have very specific proxying setups, you should not be using this guide.
@@ -22,8 +22,8 @@ Mocking Required Environment Variables
 
 Additional Environment Variables for ngshare
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The follwing variable might be necessary in case the JupyterHub is running behindd a reverse proxy.
-``JUPYTERHUB_SERVICE_REDIRECT_URL`` is the URL that ``ngshare`` calles after the oauth authentication with the hub. For example: ``/my_hub_proxy_prefix/services/ngshare/```. The default values is ``/services/ngshare/```. 
+The following variable might be necessary in case the JupyterHub is running behind a reverse proxy.
+``JUPYTERHUB_SERVICE_REDIRECT_URL`` is the URL that ``ngshare`` calls after the OAuth authentication with the hub. For example: ``/my_hub_proxy_prefix/services/ngshare/```. The default values is ``/services/ngshare/```.
 
 Running ``ngshare``
 ^^^^^^^^^^^^^^^^^^^
