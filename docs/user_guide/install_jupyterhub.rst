@@ -1,5 +1,5 @@
-Intalling in a Regular JupyterHub Environment as a Managed Service
-==================================================================
+Installing in a Regular JupyterHub Environment as a Managed Service
+===================================================================
 
 This guide assumes you already know how to set up a JupyterHub environment. You should also be familiar with `adding JupyterHub-managed services <https://jupyterhub.readthedocs.io/en/stable/reference/services.html#hub-managed-services>`_ into ``jupyterhub_config.py``.
 
@@ -33,10 +33,10 @@ After you restart JupyterHub, you can verify the service is working as intended 
 Environment variables
 ~~~~~~~~~~~~~~~~~~~~~
 
-Like other Services and JupyterHub itself ngsahre support some configuration via the environment. 
+Like other Services and JupyterHub itself ngshare support some configuration via the environment.
 
-The follwing configuration might be necessary in case the JupyterHub is running behindd a reverse proxy.
-``JUPYTERHUB_SERVICE_REDIRECT_URL`` is the URL that ``ngshare`` calles after the oauth authentication with the hub. For example: ``/my_hub_proxy_prefix/services/ngshare/```. The default values is ``/services/ngshare/```. 
+The following configuration might be necessary in case the JupyterHub is running behind a reverse proxy.
+``JUPYTERHUB_SERVICE_REDIRECT_URL`` is the URL that ``ngshare`` calls after the oauth authentication with the hub. For example: ``/my_hub_proxy_prefix/services/ngshare/```. The default values is ``/services/ngshare/```.
 
 Example for hub-managed-services:
 .. code:: python
